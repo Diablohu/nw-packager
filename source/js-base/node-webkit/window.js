@@ -32,8 +32,8 @@ node.openWin = function( path, options ){
 
 
 
-node.win.on('loaded', function(){
-})
+//node.win.on('loaded', function(){
+//})
 
 
 
@@ -193,9 +193,13 @@ _frame.app_window = {
 							node.win.minimize()
 						})
 					titlebar.find('.buttons .maximize').on('click', function(){
-							if( $html.hasClass('window-maxmize') )
+							if( $html.hasClass('window-maxmize') ){
 								node.win.restore()
-							else
+                                $html.removeClass('window-maxmize')
+                                _config.set( 'windowMaximize', null )
+                                _config.set( 'windowMaximizeX', null )
+                                _config.set( 'windowMaximizeY', null )
+                            }else
 								node.win.maximize()
 						})
 					titlebar.find('.buttons .close').on('click', function(){
