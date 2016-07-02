@@ -31,6 +31,11 @@
     }
     _g.pathMakeObj( _g.path )
 
+    _g.nwjsVersions = [
+            'latest',
+            '0.12.0'
+        ]
+
 
 
 
@@ -278,6 +283,19 @@
                         _frame.app_main.fields[i].children('input[value="' + builderOptions[i].join('"],[value="') + '"]')
                             .prop('checked', true)
                             .trigger('change')
+                        break;
+                    case 'version':
+                        if( _g.nwjsVersions.indexOf(builderOptions[i]) < 0 ){
+                            // 已存储的nwjs版本号不在 _g.nwjsVersions 中
+                            _frame.app_main.fields['version'].find('select')
+                                .prepend(
+                                    $('<option>',{
+                                        'value':    builderOptions[i],
+                                        'html':     builderOptions[i]
+                                    })
+                                )
+                                .val(builderOptions[i])
+                        }
                         break;
                     default:
                         if(_frame.app_main.fields[i] && _frame.app_main.fields[i].children){

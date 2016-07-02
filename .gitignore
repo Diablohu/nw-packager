@@ -51,3 +51,4 @@ cache/
 cache/*
 _.cmd
 koala-config.json
+/node_modules

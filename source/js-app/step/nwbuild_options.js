@@ -35,10 +35,7 @@ _frame.app_main.nwbuild_options_init = function( wrapper ){
 				'select',
 				'version',
 				'NW.js version to build',
-				[
-					'latest',
-					'0.12.0'
-				],
+				_g.nwjsVersions,
 				null,
 				{
 					'default': 		'latest',
@@ -55,6 +52,8 @@ _frame.app_main.nwbuild_options_init = function( wrapper ){
 			var searchRes
 				,scrapePtrn = /href="v?([0-9]+\.[0-9]+\.[0-9]+[^"]*)\/"/ig
 				,versions = []
+			//<a href="v0.8.0/">
+			/*
 			node.request('http://dl.nwjs.io/', function(err, res, body){
 				if( !err && res.statusCode == 200 ){
 					while( (searchRes = scrapePtrn.exec(body)) !== null ){
@@ -66,16 +65,19 @@ _frame.app_main.nwbuild_options_init = function( wrapper ){
 					versions = versions.sort(function(a,b){ return node.semver.compare(b,a); })
 				}
 
-				var select = _frame.app_main.fields['version'].children('select')
-				versions.splice(0, 0, 'latest')
-				if( versions.length )
-					select.empty()
-				for( var i in versions ){
-					$('<option value="' + versions[i] + '"/>')
-						.html(versions[i])
-						.appendTo( select )
+				if( versions.length ){
+					var select = _frame.app_main.fields['version'].children('select')
+					versions.splice(0, 0, 'latest')
+					if( versions.length )
+						select.empty()
+					for( var i in versions ){
+						$('<option value="' + versions[i] + '"/>')
+							.html(versions[i])
+							.appendTo( select )
+					}
 				}
 			})
+			*/
 
 		_frame.app_main.fields['platforms']
 			= _g.gen_form_line(
