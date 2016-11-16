@@ -1,7 +1,7 @@
 {
   "name": "nw-packager",
   "main": "app/main.html",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "debug": true,
   "window": {
     "width": 1280,
@@ -21,10 +21,20 @@
     "kiosk": false,
     "transparent": false
   },
-	"repositories": [{
-		"type": "git",
-		"url": "https://github.com/Diablohu/nw-packager"
-	}],
+  "repositories": [
+    {
+      "type": "git",
+      "url": "https://github.com/Diablohu/nw-packager"
+    }
+  ],
+  "dependencies": {
+    "archiver": "^1.2.0",
+    "fs-extra": "^1.0.0",
+    "jsonfile": "^2.4.0",
+    "node-webkit-builder": "^1.0.13",
+    "request": "^2.78.0",
+    "rimraf": "^2.5.4"
+  },
   "devDependencies": {
     "gulp": "^3.9.0",
     "gulp-concat": "^2.6.0",

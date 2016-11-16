@@ -289,10 +289,13 @@
                             // 已存储的nwjs版本号不在 _g.nwjsVersions 中
                             _frame.app_main.fields['version'].find('select')
                                 .prepend(
-                                    $('<option>',{
-                                        'value':    builderOptions[i],
-                                        'html':     builderOptions[i]
-                                    })
+                                    $('<optgroup label="Project selected"/>').append(
+                                        $('<option>',{
+                                            'value':    builderOptions[i],
+                                            'html':     builderOptions[i],
+                                            'checked':  true
+                                        })
+                                    )
                                 )
                                 .val(builderOptions[i])
                         }
