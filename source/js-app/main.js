@@ -256,7 +256,9 @@
         // 如果存在 packageJSON_path，并且允许将选项写入，在此写入
         if( packageJSON_path && _frame.app_main.option_save ){
             packageJSON['nw-packager'] = builderOptions
-            node.jsonfile.writeFileSync(packageJSON_path, packageJSON)
+            node.jsonfile.writeFileSync(packageJSON_path, packageJSON, {
+                spaces: 2
+            })
         }
     }
 

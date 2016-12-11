@@ -22,7 +22,9 @@ _frame.app_main.nwbuild_options_init = function( wrapper ){
                             ,val = _g.relative_path(input.val())
                         input.val( val )
                         packageJSON['window']['icon'] = val
-                        node.jsonfile.writeFileSync(packageJSON_path, packageJSON)
+                        node.jsonfile.writeFileSync(packageJSON_path, packageJSON, {
+                            spaces: 2
+                        })
                     }
                 }
             ).appendTo( _frame.app_main.nwbuild_options_form )

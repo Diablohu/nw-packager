@@ -94,7 +94,9 @@ _frame.app_main.processing_on = function(){
                                 }
                             node.jsonfile.writeFileSync(
                                 node.path.join( package_path, '/package.json' ),
-                                new_packageJSON
+                                new_packageJSON, {
+                                    spaces: 2
+                                }
                             )
 
                         deferred.resolve(err)
