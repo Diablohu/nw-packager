@@ -141,7 +141,6 @@ import rmDir from './modules/rmDir.js'
         // console.log('extractAnyWay', extractAnyWay)
 
         const resolve = (err) => {
-            console.log('resolve')
             if (err) {
                 errorlog(err)
             }
