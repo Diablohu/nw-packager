@@ -4,12 +4,15 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
-const externals = [
-    'fs',
-    'path',
-    'nw',
-    'nw.gui'
-]
+// const externals = [
+//     'fs',
+//     'path',
+//     'buffer',
+//     'zlib',
+
+//     'nw',
+//     'nw.gui'
+// ]
 
 module.exports = {
     entry: './source-launcher/main.js',
@@ -17,11 +20,12 @@ module.exports = {
         path: path.resolve(__dirname, './app/launcher'),
         filename: '____launcher____.js'
     },
-    externals: externals.map(value => {
-        let o = {}
-        o[value] = 'commonjs ' + value
-        return o
-    }),
+    target: "node-webkit",
+    // externals: externals.map(value => {
+    //     let o = {}
+    //     o[value] = 'commonjs ' + value
+    //     return o
+    // }),
     module: {
         rules: [
             {

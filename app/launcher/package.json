@@ -1,14 +1,14 @@
 {
-	"name":		"Who Calls the Fleet",
+	"name":		"nw-package-launcher",
 	"main":		"____launcher____.html",
 	"version":	"0.1.0",
 
-	"debug": 	true,
+	"debug": 	false,
 
 	"window": {
-		"toolbar":			true,
-		"frame":			true,
-		"transparent":		false,
+		"toolbar":			false,
+		"frame":			false,
+		"transparent":		true,
 
 		"width": 			400,
 		"height":			400,

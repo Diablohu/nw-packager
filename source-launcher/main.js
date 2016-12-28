@@ -1,14 +1,14 @@
 import compareVersion from './modules/compareVersion.js'
 import extend from './modules/extend.js'
 import rmDir from './modules/rmDir.js'
-import AdmZip from './modules/adm-zip'
 
 
 (() => {
     const fs = require('fs')
     const path = require('path')
 
-    // const AdmZip = require('adm-zip')
+    // const AdmZip = require('./modules/adm-zip')
+    const AdmZip = require('adm-zip')
     // const JSZip = require('jszip')
     const jf = require('jsonfile')
     const mkdirp = require('mkdirp')
@@ -141,19 +141,20 @@ import AdmZip from './modules/adm-zip'
         // console.log('extractAnyWay', extractAnyWay)
 
         const resolve = (err) => {
+            console.log('resolve')
             if (err) {
                 errorlog(err)
             }
             setTimeout(() => {
                 deferred.resolve()
-            }, 100)
+            }, 200)
         }
 
-        // console.log(pathParse.name, comment, verCurrent, isNotEmptyAppDataSub[pathParse.name])
+        // console.log(compareVersion(comment, verCurrent))
         if (extractAnyWay || compareVersion(comment, verCurrent)) {
             // console.log(comment, verCurrent)
-            //console.log( '[' + filename + '] version '+comment+' greater than current ' + verCurrent )
-            //console.log( 'Extract data files' )
+            // console.log('[' + pathParse.base + '] version ' + comment + ' greater than current ' + verCurrent)
+            // console.log('Extract data files')
 
             // 修改当前版本号变量，在之后写入 localStorage
             let o = {}
@@ -167,22 +168,21 @@ import AdmZip from './modules/adm-zip'
             appDataUpdatList[pathParse.name] = comment
             appDataUpdated = true
 
-            window.testzip = zip
-            window.textdir = dirAppData
-            console.log(window.testzip, dirAppData)
-            return false
+            // window.testzip = zip
+            // window.textdir = dirAppData
+            // console.log(window.testzip, dirAppData)
             zip.extractAllToAsync(dirAppData, true, function (err) {
-                console.log(dirAppData)
-                // resolve(err)
+                // console.log(dirAppData)
+                resolve(err)
             })
-            testzip.extractAllTo(window.textdir, true)
-            testzip.extractAllToAsync(window.textdir, true, function(err){
-                console.log(err)
-            })
+            // testzip.extractAllTo(window.textdir, true)
+            // testzip.extractAllToAsync(window.textdir, true, function(err){
+            //     console.log(err)
+            // })
 
         } else {
-            //console.log( '[' + filename + '] version '+comment+' not greater than current ' + verCurrent )
-            //console.log( 'Ignored.' )
+            // console.log('[' + pathParse.base + '] version ' + comment + ' not greater than current ' + verCurrent)
+            // console.log('Ignored.')
             resolve()
         }
 
@@ -295,7 +295,7 @@ import AdmZip from './modules/adm-zip'
         // 根据 package-app.json 运行程序
         .then(() => {
             console.log('finished')
-            return false
+            // return false
             let deferred = Q.defer()
 
             // 载入 package-app.json
