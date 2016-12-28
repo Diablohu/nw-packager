@@ -26,9 +26,10 @@ _frame.app_main.launcher_options_init = function( wrapper ){
             'Enable launcher',
             builderOptions['enableLauncher'],
             'Enable to use launcher, which will extract Data Package to user folder when app launching. You can choose directories for Data Packages in next step.'
-                + '<br />Data Packages will not be compiled, but to be zipped and be placed alongside final program under DATA directory.'
-                + '<br /><br />When enabled, NW-Packager will install following node.js modules to original project:'
-                + '<br /><em>adm-zip</em>, <em>jsonfile</em>, <em>mkdirp</em>, <em>q</em>',
+                + '<br />Data Packages will not be compiled, but to be zipped and be placed alongside final program under <i>/data</i> directory.'
+                // + '<br /><br />When enabled, NW-Packager will install following node.js modules to original project:'
+                // + '<br /><em>adm-zip</em>, <em>jsonfile</em>, <em>mkdirp</em>, <em>q</em>'
+                ,
             {
                 'onchange': 	function(e){
                     var checked = $(e.target).prop('checked')

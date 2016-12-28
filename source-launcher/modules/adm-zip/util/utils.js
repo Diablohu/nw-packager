@@ -152,6 +152,10 @@ module.exports = (function() {
                             } else {
                                 if(fd) {
                                     fs.write(fd, content, 0, content.length, 0, function(err, written, buffer) {
+                                        // console.log(
+                                        //     path, fd, content, 0, content.length, 0
+                                        // )
+                                        // return false
                                         fs.close(fd, function(err) {
                                             fs.chmod(path, attr || 438, function() {
                                                 callback(true);

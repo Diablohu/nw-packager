@@ -192,6 +192,7 @@ _frame.app_main.processing_on = function(){
                 }
                 if( builderOptions['enableLauncher'] ){
                     __options['files'].push( node.path.join(package_path, '/____launcher____.html').replace(/\\/g, '/') )
+                    __options['files'].push( node.path.join(package_path, '/____launcher____.js').replace(/\\/g, '/') )
                     __options['files'].push( node.path.join(package_path, '/package-app.json').replace(/\\/g, '/') )
                     if( builderOptions['launcherSplash'] ){
                         __options['files'].push( node.path.join(package_path, '/____launcher____').replace(/\\/g, '/') )
@@ -236,7 +237,7 @@ _frame.app_main.processing_on = function(){
 
             var builder = new NwBuilder(__options);
             //Log stuff you want
-                //builder.on('log', _frame.app_main.processing_log);
+                builder.on('log', _frame.app_main.processing_log);
                 //builder.on('log', console.log);
             // Build returns a promise
                 builder.build().then(function () {

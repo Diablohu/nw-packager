@@ -6,9 +6,12 @@
 	"debug": 	true,
 
 	"window": {
+		"toolbar":			true,
+		"frame":			true,
+		"transparent":		false,
+
 		"width": 			400,
 		"height":			400,
-		"toolbar":			false,
 		"icon": 			null,
 		"position":			"center",
 		"min_width":		100,
@@ -18,9 +21,7 @@
 		"always-on-top":	false,
 		"fullscreen":		false,
 		"show_in_taskbar":	true,
-		"frame":			false,
 		"show":				true,
-		"kiosk":			false,
-		"transparent":		true
+		"kiosk":			false
 	}
 }
