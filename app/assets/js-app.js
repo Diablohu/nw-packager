@@ -1270,6 +1270,7 @@ _frame.app_main.processing_on = function(){
                         ,arr = [
                             '____launcher____',
                             '____launcher____.html',
+                            '____launcher____.js',
                             'package.json'
                         ]
                     arr.forEach(function( file ) {

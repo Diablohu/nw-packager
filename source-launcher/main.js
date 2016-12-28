@@ -1,6 +1,7 @@
 import compareVersion from './modules/compareVersion.js'
-import extend from './modules/extend.js'
+// import extend from './modules/extend.js'
 import rmDir from './modules/rmDir.js'
+import deepExtend from 'deep-extend'
 
 
 (() => {
@@ -17,9 +18,9 @@ import rmDir from './modules/rmDir.js'
     const gui = require('nw.gui')
     const launcher = gui.Window.get()
 
+    const localStorage = window.localStorage
     const process = window.process
-
-    global.launcherOptions = {}
+    const global = window.global
 
     // 针对 macOS 特殊处理
     if (process.platform === "darwin") {
@@ -158,7 +159,7 @@ import rmDir from './modules/rmDir.js'
             // 修改当前版本号变量，在之后写入 localStorage
             let o = {}
             o[pathParse.name] = comment
-            extend(curVer, o)
+            deepExtend(curVer, o)
 
             // 开始解压缩操作
             if (existInAppData && isNotEmpty)
@@ -298,56 +299,69 @@ import rmDir from './modules/rmDir.js'
             let deferred = Q.defer()
 
             // 载入 package-app.json
-            global.launcherOptions = jf.readFileSync('./package-app.json')
-            global.launcherOptions["window"]["focus"] = true
+            let options = jf.readFileSync('./package-app.json')
+
+            console.log(
+                'exist options: ', JSON.stringify(options)
+            )
+
+            options["window"]["focus"] = true
             if (appDataUpdated)
-                global.launcherOptions["dataUpdated"] = appDataUpdatList
+                options["dataUpdated"] = appDataUpdatList
 
-            let max_width = Math.min(global.launcherOptions["window"]["max_width"] || screen.availWidth, screen.availWidth)
-            let max_height = Math.min(global.launcherOptions["window"]["max_height"] || screen.availHeight, screen.availHeight)
+            let max_width = Math.min(options["window"]["max_width"] || screen.availWidth, screen.availWidth)
+            let max_height = Math.min(options["window"]["max_height"] || screen.availHeight, screen.availHeight)
 
-            delete (global.launcherOptions["window"]["max_width"])
-            delete (global.launcherOptions["window"]["max_height"])
+            delete (options["window"]["max_width"])
+            delete (options["window"]["max_height"])
 
-            global.launcherOptions["window"]["min_width"]
-                = Math.min(global.launcherOptions["window"]["min_width"] || 0, max_width)
-            global.launcherOptions["window"]["min_height"]
-                = Math.min(global.launcherOptions["window"]["min_height"] || 0, max_height)
+            options["window"]["min_width"]
+                = Math.min(options["window"]["min_width"] || 0, max_width)
+            options["window"]["min_height"]
+                = Math.min(options["window"]["min_height"] || 0, max_height)
 
-            global.launcherOptions["window"]["width"]
-                = Math.min(global.launcherOptions["window"]["width"] || screen.availWidth, max_width)
-            global.launcherOptions["window"]["height"]
-                = Math.min(global.launcherOptions["window"]["height"] || screen.availHeight, max_height)
+            options["window"]["width"]
+                = Math.min(options["window"]["width"] || screen.availWidth, max_width)
+            options["window"]["height"]
+                = Math.min(options["window"]["height"] || screen.availHeight, max_height)
 
             // Platform
-            let platformOverrides = global.launcherOptions['platformOverrides'] || {}
+            let platformOverrides = options['platformOverrides'] || {}
+            console.log(
+                'platformOverrides: ', JSON.stringify(platformOverrides)
+            )
             if (/^win[0-9]+/i.test(process.platform)) {
-                extend(true, global.launcherOptions, platformOverrides['win'] || {})
+                deepExtend(options, platformOverrides['win'] || {})
                 if (process.arch == 'x64') {
-                    extend(true, global.launcherOptions, platformOverrides['win64'] || {})
+                    deepExtend(options, platformOverrides['win64'] || {})
                 } else {
-                    extend(true, global.launcherOptions, platformOverrides['win32'] || {})
+                    deepExtend(options, platformOverrides['win32'] || {})
                 }
             } else if (/^darwin/i.test(process.platform)) {
-                extend(true, global.launcherOptions, platformOverrides['osx'] || {})
+                deepExtend(options, platformOverrides['osx'] || {})
                 if (process.arch == 'ia64') {
-                    extend(true, global.launcherOptions, platformOverrides['osx64'] || {})
+                    deepExtend(options, platformOverrides['osx64'] || {})
                 } else {
-                    extend(true, global.launcherOptions, platformOverrides['osx32'] || {})
+                    deepExtend(options, platformOverrides['osx32'] || {})
                 }
             } else if (/^Linux/i.test(process.platform)) {
-                extend(true, global.launcherOptions, platformOverrides['linux'] || {})
+                deepExtend(options, platformOverrides['linux'] || {})
                 if (process.arch == 'x64') {
-                    extend(true, global.launcherOptions, platformOverrides['linux64'] || {})
+                    deepExtend(options, platformOverrides['linux64'] || {})
                 } else {
-                    extend(true, global.launcherOptions, platformOverrides['linux32'] || {})
+                    deepExtend(options, platformOverrides['linux32'] || {})
                 }
             }
 
+            console.log(
+                'new options: ', JSON.stringify(options)
+            )
+            // return false;
+
             // 开始新的 nw.js 进程
             var appWin = gui.Window.open(
-                'file://' + path.join(dirAppData, global.launcherOptions.main),
-                global.launcherOptions['window']
+                'file://' + path.join(dirAppData, options.main),
+                options['window']
             )
 
             // 在 App 窗口载入后，隐藏 luancher 进程
