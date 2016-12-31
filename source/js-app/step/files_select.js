@@ -64,7 +64,10 @@ _frame.app_main.files_select_on = function(){
 		files.sort()
 
 	// 以下文件、文件夹为必定选择
-		var filesRequired = ['node_modules', 'package.json']
+		var filesRequired = [
+			// 'node_modules',
+			'package.json'
+		]
 
 	// 添加项目
 	// name		项目名称

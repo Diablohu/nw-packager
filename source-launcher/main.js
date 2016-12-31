@@ -2,19 +2,15 @@ import compareVersion from './modules/compareVersion.js'
 // import extend from './modules/extend.js'
 import rmDir from './modules/rmDir.js'
 import deepExtend from 'deep-extend'
+import AdmZip from 'adm-zip'
+import jf from 'jsonfile'
+import mkdirp from 'mkdirp'
+import Q from 'q'
 
 
 (() => {
     const fs = require('fs')
     const path = require('path')
-
-    // const AdmZip = require('./modules/adm-zip')
-    const AdmZip = require('adm-zip')
-    // const JSZip = require('jszip')
-    const jf = require('jsonfile')
-    const mkdirp = require('mkdirp')
-    const Q = require('q')
-
     const gui = require('nw.gui')
     const launcher = gui.Window.get()
 
@@ -183,6 +179,10 @@ import deepExtend from 'deep-extend'
         } else {
             // console.log('[' + pathParse.base + '] version ' + comment + ' not greater than current ' + verCurrent)
             // console.log('Ignored.')
+            // 遍历压缩包内所有文件，如果在目标目录中不存在，解压缩该文件
+            // zip.getEntries().forEach((entry) => {
+
+            // })
             resolve()
         }
 
