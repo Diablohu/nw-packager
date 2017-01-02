@@ -914,7 +914,10 @@ _frame.app_main.files_select_on = function(){
 		files.sort()
 
 	// 以下文件、文件夹为必定选择
-		var filesRequired = ['node_modules', 'package.json']
+		var filesRequired = [
+			// 'node_modules',
+			'package.json'
+		]
 
 	// 添加项目
 	// name		项目名称
@@ -1147,17 +1150,29 @@ _frame.app_main.processing_on = function(){
 
                 builderOptions['dataRelative'].forEach(function(name) {
                     var deferred 	= Q.defer()
-                        ,zip 		= new node.archiver('zip',{
+					var tarPath 	= node.path.join(package_path, '/' + name)
+					try {
+						node.fs.accessSync(
+							tarPath,
+							node.fs.F_OK
+						);
+					} catch (e) {
+						console.log(name + ' not found')
+						deferred.resolve(e);
+					}
+                    var zip 		= new node.archiver('zip',{
                                             'comment': 	builderOptions['dataVersion'][name]
                                         })
                         ,zipfile 	= node.path.join( zip_folder, name + '.nwjs-data' )
                         ,stream 	= node.fs.createWriteStream(zipfile)
                                         .on('finish',function(err){
                                             _frame.app_main.processing_log(name + '.nwjs-data generated.')
+                                        })
+                                        .on('close',function(err){
                                             deferred.resolve(err);
                                         })
                     zip.directory(
-                        node.path.join(package_path, '/' + name),
+                        tarPath,
                         name
                     );
                     zip.pipe( stream )

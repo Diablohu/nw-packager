@@ -1,7 +1,7 @@
 {
   "name": "nw-packager",
   "main": "app/main.html",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "debug": true,
   "window": {
     "width": 1280,
@@ -33,7 +33,9 @@
     "deep-extend": "^0.4.1",
     "fs-extra": "^1.0.0",
     "jsonfile": "^2.4.0",
+    "mkdirp": "^0.5.1",
     "node-webkit-builder": "^1.0.13",
+    "q": "^1.4.1",
     "request": "^2.78.0",
     "rimraf": "^2.5.4"
   },

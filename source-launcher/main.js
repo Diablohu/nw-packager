@@ -353,10 +353,14 @@ import Q from 'q'
                 }
             }
 
+            // options['window'].frame = true
+            // options['window'].show = true
+            // options['window'].toolbar = true
             console.log(
                 'new options: ', JSON.stringify(options)
             )
             // return false;
+            // console.log( path.join(dirAppData, options.main) )
 
             // 开始新的 nw.js 进程
             var appWin = gui.Window.open(
