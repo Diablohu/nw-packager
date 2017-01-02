@@ -16,7 +16,7 @@ import Q from 'q'
 
     const localStorage = window.localStorage
     const process = window.process
-    const global = window.global
+    // const global = self.global
 
     // 针对 macOS 特殊处理
     if (process.platform === "darwin") {
@@ -361,6 +361,8 @@ import Q from 'q'
             )
             // return false;
             // console.log( path.join(dirAppData, options.main) )
+            global.launcherOptions = options
+            localStorage.setItem('nwManifest', JSON.stringify(options))
 
             // 开始新的 nw.js 进程
             var appWin = gui.Window.open(
@@ -376,6 +378,7 @@ import Q from 'q'
 
             // 在 App 窗口关闭时，终结原 nw.js 进程 (launcher 进程)
             appWin.on('closed', function () {
+                localStorage.removeItem('nwManifest')
                 launcher.close()
             })
 
