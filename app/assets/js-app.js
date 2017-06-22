@@ -1259,6 +1259,7 @@ _frame.app_main.processing_on = function(){
 
             _frame.app_main.processing_log('NwBuilder target directory ready.');
             _frame.app_main.processing_log('NwBuilder building...');
+            console.log(__options);
 
             var builder = new NwBuilder(__options);
             //Log stuff you want
