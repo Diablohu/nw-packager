@@ -7,7 +7,7 @@
     node.require('request')
     node.require('semver')
 
-    var NwBuilder 	= node.require('node-webkit-builder')
+    var NwBuilder 	= node.require('nw-builder')
         ,glob 		= node.require('simple-glob')
         ,Q			= node.require('Q')
 
