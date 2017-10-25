@@ -1036,7 +1036,9 @@ _frame.app_main.processing_on = function(){
 
     var zipped_files 	= []
         ,zip_folder 	= node.path.join( node.gui.App.dataPath, '/___zip___' )
-        ,__options 		= {}
+        ,__options 		= {
+            flavor: 'normal'
+        }
         ,promise_chain 	= Q.fcall(function(){})
     
     // 处理路径
