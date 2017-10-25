@@ -9,6 +9,10 @@ import Q from 'q'
 
 
 (() => {
+    try {
+        nw.Window.get().show()
+    } catch (e) { }
+
     const fs = require('fs')
     const path = require('path')
     const gui = require('nw.gui')
@@ -365,22 +369,34 @@ import Q from 'q'
             localStorage.setItem('nwManifest', JSON.stringify(options))
 
             // 开始新的 nw.js 进程
+            options.window['always_on_top'] = options.window['always-on-top']
+            options.window.id = 'nwjsapp'
+            options.debug = false
+            delete options.window.toolbar
+            delete options.window.as_desktop
+            delete options.window['always-on-top']
             var appWin = gui.Window.open(
                 'file://' + path.join(dirAppData, options.main),
-                options['window']
+                options['window'],
+                function (win) {
+                    win.window.launcherOptions = options
+                    win.window.nw = nw
+                    win.window.win = win
+                    // win.get().show()
+
+                    // 在 App 窗口载入后，隐藏 luancher 进程
+                    win.on('loaded', function () {
+                        launcher.hide()
+                        deferred.resolve()
+                    })
+
+                    // 在 App 窗口关闭时，终结原 nw.js 进程 (launcher 进程)
+                    win.on('closed', function () {
+                        localStorage.removeItem('nwManifest')
+                        launcher.close()
+                    })
+                }
             )
-
-            // 在 App 窗口载入后，隐藏 luancher 进程
-            appWin.on('loaded', function () {
-                launcher.hide()
-                deferred.resolve()
-            })
-
-            // 在 App 窗口关闭时，终结原 nw.js 进程 (launcher 进程)
-            appWin.on('closed', function () {
-                localStorage.removeItem('nwManifest')
-                launcher.close()
-            })
 
             return deferred.promise
         })

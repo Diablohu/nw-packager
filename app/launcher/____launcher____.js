@@ -1,7 +1,5712 @@
-!function(t){function n(r){if(e[r])return e[r].exports;var o=e[r]={i:r,l:!1,exports:{}};return t[r].call(o.exports,o,o.exports,n),o.l=!0,o.exports}var e={};return n.m=t,n.c=e,n.i=function(t){return t},n.d=function(t,e,r){n.o(t,e)||Object.defineProperty(t,e,{configurable:!1,enumerable:!0,get:r})},n.n=function(t){var e=t&&t.__esModule?function(){return t.default}:function(){return t};return n.d(e,"a",e),e},n.o=function(t,n){return Object.prototype.hasOwnProperty.call(t,n)},n.p="",n(n.s=33)}([function(t,n){t.exports=require("fs")},function(t,n){t.exports=require("path")},function(t,n,e){t.exports=e(23),t.exports.Constants=e(4),t.exports.Errors=e(5),t.exports.FileAttr=e(22)},function(t,n,e){n.EntryHeader=e(17),n.MainHeader=e(18)},function(t,n){t.exports={LOCHDR:30,LOCSIG:67324752,LOCVER:4,LOCFLG:6,LOCHOW:8,LOCTIM:10,LOCCRC:14,LOCSIZ:18,LOCLEN:22,LOCNAM:26,LOCEXT:28,EXTSIG:134695760,EXTHDR:16,EXTCRC:4,EXTSIZ:8,EXTLEN:12,CENHDR:46,CENSIG:33639248,CENVEM:4,CENVER:6,CENFLG:8,CENHOW:10,CENTIM:12,CENCRC:16,CENSIZ:20,CENLEN:24,CENNAM:28,CENEXT:30,CENCOM:32,CENDSK:34,CENATT:36,CENATX:38,CENOFF:42,ENDHDR:22,ENDSIG:101010256,ENDSUB:8,ENDTOT:10,ENDSIZ:12,ENDOFF:16,ENDCOM:20,STORED:0,SHRUNK:1,REDUCED1:2,REDUCED2:3,REDUCED3:4,REDUCED4:5,IMPLODED:6,DEFLATED:8,ENHANCED_DEFLATED:9,PKWARE:10,BZIP2:12,LZMA:14,IBM_TERSE:18,IBM_LZ77:19,FLG_ENC:0,FLG_COMP1:1,FLG_COMP2:2,FLG_DESC:4,FLG_ENH:8,FLG_STR:16,FLG_LNG:1024,FLG_MSK:4096,FILE:0,BUFFER:1,NONE:2,EF_ID:0,EF_SIZE:2,ID_ZIP64:1,ID_AVINFO:7,ID_PFS:8,ID_OS2:9,ID_NTFS:10,ID_OPENVMS:12,ID_UNIX:13,ID_FORK:14,ID_PATCH:15,ID_X509_PKCS7:20,ID_X509_CERTID_F:21,ID_X509_CERTID_C:22,ID_STRONGENC:23,ID_RECORD_MGT:24,ID_X509_PKCS7_RL:25,ID_IBM1:101,ID_IBM2:102,ID_POSZIP:18064,EF_ZIP64_OR_32:4294967295,EF_ZIP64_OR_16:65535,EF_ZIP64_SUNCOMP:0,EF_ZIP64_SCOMP:8,EF_ZIP64_RHO:16,EF_ZIP64_DSN:24}},function(t,n){t.exports={INVALID_LOC:"Invalid LOC header (bad signature)",INVALID_CEN:"Invalid CEN header (bad signature)",INVALID_END:"Invalid END header (bad signature)",NO_DATA:"Nothing to decompress",BAD_CRC:"CRC32 checksum failed",FILE_IN_THE_WAY:"There is a file in the way: %s",UNKNOWN_METHOD:"Invalid/unsupported compression method",AVAIL_DATA:"inflate::Available inflate data did not terminate",INVALID_DISTANCE:"inflate::Invalid literal/length or distance code in fixed or dynamic block",TO_MANY_CODES:"inflate::Dynamic block code description: too many length or distance codes",INVALID_REPEAT_LEN:"inflate::Dynamic block code description: repeat more than specified lengths",INVALID_REPEAT_FIRST:"inflate::Dynamic block code description: repeat lengths with no first length",INCOMPLETE_CODES:"inflate::Dynamic block code description: code lengths codes incomplete",INVALID_DYN_DISTANCE:"inflate::Dynamic block code description: invalid distance code lengths",INVALID_CODES_LEN:"inflate::Dynamic block code description: invalid literal/length code lengths",INVALID_STORE_BLOCK:"inflate::Stored block length did not match one's complement",INVALID_BLOCK_TYPE:"inflate::Invalid block type (type == 3)",CANT_EXTRACT_FILE:"Could not extract the file",CANT_OVERRIDE:"Target file already exists",NO_ZIP:"No zip file was loaded",NO_ENTRY:"Entry doesn't exist",DIRECTORY_CONTENT_ERROR:"A directory cannot have content",FILE_NOT_FOUND:"File not found: %s",NOT_IMPLEMENTED:"Not implemented",INVALID_FILENAME:"Invalid filename",INVALID_FORMAT:"Invalid or unsupported zip format. No END header found"}},function(t,n,e){var r=e(2),o=e(3),i=r.Constants,c=e(20);t.exports=function(t){function n(){return t&&Buffer.isBuffer(t)?(d.loadDataHeaderFromBinary(t),t.slice(d.realDataOffset,d.realDataOffset+d.compressedSize)):new Buffer(0)}function e(t){return!(d.flags&!1&&r.crc32(t)!=d.crc)}function u(t,o,i){if("undefined"==typeof o&&"string"==typeof t&&(i=t,t=void 0),y)return t&&o&&o(new Buffer(0),r.Errors.DIRECTORY_CONTENT_ERROR),new Buffer(0);var u=n();if(0==u.length)return t&&o&&o(u,r.Errors.NO_DATA),u;var f=new Buffer(d.size);switch(f.fill(0),d.method){case r.Constants.STORED:return u.copy(f),e(f)?(t&&o&&o(f),f):(t&&o&&o(f,r.Errors.BAD_CRC),r.Errors.BAD_CRC);case r.Constants.DEFLATED:var a=new c.Inflater(u);if(!t)return a.inflate(f),e(f)||console.warn(r.Errors.BAD_CRC+" "+p.toString()),f;a.inflateAsync(function(t){t.copy(f,0),e(f)?o&&o(f):o&&o(f,r.Errors.BAD_CRC)});break;default:return t&&o&&o(new Buffer(0),r.Errors.UNKNOWN_METHOD),r.Errors.UNKNOWN_METHOD}}function f(e,o){if((!v||!v.length)&&Buffer.isBuffer(t))return e&&o&&o(n()),n();if(v.length&&!y){var i;switch(d.method){case r.Constants.STORED:return d.compressedSize=d.size,i=new Buffer(v.length),v.copy(i),e&&o&&o(i),i;default:case r.Constants.DEFLATED:var u=new c.Deflater(v);if(!e){var f=u.deflate();return d.compressedSize=f.length,f}u.deflateAsync(function(t){i=new Buffer(t.length),d.compressedSize=t.length,t.copy(i),o&&o(i)}),u=null}}else{if(!e||!o)return new Buffer(0);o(new Buffer(0))}}function a(t,n){return(t.readUInt32LE(n+4)<<4)+t.readUInt32LE(n)}function s(t){for(var n,e,r,o=0;o<t.length;)n=t.readUInt16LE(o),o+=2,e=t.readUInt16LE(o),o+=2,r=t.slice(o,o+e),o+=e,i.ID_ZIP64===n&&l(r)}function l(t){var n,e,r,o;t.length>=i.EF_ZIP64_SCOMP&&(n=a(t,i.EF_ZIP64_SUNCOMP),d.size===i.EF_ZIP64_OR_32&&(d.size=n)),t.length>=i.EF_ZIP64_RHO&&(e=a(t,i.EF_ZIP64_SCOMP),d.compressedSize===i.EF_ZIP64_OR_32&&(d.compressedSize=e)),t.length>=i.EF_ZIP64_DSN&&(r=a(t,i.EF_ZIP64_RHO),d.offset===i.EF_ZIP64_OR_32&&(d.offset=r)),t.length>=i.EF_ZIP64_DSN+4&&(o=t.readUInt32LE(i.EF_ZIP64_DSN),d.diskNumStart===i.EF_ZIP64_OR_16&&(d.diskNumStart=o))}var d=new o.EntryHeader,p=new Buffer(0),h=new Buffer(0),y=!1,v=null,E=new Buffer(0);return{get entryName(){return p.toString()},get rawEntryName(){return p},set entryName(t){p=r.toBuffer(t);var n=p[p.length-1];y=47==n||92==n,d.fileNameLength=p.length},get extra(){return E},set extra(t){E=t,d.extraLength=t.length,s(t)},get comment(){return h.toString()},set comment(t){h=r.toBuffer(t),d.commentLength=h.length},get name(){var t=p.toString();return y?t.substr(t.length-1).split("/").pop():t.split("/").pop()},get isDirectory(){return y},getCompressedData:function(){return f(!1,null)},getCompressedDataAsync:function(t){f(!0,t)},setData:function(t){v=r.toBuffer(t),!y&&v.length?(d.size=v.length,d.method=r.Constants.DEFLATED,d.crc=r.crc32(t)):d.method=r.Constants.STORED},getData:function(t){return u(!1,null,t)},getDataAsync:function(t,n){u(!0,t,n)},set attr(t){d.attr=t},get attr(){return d.attr},set header(t){d.loadFromBinary(t)},get header(){return d},packHeader:function(){var t=d.entryHeaderToBinary();return p.copy(t,r.Constants.CENHDR),d.extraLength&&E.copy(t,r.Constants.CENHDR+p.length),d.commentLength&&h.copy(t,r.Constants.CENHDR+p.length+d.extraLength,h.length),t},toString:function(){return'{\n\t"entryName" : "'+p.toString()+'",\n\t"name" : "'+p.toString().split("/").pop()+'",\n\t"comment" : "'+h.toString()+'",\n\t"isDirectory" : '+y+',\n\t"header" : '+d.toString().replace(/\t/gm,"\t\t")+',\n\t"compressedData" : <'+(t&&t.length+" bytes buffer"||"null")+'>\n\t"data" : <'+(v&&v.length+" bytes buffer"||"null")+">\n}"}}}},function(t,n,e){"use strict";function r(t){if(null===t||"object"!=typeof t)return t;if(t instanceof Object)var n={__proto__:t.__proto__};else var n=Object.create(null);return Object.getOwnPropertyNames(t).forEach(function(e){Object.defineProperty(n,e,Object.getOwnPropertyDescriptor(t,e))}),n}var o=e(0);t.exports=r(o)},function(t,n){t.exports=require("zlib")},function(t,n,e){var r=e(0),o=e(1);r.existsSync=r.existsSync||o.existsSync;var i=e(6),c=e(24),u=e(2);t.exports=function(t){function n(t){if(t&&e){var n;if("string"==typeof t&&(n=e.getEntry(t)),"object"==typeof t&&void 0!=t.entryName&&void 0!=t.header&&(n=e.getEntry(t.entryName)),n)return n}return null}var e=void 0,f="";if(t&&"string"==typeof t){if(!r.existsSync(t))throw u.Errors.INVALID_FILENAME;f=t,e=new c(t,u.Constants.FILE)}else e=t&&Buffer.isBuffer(t)?new c(t,u.Constants.BUFFER):new c(null,u.Constants.NONE);return{readFile:function(t){var e=n(t);return e&&e.getData()||null},readFileAsync:function(t,e){var r=n(t);r?r.getDataAsync(e):e(null,"getEntry failed for:"+t)},readAsText:function(t,e){var r=n(t);if(r){var o=r.getData();if(o&&o.length)return o.toString(e||"utf8")}return""},readAsTextAsync:function(t,e,r){var o=n(t);o?o.getDataAsync(function(t){e(t&&t.length?t.toString(r||"utf8"):"")}):e("")},deleteFile:function(t){var r=n(t);r&&e.deleteEntry(r.entryName)},addZipComment:function(t){e.comment=t},getZipComment:function(){return e.comment||""},addZipEntryComment:function(t,e){var r=n(t);r&&(r.comment=e)},getZipEntryComment:function(t){var e=n(t);return e?e.comment||"":""},updateFile:function(t,e){var r=n(t);r&&r.setData(e)},addLocalFile:function(t,n,e){if(!r.existsSync(t))throw u.Errors.FILE_NOT_FOUND.replace("%s",t);n?(n=n.split("\\").join("/"),"/"!=n.charAt(n.length-1)&&(n+="/")):n="";var o=t.split("\\").join("/").split("/").pop();e?this.addFile(n+e,r.readFileSync(t),"",0):this.addFile(n+o,r.readFileSync(t),"",0)},addLocalFolder:function(t,n,e){if(void 0===e?e=function(){return!0}:e instanceof RegExp&&(e=function(t){return function(n){return t.test(n)}}(e)),n?(n=n.split("\\").join("/"),"/"!=n.charAt(n.length-1)&&(n+="/")):n="",t=t.split("\\").join("/"),t=o.normalize(t),"/"!=t.charAt(t.length-1)&&(t+="/"),!r.existsSync(t))throw u.Errors.FILE_NOT_FOUND.replace("%s",t);var i=u.findFiles(t),c=this;i.length&&i.forEach(function(o){var i=o.split("\\").join("/").replace(new RegExp(t,"i"),"");e(i)&&("/"!==i.charAt(i.length-1)?c.addFile(n+i,r.readFileSync(o),"",0):c.addFile(n+i,new Buffer(0),"",0))})},addFile:function(t,n,r,o){var c=new i;c.entryName=t,c.comment=r||"",c.attr=o||438,c.isDirectory&&n.length,c.setData(n),e.setEntry(c)},getEntries:function(){return e?e.entries:[]},getEntry:function(t){return n(t)},extractEntryTo:function(t,i,c,f){f=f||!1,c="undefined"==typeof c||c;var a=n(t);if(!a)throw u.Errors.NO_ENTRY;var s=o.resolve(i,c?a.entryName:o.basename(a.entryName));if(a.isDirectory){s=o.resolve(s,"..");var l=e.getEntryChildren(a);return l.forEach(function(t){if(!t.isDirectory){var n=t.getData();if(!n)throw u.Errors.CANT_EXTRACT_FILE;u.writeFileTo(o.resolve(i,c?t.entryName:t.entryName.substr(a.entryName.length)),n,f)}}),!0}var d=a.getData();if(!d)throw u.Errors.CANT_EXTRACT_FILE;if(r.existsSync(s)&&!f)throw u.Errors.CANT_OVERRIDE;return u.writeFileTo(s,d,f),!0},extractAllTo:function(t,n){if(n=n||!1,!e)throw u.Errors.NO_ZIP;e.entries.forEach(function(e){if(e.isDirectory)return void u.makeDir(o.resolve(t,e.entryName.toString()));var r=e.getData();if(!r)throw u.Errors.CANT_EXTRACT_FILE+"2";u.writeFileTo(o.resolve(t,e.entryName.toString()),r,n)})},extractAllToAsync:function(t,n,r){if(n=n||!1,!e)return void r(new Error(u.Errors.NO_ZIP));var i=e.entries,c=i.length;i.forEach(function(e){if(!(c<=0))return e.isDirectory?(u.makeDir(o.resolve(t,e.entryName.toString())),void(0==--c&&r(void 0))):void e.getDataAsync(function(i){if(!(c<=0))return i?void u.writeFileToAsync(o.resolve(t,e.entryName.toString()),i,n,function(t){if(!(c<=0))return t?void(0==--c&&r(void 0)):(c=0,void r(new Error("Unable to write")))}):(c=0,void r(new Error(u.Errors.CANT_EXTRACT_FILE+"2")))})})},writeZip:function(t,n){if(1==arguments.length&&"function"==typeof t&&(n=t,t=""),!t&&f&&(t=f),t){var r=e.compressToBuffer();if(r){var o=u.writeFileTo(t,r,!0);"function"==typeof n&&n(o?null:new Error("failed"),"")}}},toBuffer:function(t,n,r,o){return this.valueOf=2,"function"==typeof t?(e.toAsyncBuffer(t,n,r,o),null):e.compressToBuffer()}}}},function(t,n){"use strict";Object.defineProperty(n,"__esModule",{value:!0});var e="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(t){return typeof t}:function(t){return t&&"function"==typeof Symbol&&t.constructor===Symbol&&t!==Symbol.prototype?"symbol":typeof t};n.default=function(t,n){var r=void 0,o=void 0;if(("undefined"==typeof t?"undefined":e(t))+("undefined"==typeof n?"undefined":e(n))!=="stringstring")return!1;for(t=t.split("."),n=n.split("."),r=0,o=Math.max(t.length,n.length);r<o;r++){if(t[r]&&!n[r]&&parseInt(t[r])>0||parseInt(t[r])>parseInt(n[r]))return 1;if(n[r]&&!t[r]&&parseInt(n[r])>0||parseInt(t[r])<parseInt(n[r]))return-1}return 0}},function(t,n,e){"use strict";Object.defineProperty(n,"__esModule",{value:!0});var r=e(0),o=e(1),i=function t(n,e){void 0===e&&(e=!0);try{var i=r.readdirSync(n)}catch(t){return}if(i.length>0)for(var c=0;c<i.length;c++){var u=o.join(n,i[c]);r.statSync(u).isFile()?r.unlinkSync(u):t(u)}e&&r.rmdirSync(n)};n.default=i},function(t,n){"use strict";function e(t){return t instanceof Buffer||t instanceof Date||t instanceof RegExp}function r(t){if(t instanceof Buffer){var n=new Buffer(t.length);return t.copy(n),n}if(t instanceof Date)return new Date(t.getTime());if(t instanceof RegExp)return new RegExp(t);throw new Error("Unexpected situation")}function o(t){var n=[];return t.forEach(function(t,c){"object"==typeof t&&null!==t?Array.isArray(t)?n[c]=o(t):e(t)?n[c]=r(t):n[c]=i({},t):n[c]=t}),n}var i=t.exports=function(){if(arguments.length<1||"object"!=typeof arguments[0])return!1;if(arguments.length<2)return arguments[0];var t,n,c=arguments[0],u=Array.prototype.slice.call(arguments,1);return u.forEach(function(u){"object"!=typeof u||Array.isArray(u)||Object.keys(u).forEach(function(f){return n=c[f],t=u[f],t===c?void 0:"object"!=typeof t||null===t?void(c[f]=t):Array.isArray(t)?void(c[f]=o(t)):e(t)?void(c[f]=r(t)):"object"!=typeof n||null===n||Array.isArray(n)?void(c[f]=i({},t)):void(c[f]=i(n,t))})}),c}},function(t,n,e){function r(t,n,e){null==e&&(e=n,n={}),"string"==typeof n&&(n={encoding:n}),n=n||{};var r=n.fs||f,o=!0;"passParsingErrors"in n?o=n.passParsingErrors:"throws"in n&&(o=n.throws),r.readFile(t,n,function(r,i){if(r)return e(r);i=u(i);var c;try{c=JSON.parse(i,n?n.reviver:null)}catch(n){return o?(n.message=t+": "+n.message,e(n)):e(null,null)}e(null,c)})}function o(t,n){n=n||{},"string"==typeof n&&(n={encoding:n});var e=n.fs||f,r=!0;"passParsingErrors"in n?r=n.passParsingErrors:"throws"in n&&(r=n.throws);var o=e.readFileSync(t,n);o=u(o);try{return JSON.parse(o,n.reviver)}catch(n){if(r)throw n.message=t+": "+n.message,n;return null}}function i(t,n,e,r){null==r&&(r=e,e={}),e=e||{};var o=e.fs||f,i="object"==typeof e&&null!==e&&"spaces"in e?e.spaces:this.spaces,c="";try{c=JSON.stringify(n,e?e.replacer:null,i)+"\n"}catch(t){if(r)return r(t,null)}o.writeFile(t,c,e,r)}function c(t,n,e){e=e||{};var r=e.fs||f,o="object"==typeof e&&null!==e&&"spaces"in e?e.spaces:this.spaces,i=JSON.stringify(n,e.replacer,o)+"\n";return r.writeFileSync(t,i,e)}function u(t){return Buffer.isBuffer(t)&&(t=t.toString("utf8")),t=t.replace(/^\uFEFF/,"")}var f;try{f=e(25)}catch(t){f=e(0)}var a={spaces:null,readFile:r,readFileSync:o,writeFile:i,writeFileSync:c};t.exports=a},function(t,n,e){function r(t,n,e,u){"function"==typeof n?(e=n,n={}):n&&"object"==typeof n||(n={mode:n});var f=n.mode,a=n.fs||i;void 0===f&&(f=c&~process.umask()),u||(u=null);var s=e||function(){};t=o.resolve(t),a.mkdir(t,f,function(e){if(!e)return u=u||t,s(null,u);switch(e.code){case"ENOENT":r(o.dirname(t),n,function(e,o){e?s(e,o):r(t,n,s,o)});break;default:a.stat(t,function(t,n){t||!n.isDirectory()?s(e,u):s(null,u)})}})}var o=e(1),i=e(0),c=parseInt("0777",8);t.exports=r.mkdirp=r.mkdirP=r,r.sync=function t(n,e,r){e&&"object"==typeof e||(e={mode:e});var u=e.mode,f=e.fs||i;void 0===u&&(u=c&~process.umask()),r||(r=null),n=o.resolve(n);try{f.mkdirSync(n,u),r=r||n}catch(i){switch(i.code){case"ENOENT":r=t(o.dirname(n),e,r),t(n,e,r);break;default:var a;try{a=f.statSync(n)}catch(t){throw i}if(!a.isDirectory())throw i}}return r}},function(t,n,e){/*!
+/******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
+/******/
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId]) {
+/******/ 			return installedModules[moduleId].exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			i: moduleId,
+/******/ 			l: false,
+/******/ 			exports: {}
+/******/ 		};
+/******/
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/
+/******/ 		// Flag the module as loaded
+/******/ 		module.l = true;
+/******/
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/
+/******/
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
+/******/
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
+/******/
+/******/ 	// define getter function for harmony exports
+/******/ 	__webpack_require__.d = function(exports, name, getter) {
+/******/ 		if(!__webpack_require__.o(exports, name)) {
+/******/ 			Object.defineProperty(exports, name, {
+/******/ 				configurable: false,
+/******/ 				enumerable: true,
+/******/ 				get: getter
+/******/ 			});
+/******/ 		}
+/******/ 	};
+/******/
+/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	__webpack_require__.n = function(module) {
+/******/ 		var getter = module && module.__esModule ?
+/******/ 			function getDefault() { return module['default']; } :
+/******/ 			function getModuleExports() { return module; };
+/******/ 		__webpack_require__.d(getter, 'a', getter);
+/******/ 		return getter;
+/******/ 	};
+/******/
+/******/ 	// Object.prototype.hasOwnProperty.call
+/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
+/******/
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "";
+/******/
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(__webpack_require__.s = 9);
+/******/ })
+/************************************************************************/
+/******/ ([
+/* 0 */
+/***/ (function(module, exports) {
+
+module.exports = require("fs");
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports) {
+
+module.exports = require("path");
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(14);
+module.exports.Constants = __webpack_require__(4);
+module.exports.Errors = __webpack_require__(5);
+module.exports.FileAttr = __webpack_require__(15);
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var Utils = __webpack_require__(2),
+    Headers = __webpack_require__(6),
+    Constants = Utils.Constants,
+    Methods = __webpack_require__(18);
+
+module.exports = function (/*Buffer*/input) {
+
+    var _entryHeader = new Headers.EntryHeader(),
+        _entryName = new Buffer(0),
+        _comment = new Buffer(0),
+        _isDirectory = false,
+        uncompressedData = null,
+        _extra = new Buffer(0);
+
+    function getCompressedDataFromZip() {
+        if (!input || !Buffer.isBuffer(input)) {
+            return new Buffer(0);
+        }
+        _entryHeader.loadDataHeaderFromBinary(input);
+        return input.slice(_entryHeader.realDataOffset, _entryHeader.realDataOffset + _entryHeader.compressedSize)
+    }
+
+    function crc32OK(data) {
+        // if bit 3 (0x08) of the general-purpose flags field is set, then the CRC-32 and file sizes are not known when the header is written
+        if (_entryHeader.flags & 0x8 != 0x8) {
+           if (Utils.crc32(data) != _entryHeader.crc) {
+               return false;
+           }
+        } else {
+            // @TODO: load and check data descriptor header
+            // The fields in the local header are filled with zero, and the CRC-32 and size are appended in a 12-byte structure
+            // (optionally preceded by a 4-byte signature) immediately after the compressed data:
+        }
+        return true;
+    }
+
+    function decompress(/*Boolean*/async, /*Function*/callback, /*String*/pass) {
+        if(typeof callback === 'undefined' && typeof async === 'string') {
+            pass=async;
+            async=void 0;
+        }
+        if (_isDirectory) {
+            if (async && callback) {
+                callback(new Buffer(0), Utils.Errors.DIRECTORY_CONTENT_ERROR); //si added error.
+            }
+            return new Buffer(0);
+        }
+
+        var compressedData = getCompressedDataFromZip();
+       
+        if (compressedData.length == 0) {
+            if (async && callback) callback(compressedData, Utils.Errors.NO_DATA);//si added error.
+            return compressedData;
+        }
+
+        var data = new Buffer(_entryHeader.size);
+        data.fill(0);
+
+        switch (_entryHeader.method) {
+            case Utils.Constants.STORED:
+                compressedData.copy(data);
+                if (!crc32OK(data)) {
+                    if (async && callback) callback(data, Utils.Errors.BAD_CRC);//si added error
+                    return Utils.Errors.BAD_CRC;
+                } else {//si added otherwise did not seem to return data.
+                    if (async && callback) callback(data);
+                    return data;
+                }
+                break;
+            case Utils.Constants.DEFLATED:
+                var inflater = new Methods.Inflater(compressedData);
+                if (!async) {
+                    inflater.inflate(data);
+                    if (!crc32OK(data)) {
+                        console.warn(Utils.Errors.BAD_CRC + " " + _entryName.toString())
+                    }
+                    return data;
+                } else {
+                    inflater.inflateAsync(function(result) {
+                        result.copy(data, 0);
+                        if (!crc32OK(data)) {
+                            if (callback) callback(data, Utils.Errors.BAD_CRC); //si added error
+                        } else { //si added otherwise did not seem to return data.
+                            if (callback) callback(data);
+                        }
+                    })
+                }
+                break;
+            default:
+                if (async && callback) callback(new Buffer(0), Utils.Errors.UNKNOWN_METHOD);
+                return Utils.Errors.UNKNOWN_METHOD;
+        }
+    }
+
+    function compress(/*Boolean*/async, /*Function*/callback) {
+        if ((!uncompressedData || !uncompressedData.length) && Buffer.isBuffer(input)) {
+            // no data set or the data wasn't changed to require recompression
+            if (async && callback) callback(getCompressedDataFromZip());
+            return getCompressedDataFromZip();
+        }
+
+        if (uncompressedData.length && !_isDirectory) {
+            var compressedData;
+            // Local file header
+            switch (_entryHeader.method) {
+                case Utils.Constants.STORED:
+                    _entryHeader.compressedSize = _entryHeader.size;
+
+                    compressedData = new Buffer(uncompressedData.length);
+                    uncompressedData.copy(compressedData);
+
+                    if (async && callback) callback(compressedData);
+                    return compressedData;
+
+                    break;
+                default:
+                case Utils.Constants.DEFLATED:
+
+                    var deflater = new Methods.Deflater(uncompressedData);
+                    if (!async) {
+                        var deflated = deflater.deflate();
+                        _entryHeader.compressedSize = deflated.length;
+                        return deflated;
+                    } else {
+                        deflater.deflateAsync(function(data) {
+                            compressedData = new Buffer(data.length);
+                            _entryHeader.compressedSize = data.length;
+                            data.copy(compressedData);
+                            callback && callback(compressedData);
+                        })
+                    }
+                    deflater = null;
+                    break;
+            }
+        } else {
+            if (async && callback) {
+                callback(new Buffer(0));
+            } else {
+                return new Buffer(0);
+            }
+        }
+    }
+
+    function readUInt64LE(buffer, offset) {
+        return (buffer.readUInt32LE(offset + 4) << 4) + buffer.readUInt32LE(offset);
+    }
+
+    function parseExtra(data) {
+        var offset = 0;
+        var signature, size, part;
+        while(offset<data.length) {
+            signature = data.readUInt16LE(offset);
+            offset += 2;
+            size = data.readUInt16LE(offset);
+            offset += 2;
+            part = data.slice(offset, offset+size);
+            offset += size;
+            if(Constants.ID_ZIP64 === signature) {
+                parseZip64ExtendedInformation(part);
+            }
+        }
+    }
+
+    //Override header field values with values from the ZIP64 extra field
+    function parseZip64ExtendedInformation(data) {
+        var size, compressedSize, offset, diskNumStart;
+
+        if(data.length >= Constants.EF_ZIP64_SCOMP) {
+            size = readUInt64LE(data, Constants.EF_ZIP64_SUNCOMP);
+            if(_entryHeader.size === Constants.EF_ZIP64_OR_32) {
+                _entryHeader.size = size;
+            }
+        }
+        if(data.length >= Constants.EF_ZIP64_RHO) {
+            compressedSize = readUInt64LE(data, Constants.EF_ZIP64_SCOMP);
+            if(_entryHeader.compressedSize === Constants.EF_ZIP64_OR_32) {
+                _entryHeader.compressedSize = compressedSize;
+            }
+        }
+        if(data.length >= Constants.EF_ZIP64_DSN) {
+            offset = readUInt64LE(data, Constants.EF_ZIP64_RHO);
+            if(_entryHeader.offset === Constants.EF_ZIP64_OR_32) {
+                _entryHeader.offset = offset;
+            }
+        }
+        if(data.length >= Constants.EF_ZIP64_DSN+4) {
+            diskNumStart = data.readUInt32LE(Constants.EF_ZIP64_DSN);
+            if(_entryHeader.diskNumStart === Constants.EF_ZIP64_OR_16) {
+                _entryHeader.diskNumStart = diskNumStart;
+            }
+        }
+    }
+
+
+    return {
+        get entryName () { return _entryName.toString(); },
+        get rawEntryName() { return _entryName; },
+        set entryName (val) {
+            _entryName = Utils.toBuffer(val);
+            var lastChar = _entryName[_entryName.length - 1];
+            _isDirectory = (lastChar == 47) || (lastChar == 92);
+            _entryHeader.fileNameLength = _entryName.length;
+        },
+
+        get extra () { return _extra; },
+        set extra (val) {
+            _extra = val;
+            _entryHeader.extraLength = val.length;
+            parseExtra(val);
+        },
+
+        get comment () { return _comment.toString(); },
+        set comment (val) {
+            _comment = Utils.toBuffer(val);
+            _entryHeader.commentLength = _comment.length;
+        },
+
+        get name () { var n = _entryName.toString(); return _isDirectory ? n.substr(n.length - 1).split("/").pop() : n.split("/").pop(); },
+        get isDirectory () { return _isDirectory },
+
+        getCompressedData : function() {
+            return compress(false, null)
+        },
+
+        getCompressedDataAsync : function(/*Function*/callback) {
+            compress(true, callback)
+        },
+
+        setData : function(value) {
+            uncompressedData = Utils.toBuffer(value);
+            if (!_isDirectory && uncompressedData.length) {
+                _entryHeader.size = uncompressedData.length;
+                _entryHeader.method = Utils.Constants.DEFLATED;
+                _entryHeader.crc = Utils.crc32(value);
+            } else { // folders and blank files should be stored
+                _entryHeader.method = Utils.Constants.STORED;
+            }
+        },
+
+        getData : function(pass) {
+            return decompress(false, null, pass);
+        },
+
+        getDataAsync : function(/*Function*/callback, pass) {
+            decompress(true, callback, pass)
+        },
+
+        set attr(attr) { _entryHeader.attr = attr; },
+        get attr() { return _entryHeader.attr; },
+
+        set header(/*Buffer*/data) {
+            _entryHeader.loadFromBinary(data);
+        },
+
+        get header() {
+            return _entryHeader;
+        },
+
+        packHeader : function() {
+            var header = _entryHeader.entryHeaderToBinary();
+            // add
+            _entryName.copy(header, Utils.Constants.CENHDR);
+            if (_entryHeader.extraLength) {
+                _extra.copy(header, Utils.Constants.CENHDR + _entryName.length)
+            }
+            if (_entryHeader.commentLength) {
+                _comment.copy(header, Utils.Constants.CENHDR + _entryName.length + _entryHeader.extraLength, _comment.length);
+            }
+            return header;
+        },
+
+        toString : function() {
+            return '{\n' +
+                '\t"entryName" : "' + _entryName.toString() + "\",\n" +
+                '\t"name" : "' + _entryName.toString().split("/").pop() + "\",\n" +
+                '\t"comment" : "' + _comment.toString() + "\",\n" +
+                '\t"isDirectory" : ' + _isDirectory + ",\n" +
+                '\t"header" : ' + _entryHeader.toString().replace(/\t/mg, "\t\t") + ",\n" +
+                '\t"compressedData" : <' + (input && input.length  + " bytes buffer" || "null") + ">\n" +
+                '\t"data" : <' + (uncompressedData && uncompressedData.length  + " bytes buffer" || "null") + ">\n" +
+                '}';
+        }
+    }
+};
+
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports) {
+
+module.exports = {
+    /* The local file header */
+    LOCHDR           : 30, // LOC header size
+    LOCSIG           : 0x04034b50, // "PK\003\004"
+    LOCVER           : 4,	// version needed to extract
+    LOCFLG           : 6, // general purpose bit flag
+    LOCHOW           : 8, // compression method
+    LOCTIM           : 10, // modification time (2 bytes time, 2 bytes date)
+    LOCCRC           : 14, // uncompressed file crc-32 value
+    LOCSIZ           : 18, // compressed size
+    LOCLEN           : 22, // uncompressed size
+    LOCNAM           : 26, // filename length
+    LOCEXT           : 28, // extra field length
+
+    /* The Data descriptor */
+    EXTSIG           : 0x08074b50, // "PK\007\008"
+    EXTHDR           : 16, // EXT header size
+    EXTCRC           : 4, // uncompressed file crc-32 value
+    EXTSIZ           : 8, // compressed size
+    EXTLEN           : 12, // uncompressed size
+
+    /* The central directory file header */
+    CENHDR           : 46, // CEN header size
+    CENSIG           : 0x02014b50, // "PK\001\002"
+    CENVEM           : 4, // version made by
+    CENVER           : 6, // version needed to extract
+    CENFLG           : 8, // encrypt, decrypt flags
+    CENHOW           : 10, // compression method
+    CENTIM           : 12, // modification time (2 bytes time, 2 bytes date)
+    CENCRC           : 16, // uncompressed file crc-32 value
+    CENSIZ           : 20, // compressed size
+    CENLEN           : 24, // uncompressed size
+    CENNAM           : 28, // filename length
+    CENEXT           : 30, // extra field length
+    CENCOM           : 32, // file comment length
+    CENDSK           : 34, // volume number start
+    CENATT           : 36, // internal file attributes
+    CENATX           : 38, // external file attributes (host system dependent)
+    CENOFF           : 42, // LOC header offset
+
+    /* The entries in the end of central directory */
+    ENDHDR           : 22, // END header size
+    ENDSIG           : 0x06054b50, // "PK\005\006"
+    ENDSUB           : 8, // number of entries on this disk
+    ENDTOT           : 10, // total number of entries
+    ENDSIZ           : 12, // central directory size in bytes
+    ENDOFF           : 16, // offset of first CEN header
+    ENDCOM           : 20, // zip file comment length
+
+    /* Compression methods */
+    STORED           : 0, // no compression
+    SHRUNK           : 1, // shrunk
+    REDUCED1         : 2, // reduced with compression factor 1
+    REDUCED2         : 3, // reduced with compression factor 2
+    REDUCED3         : 4, // reduced with compression factor 3
+    REDUCED4         : 5, // reduced with compression factor 4
+    IMPLODED         : 6, // imploded
+    // 7 reserved
+    DEFLATED         : 8, // deflated
+    ENHANCED_DEFLATED: 9, // enhanced deflated
+    PKWARE           : 10,// PKWare DCL imploded
+    // 11 reserved
+    BZIP2            : 12, //  compressed using BZIP2
+    // 13 reserved
+    LZMA             : 14, // LZMA
+    // 15-17 reserved
+    IBM_TERSE        : 18, // compressed using IBM TERSE
+    IBM_LZ77         : 19, //IBM LZ77 z
+
+    /* General purpose bit flag */
+    FLG_ENC          : 0,  // encripted file
+    FLG_COMP1        : 1,  // compression option
+    FLG_COMP2        : 2,  // compression option
+    FLG_DESC         : 4,  // data descriptor
+    FLG_ENH          : 8,  // enhanced deflation
+    FLG_STR          : 16, // strong encryption
+    FLG_LNG          : 1024, // language encoding
+    FLG_MSK          : 4096, // mask header values
+
+    /* Load type */
+    FILE             : 0,
+    BUFFER           : 1,
+    NONE             : 2,
+
+    /* 4.5 Extensible data fields */
+    EF_ID            : 0,
+    EF_SIZE          : 2,
+
+    /* Header IDs */
+    ID_ZIP64         : 0x0001,
+    ID_AVINFO        : 0x0007,
+    ID_PFS           : 0x0008,
+    ID_OS2           : 0x0009,
+    ID_NTFS          : 0x000a,
+    ID_OPENVMS       : 0x000c,
+    ID_UNIX          : 0x000d,
+    ID_FORK          : 0x000e,
+    ID_PATCH         : 0x000f,
+    ID_X509_PKCS7    : 0x0014,
+    ID_X509_CERTID_F : 0x0015,
+    ID_X509_CERTID_C : 0x0016,
+    ID_STRONGENC     : 0x0017,
+    ID_RECORD_MGT    : 0x0018,
+    ID_X509_PKCS7_RL : 0x0019,
+    ID_IBM1          : 0x0065,
+    ID_IBM2          : 0x0066,
+    ID_POSZIP        : 0x4690,
+
+    EF_ZIP64_OR_32   : 0xffffffff,
+    EF_ZIP64_OR_16   : 0xffff,
+    EF_ZIP64_SUNCOMP : 0,
+    EF_ZIP64_SCOMP   : 8,
+    EF_ZIP64_RHO     : 16,
+    EF_ZIP64_DSN     : 24
+};
+
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports) {
+
+module.exports = {
+    /* Header error messages */
+    "INVALID_LOC" : "Invalid LOC header (bad signature)",
+    "INVALID_CEN" : "Invalid CEN header (bad signature)",
+    "INVALID_END" : "Invalid END header (bad signature)",
+
+    /* ZipEntry error messages*/
+    "NO_DATA" : "Nothing to decompress",
+    "BAD_CRC" : "CRC32 checksum failed",
+    "FILE_IN_THE_WAY" : "There is a file in the way: %s",
+    "UNKNOWN_METHOD" : "Invalid/unsupported compression method",
+
+    /* Inflater error messages */
+    "AVAIL_DATA" : "inflate::Available inflate data did not terminate",
+    "INVALID_DISTANCE" : "inflate::Invalid literal/length or distance code in fixed or dynamic block",
+    "TO_MANY_CODES" : "inflate::Dynamic block code description: too many length or distance codes",
+    "INVALID_REPEAT_LEN" : "inflate::Dynamic block code description: repeat more than specified lengths",
+    "INVALID_REPEAT_FIRST" : "inflate::Dynamic block code description: repeat lengths with no first length",
+    "INCOMPLETE_CODES" : "inflate::Dynamic block code description: code lengths codes incomplete",
+    "INVALID_DYN_DISTANCE": "inflate::Dynamic block code description: invalid distance code lengths",
+    "INVALID_CODES_LEN": "inflate::Dynamic block code description: invalid literal/length code lengths",
+    "INVALID_STORE_BLOCK" : "inflate::Stored block length did not match one's complement",
+    "INVALID_BLOCK_TYPE" : "inflate::Invalid block type (type == 3)",
+
+    /* ADM-ZIP error messages */
+    "CANT_EXTRACT_FILE" : "Could not extract the file",
+    "CANT_OVERRIDE" : "Target file already exists",
+    "NO_ZIP" : "No zip file was loaded",
+    "NO_ENTRY" : "Entry doesn't exist",
+    "DIRECTORY_CONTENT_ERROR" : "A directory cannot have content",
+    "FILE_NOT_FOUND" : "File not found: %s",
+    "NOT_IMPLEMENTED" : "Not implemented",
+    "INVALID_FILENAME" : "Invalid filename",
+    "INVALID_FORMAT" : "Invalid or unsupported zip format. No END header found"
+};
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports.EntryHeader = __webpack_require__(16);
+exports.MainHeader = __webpack_require__(17);
+
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports) {
+
+module.exports = require("zlib");
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var fs = __webpack_require__(0)
+
+module.exports = clone(fs)
+
+function clone (obj) {
+  if (obj === null || typeof obj !== 'object')
+    return obj
+
+  if (obj instanceof Object)
+    var copy = { __proto__: obj.__proto__ }
+  else
+    var copy = Object.create(null)
+
+  Object.getOwnPropertyNames(obj).forEach(function (key) {
+    Object.defineProperty(copy, key, Object.getOwnPropertyDescriptor(obj, key))
+  })
+
+  return copy
+}
+
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+// import extend from './modules/extend.js'
+
+
+var _compareVersion = __webpack_require__(10);
+
+var _compareVersion2 = _interopRequireDefault(_compareVersion);
+
+var _rmDir = __webpack_require__(11);
+
+var _rmDir2 = _interopRequireDefault(_rmDir);
+
+var _deepExtend = __webpack_require__(12);
+
+var _deepExtend2 = _interopRequireDefault(_deepExtend);
+
+var _admZip = __webpack_require__(13);
+
+var _admZip2 = _interopRequireDefault(_admZip);
+
+var _jsonfile = __webpack_require__(23);
+
+var _jsonfile2 = _interopRequireDefault(_jsonfile);
+
+var _mkdirp = __webpack_require__(31);
+
+var _mkdirp2 = _interopRequireDefault(_mkdirp);
+
+var _q = __webpack_require__(32);
+
+var _q2 = _interopRequireDefault(_q);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+(function () {
+    try {
+        nw.Window.get().show();
+    } catch (e) {}
+
+    var fs = __webpack_require__(0);
+    var path = __webpack_require__(1);
+    var gui = __webpack_require__(33);
+    var launcher = gui.Window.get();
+
+    var localStorage = window.localStorage;
+    var process = window.process;
+    // const global = self.global
+
+    // 针对 macOS 特殊处理
+    if (process.platform === "darwin") {
+        var mb = new gui.Menu({ type: 'menubar' });
+        mb.createMacBuiltin('YourAPPName', {
+            hideEdit: false
+        });
+        gui.Window.get().menu = mb;
+    }
+
+    //launcher.showDevTools()
+
+    // 数据包目录下的文件列表
+    var fileListData = [];
+
+    // 解压缩工作目录下的文件列表
+    var fileListAppData = [];
+
+    // 解压缩工作目录下的文件夹是否有文件
+    var isNotEmptyAppDataSub = {};
+
+    // 更新的数据包列表
+    var appDataUpdatList = {};
+    var appDataUpdated = false;
+
+    // 当前工作目录
+    var dirRoot = void 0;
+    var rootscheck = [path.dirname(process.execPath), process.cwd()];
+    rootscheck.some(function (dir) {
+        try {
+            fs.accessSync(path.join(dir, 'data'), fs.F_OK);
+            dirRoot = dir;
+            return true;
+        } catch (e) {
+            return false;
+        }
+    });
+    // let dirRoot = path.dirname(process.execPath).split(path.sep)
+    // dirRoot = (process.platform == 'darwin' || (dirRoot[dirRoot.length - 1] == 'nwjs' && path.basename(process.execPath) == 'nw.exe'))
+    //     ? process.cwd()
+    //     : path.dirname(process.execPath)
+
+    var dirData = path.join(dirRoot, '/data/');
+    var dirApp = gui.App.dataPath;
+    var dirAppData = path.join(dirApp, '/Extracted Data/');
+
+    // console.log(
+    //     dirRoot,
+    //     dirData,
+    //     dirApp,
+    //     dirAppData
+    // )
+
+    // 处理当前数据包版本
+    var curVer = {};
+    try {
+        curVer = JSON.parse(localStorage['nwjs-data-version']);
+    } catch (e) {}
+
+    // Error Logger
+    var errorlog = function errorlog(err) {
+        //console.log(err)
+        fs.appendFileSync(path.join(dirRoot, 'errorlog.txt'), new Date() + "\r\n" + (err instanceof Error ? err.message || '' : err) + "\r\n" + "\r\n" + "========================================" + "\r\n" + "\r\n");
+    };
+
+    var readdir = function readdir(dir) {
+        var deferred = _q2.default.defer();
+        fs.readdir(dir, function (err, files) {
+            if (err) {
+                deferred.reject(new Error(err));
+            } else {
+                deferred.resolve(files);
+            }
+        });
+        return deferred.promise;
+    };
+
+    var unzip = function unzip(dir) {
+        var deferred = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _q2.default.defer();
+
+        // console.log(dir)
+        var pathParse = (typeof dir === 'undefined' ? 'undefined' : _typeof(dir)) == 'object' ? dir : path.parse(dir);
+
+        // 比对版本
+        // 如果版本号高于当前版本，则进行解压缩操作，并更改当前版本号
+        // 否则跳过
+        var zipFile = path.join(pathParse.dir, pathParse.base);
+        // console.log('zipFile', zipFile)
+        var zip = new _admZip2.default(zipFile);
+        // console.log('zip', zip)
+        var comment = zip.getZipComment();
+        // console.log('verPackage', comment)
+        var verCurrent = curVer[pathParse.name] || '0';
+        // console.log('verCurrent', verCurrent)
+
+        // 如果 App 数据目录下对应目录不存在或为空，强制解压缩
+        var existInAppData = fileListAppData.indexOf(pathParse.name) > -1;
+        var isNotEmpty = isNotEmptyAppDataSub[pathParse.name];
+        var extractAnyWay = !existInAppData || !isNotEmpty;
+        // console.log('existInAppData', existInAppData)
+        // console.log('isNotEmpty', isNotEmpty)
+        // console.log('extractAnyWay', extractAnyWay)
+
+        var resolve = function resolve(err) {
+            if (err) {
+                errorlog(err);
+            }
+            setTimeout(function () {
+                deferred.resolve();
+            }, 200);
+        };
+
+        // console.log(compareVersion(comment, verCurrent))
+        if (extractAnyWay || (0, _compareVersion2.default)(comment, verCurrent)) {
+            // console.log(comment, verCurrent)
+            // console.log('[' + pathParse.base + '] version ' + comment + ' greater than current ' + verCurrent)
+            // console.log('Extract data files')
+
+            // 修改当前版本号变量，在之后写入 localStorage
+            var o = {};
+            o[pathParse.name] = comment;
+            (0, _deepExtend2.default)(curVer, o);
+
+            // 开始解压缩操作
+            if (existInAppData && isNotEmpty) (0, _rmDir2.default)(path.join(dirAppData, pathParse.name));
+
+            appDataUpdatList[pathParse.name] = comment;
+            appDataUpdated = true;
+
+            // window.testzip = zip
+            // window.textdir = dirAppData
+            // console.log(window.testzip, dirAppData)
+            zip.extractAllToAsync(dirAppData, true, function (err) {
+                // console.log(dirAppData)
+                resolve(err);
+            });
+            // testzip.extractAllTo(window.textdir, true)
+            // testzip.extractAllToAsync(window.textdir, true, function(err){
+            //     console.log(err)
+            // })
+        } else {
+            // console.log('[' + pathParse.base + '] version ' + comment + ' not greater than current ' + verCurrent)
+            // console.log('Ignored.')
+            // 遍历压缩包内所有文件，如果在目标目录中不存在，解压缩该文件
+            // zip.getEntries().forEach((entry) => {
+
+            // })
+            resolve();
+        }
+
+        return deferred.promise;
+    };
+
+    // 函数步骤链，使用 Q 实现
+    var promise_chain = _q2.default.fcall(function () {});
+    promise_chain
+
+    // Error Handler
+    .catch(function (err) {
+        return errorlog(err);
+        // try {
+        //     errorlog(new Error(err))
+        // } catch (e) {
+        // }
+    })
+
+    // 创建数据包解压缩目录
+    .then(function () {
+        return (0, _mkdirp2.default)(dirAppData);
+    })
+
+    // 获取数据包目录下的文件列表
+    .then(function () {
+        return readdir(dirData);
+    }).then(function (files) {
+        return fileListData = files;
+    })
+
+    // 获取解压缩工作目录下的文件列表
+    .then(function () {
+        return readdir(dirAppData);
+    }).then(function (files) {
+        return fileListAppData = files;
+    })
+
+    // 检查解压缩工作目录下的子文件夹是否为空
+    .then(function () {
+        var chain = (0, _q2.default)();
+        var deferred = _q2.default.defer();
+
+        fileListAppData.forEach(function (filename) {
+            chain = chain.then(function () {
+                var deferred = _q2.default.defer();
+                var searchPath = path.join(dirAppData, filename);
+
+                // 检查是否为目录，再检查是否为空
+                fs.stat(searchPath, function (err, stat) {
+                    if (err || !stat.isDirectory()) {
+                        if (err) errorlog(new Error(err));
+                        deferred.resolve();
+                    } else {
+                        fs.readdir(searchPath, function (err, items) {
+                            if (err) {
+                                errorlog(new Error(err));
+                            } else {
+                                isNotEmptyAppDataSub[filename] = items.length ? true : false;
+                            }
+                            deferred.resolve();
+                        });
+                    }
+                });
+
+                return deferred.promise;
+            });
+        });
+
+        chain = chain.then(function () {
+            deferred.resolve();
+        });
+
+        return deferred.promise;
+    })
+
+    // 处理 data 目录下的文件
+    // 解压缩所有 .nwjs-data 文件
+    .then(function () {
+        var chain = (0, _q2.default)();
+        var deferred = _q2.default.defer();
+
+        fileListData.forEach(function (filename) {
+            chain = chain.then(function () {
+                console.log(filename);
+                var deferred = _q2.default.defer();
+                var pathParse = path.parse(path.join(dirData, filename), filename);
+
+                switch (pathParse['ext']) {
+                    case '.nwjs-data':
+                        unzip(pathParse, deferred);
+                        break;
+                    default:
+                        deferred.resolve();
+                        break;
+                }
+
+                // 存储数据包版本号至 localStorage
+                localStorage['nwjs-data-version'] = JSON.stringify(curVer);
+                return deferred.promise;
+            });
+        });
+
+        chain = chain.then(function () {
+            deferred.resolve();
+        });
+
+        return deferred.promise;
+    })
+
+    // 根据 package-app.json 运行程序
+    .then(function () {
+        console.log('finished');
+        // return false
+        var deferred = _q2.default.defer();
+
+        // 载入 package-app.json
+        var options = _jsonfile2.default.readFileSync('./package-app.json');
+
+        console.log('exist options: ', JSON.stringify(options));
+
+        options["window"]["focus"] = true;
+        if (appDataUpdated) options["dataUpdated"] = appDataUpdatList;
+
+        var max_width = Math.min(options["window"]["max_width"] || screen.availWidth, screen.availWidth);
+        var max_height = Math.min(options["window"]["max_height"] || screen.availHeight, screen.availHeight);
+
+        delete options["window"]["max_width"];
+        delete options["window"]["max_height"];
+
+        options["window"]["min_width"] = Math.min(options["window"]["min_width"] || 0, max_width);
+        options["window"]["min_height"] = Math.min(options["window"]["min_height"] || 0, max_height);
+
+        options["window"]["width"] = Math.min(options["window"]["width"] || screen.availWidth, max_width);
+        options["window"]["height"] = Math.min(options["window"]["height"] || screen.availHeight, max_height);
+
+        // Platform
+        var platformOverrides = options['platformOverrides'] || {};
+        console.log('platformOverrides: ', JSON.stringify(platformOverrides));
+        if (/^win[0-9]+/i.test(process.platform)) {
+            (0, _deepExtend2.default)(options, platformOverrides['win'] || {});
+            if (process.arch == 'x64') {
+                (0, _deepExtend2.default)(options, platformOverrides['win64'] || {});
+            } else {
+                (0, _deepExtend2.default)(options, platformOverrides['win32'] || {});
+            }
+        } else if (/^darwin/i.test(process.platform)) {
+            (0, _deepExtend2.default)(options, platformOverrides['osx'] || {});
+            if (process.arch == 'ia64') {
+                (0, _deepExtend2.default)(options, platformOverrides['osx64'] || {});
+            } else {
+                (0, _deepExtend2.default)(options, platformOverrides['osx32'] || {});
+            }
+        } else if (/^Linux/i.test(process.platform)) {
+            (0, _deepExtend2.default)(options, platformOverrides['linux'] || {});
+            if (process.arch == 'x64') {
+                (0, _deepExtend2.default)(options, platformOverrides['linux64'] || {});
+            } else {
+                (0, _deepExtend2.default)(options, platformOverrides['linux32'] || {});
+            }
+        }
+
+        // options['window'].frame = true
+        // options['window'].show = true
+        // options['window'].toolbar = true
+        console.log('new options: ', JSON.stringify(options));
+        // return false;
+        // console.log( path.join(dirAppData, options.main) )
+        global.launcherOptions = options;
+        localStorage.setItem('nwManifest', JSON.stringify(options));
+
+        // 开始新的 nw.js 进程
+        options.window['always_on_top'] = options.window['always-on-top'];
+        options.window.id = 'nwjsapp';
+        options.debug = false;
+        delete options.window.toolbar;
+        delete options.window.as_desktop;
+        delete options.window['always-on-top'];
+        var appWin = gui.Window.open('file://' + path.join(dirAppData, options.main), options['window'], function (win) {
+            win.window.launcherOptions = options;
+            win.window.nw = nw;
+            win.window.win = win;
+            // win.get().show()
+
+            // 在 App 窗口载入后，隐藏 luancher 进程
+            win.on('loaded', function () {
+                launcher.hide();
+                deferred.resolve();
+            });
+
+            // 在 App 窗口关闭时，终结原 nw.js 进程 (launcher 进程)
+            win.on('closed', function () {
+                localStorage.removeItem('nwManifest');
+                launcher.close();
+            });
+        });
+
+        return deferred.promise;
+    });
+})();
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+// compare version
+// 对比版本号 a 相对于 b
+// a > b => 1
+// a = b => 0
+// a < b => -1
+
+exports.default = function (a, b) {
+    var i = void 0,
+        len = void 0;
+
+    if ((typeof a === 'undefined' ? 'undefined' : _typeof(a)) + (typeof b === 'undefined' ? 'undefined' : _typeof(b)) !== 'stringstring') {
+        return false;
+    }
+
+    a = a.split('.');
+    b = b.split('.');
+    i = 0;
+    len = Math.max(a.length, b.length);
+
+    for (; i < len; i++) {
+        if (a[i] && !b[i] && parseInt(a[i]) > 0 || parseInt(a[i]) > parseInt(b[i])) {
+            return 1;
+        } else if (b[i] && !a[i] && parseInt(b[i]) > 0 || parseInt(a[i]) < parseInt(b[i])) {
+            return -1;
+        }
+    }
+
+    return 0;
+};
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+// Empty directory
+// code from https://gist.github.com/liangzan/807712
+
+var fs = __webpack_require__(0);
+var path = __webpack_require__(1);
+
+var rmDir = function rmDir(dirPath, removeSelf) {
+    if (removeSelf === undefined) removeSelf = true;
+    try {
+        var files = fs.readdirSync(dirPath);
+    } catch (e) {
+        return;
+    }
+    if (files.length > 0) for (var i = 0; i < files.length; i++) {
+        //var filePath = dirPath + '/' + files[i];
+        var filePath = path.join(dirPath, files[i]);
+        if (fs.statSync(filePath).isFile()) fs.unlinkSync(filePath);else rmDir(filePath);
+    }
+    if (removeSelf) fs.rmdirSync(dirPath);
+};
+
+exports.default = rmDir;
+
+/***/ }),
+/* 12 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/*!
+ * @description Recursive object extending
+ * @author Viacheslav Lotsmanov <lotsmanov89@gmail.com>
+ * @license MIT
  *
- * Copyright 2009-2012 Kris Kowal under the terms of the MIT
- * license found at http://github.com/kriskowal/q/raw/master/LICENSE
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2013-2015 Viacheslav Lotsmanov
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to
+ * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+ * the Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+
+
+function isSpecificValue(val) {
+	return (
+		val instanceof Buffer
+		|| val instanceof Date
+		|| val instanceof RegExp
+	) ? true : false;
+}
+
+function cloneSpecificValue(val) {
+	if (val instanceof Buffer) {
+		var x = new Buffer(val.length);
+		val.copy(x);
+		return x;
+	} else if (val instanceof Date) {
+		return new Date(val.getTime());
+	} else if (val instanceof RegExp) {
+		return new RegExp(val);
+	} else {
+		throw new Error('Unexpected situation');
+	}
+}
+
+/**
+ * Recursive cloning array.
+ */
+function deepCloneArray(arr) {
+	var clone = [];
+	arr.forEach(function (item, index) {
+		if (typeof item === 'object' && item !== null) {
+			if (Array.isArray(item)) {
+				clone[index] = deepCloneArray(item);
+			} else if (isSpecificValue(item)) {
+				clone[index] = cloneSpecificValue(item);
+			} else {
+				clone[index] = deepExtend({}, item);
+			}
+		} else {
+			clone[index] = item;
+		}
+	});
+	return clone;
+}
+
+/**
+ * Extening object that entered in first argument.
+ *
+ * Returns extended object or false if have no target object or incorrect type.
+ *
+ * If you wish to clone source object (without modify it), just use empty new
+ * object as first argument, like this:
+ *   deepExtend({}, yourObj_1, [yourObj_N]);
+ */
+var deepExtend = module.exports = function (/*obj_1, [obj_2], [obj_N]*/) {
+	if (arguments.length < 1 || typeof arguments[0] !== 'object') {
+		return false;
+	}
+
+	if (arguments.length < 2) {
+		return arguments[0];
+	}
+
+	var target = arguments[0];
+
+	// convert arguments to array and cut off target object
+	var args = Array.prototype.slice.call(arguments, 1);
+
+	var val, src, clone;
+
+	args.forEach(function (obj) {
+		// skip argument if isn't an object, is null, or is an array
+		if (typeof obj !== 'object' || obj === null || Array.isArray(obj)) {
+			return;
+		}
+
+		Object.keys(obj).forEach(function (key) {
+			src = target[key]; // source value
+			val = obj[key]; // new value
+
+			// recursion prevention
+			if (val === target) {
+				return;
+
+			/**
+			 * if new value isn't object then just overwrite by new value
+			 * instead of extending.
+			 */
+			} else if (typeof val !== 'object' || val === null) {
+				target[key] = val;
+				return;
+
+			// just clone arrays (and recursive clone objects inside)
+			} else if (Array.isArray(val)) {
+				target[key] = deepCloneArray(val);
+				return;
+
+			// custom cloning and overwrite for specific objects
+			} else if (isSpecificValue(val)) {
+				target[key] = cloneSpecificValue(val);
+				return;
+
+			// overwrite by new value if source isn't object or array
+			} else if (typeof src !== 'object' || src === null || Array.isArray(src)) {
+				target[key] = deepExtend({}, val);
+				return;
+
+			// source value and new value is objects both, extending...
+			} else {
+				target[key] = deepExtend(src, val);
+				return;
+			}
+		});
+	});
+
+	return target;
+}
+
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var fs = __webpack_require__(0),
+    pth = __webpack_require__(1);
+
+fs.existsSync = fs.existsSync || pth.existsSync;
+
+var ZipEntry = __webpack_require__(3),
+    ZipFile =  __webpack_require__(22),
+    Utils = __webpack_require__(2);
+
+module.exports = function(/*String*/input) {
+    var _zip = undefined,
+        _filename = "";
+
+    if (input && typeof input === "string") { // load zip file
+        if (fs.existsSync(input)) {
+            _filename = input;
+            _zip = new ZipFile(input, Utils.Constants.FILE);
+        } else {
+           throw Utils.Errors.INVALID_FILENAME;
+        }
+    } else if(input && Buffer.isBuffer(input)) { // load buffer
+        _zip = new ZipFile(input, Utils.Constants.BUFFER);
+    } else { // create new zip file
+        _zip = new ZipFile(null, Utils.Constants.NONE);
+    }
+
+    function getEntry(/*Object*/entry) {
+        if (entry && _zip) {
+            var item;
+            // If entry was given as a file name
+            if (typeof entry === "string")
+                item = _zip.getEntry(entry);
+            // if entry was given as a ZipEntry object
+            if (typeof entry === "object" && entry.entryName != undefined && entry.header != undefined)
+                item =  _zip.getEntry(entry.entryName);
+
+            if (item) {
+                return item;
+            }
+        }
+        return null;
+    }
+
+    return {
+        /**
+         * Extracts the given entry from the archive and returns the content as a Buffer object
+         * @param entry ZipEntry object or String with the full path of the entry
+         *
+         * @return Buffer or Null in case of error
+         */
+        readFile : function(/*Object*/entry) {
+            var item = getEntry(entry);
+            return item && item.getData() || null;
+        },
+
+        /**
+         * Asynchronous readFile
+         * @param entry ZipEntry object or String with the full path of the entry
+         * @param callback
+         *
+         * @return Buffer or Null in case of error
+         */
+        readFileAsync : function(/*Object*/entry, /*Function*/callback) {
+            var item = getEntry(entry);
+            if (item) {
+                item.getDataAsync(callback);
+            } else {
+                callback(null,"getEntry failed for:" + entry)
+            }
+        },
+
+        /**
+         * Extracts the given entry from the archive and returns the content as plain text in the given encoding
+         * @param entry ZipEntry object or String with the full path of the entry
+         * @param encoding Optional. If no encoding is specified utf8 is used
+         *
+         * @return String
+         */
+        readAsText : function(/*Object*/entry, /*String - Optional*/encoding) {
+            var item = getEntry(entry);
+            if (item) {
+                var data = item.getData();
+                if (data && data.length) {
+                    return data.toString(encoding || "utf8");
+                }
+            }
+            return "";
+        },
+
+        /**
+         * Asynchronous readAsText
+         * @param entry ZipEntry object or String with the full path of the entry
+         * @param callback
+         * @param encoding Optional. If no encoding is specified utf8 is used
+         *
+         * @return String
+         */
+        readAsTextAsync : function(/*Object*/entry, /*Function*/callback, /*String - Optional*/encoding) {
+            var item = getEntry(entry);
+            if (item) {
+                item.getDataAsync(function(data) {
+                    if (data && data.length) {
+                        callback(data.toString(encoding || "utf8"));
+                    } else {
+                        callback("");
+                    }
+                })
+            } else {
+                callback("");
+            }
+        },
+
+        /**
+         * Remove the entry from the file or the entry and all it's nested directories and files if the given entry is a directory
+         *
+         * @param entry
+         */
+        deleteFile : function(/*Object*/entry) { // @TODO: test deleteFile
+            var item = getEntry(entry);
+            if (item) {
+                _zip.deleteEntry(item.entryName);
+            }
+        },
+
+        /**
+         * Adds a comment to the zip. The zip must be rewritten after adding the comment.
+         *
+         * @param comment
+         */
+        addZipComment : function(/*String*/comment) { // @TODO: test addZipComment
+            _zip.comment = comment;
+        },
+
+        /**
+         * Returns the zip comment
+         *
+         * @return String
+         */
+        getZipComment : function() {
+            return _zip.comment || '';
+        },
+
+        /**
+         * Adds a comment to a specified zipEntry. The zip must be rewritten after adding the comment
+         * The comment cannot exceed 65535 characters in length
+         *
+         * @param entry
+         * @param comment
+         */
+        addZipEntryComment : function(/*Object*/entry,/*String*/comment) {
+            var item = getEntry(entry);
+            if (item) {
+                item.comment = comment;
+            }
+        },
+
+        /**
+         * Returns the comment of the specified entry
+         *
+         * @param entry
+         * @return String
+         */
+        getZipEntryComment : function(/*Object*/entry) {
+            var item = getEntry(entry);
+            if (item) {
+                return item.comment || '';
+            }
+            return ''
+        },
+
+        /**
+         * Updates the content of an existing entry inside the archive. The zip must be rewritten after updating the content
+         *
+         * @param entry
+         * @param content
+         */
+        updateFile : function(/*Object*/entry, /*Buffer*/content) {
+            var item = getEntry(entry);
+            if (item) {
+                item.setData(content);
+            }
+        },
+
+        /**
+         * Adds a file from the disk to the archive
+         *
+         * @param localPath
+         */
+        addLocalFile : function(/*String*/localPath, /*String*/zipPath, /*String*/zipName) {
+             if (fs.existsSync(localPath)) {
+                if(zipPath){
+                    zipPath=zipPath.split("\\").join("/");
+                    if(zipPath.charAt(zipPath.length - 1) != "/"){
+                        zipPath += "/";
+                    }
+                }else{
+                    zipPath="";
+                }
+                 var p = localPath.split("\\").join("/").split("/").pop();
+                
+                 if(zipName){
+                    this.addFile(zipPath+zipName, fs.readFileSync(localPath), "", 0)
+                 }else{
+                    this.addFile(zipPath+p, fs.readFileSync(localPath), "", 0)
+                 }
+             } else {
+                 throw Utils.Errors.FILE_NOT_FOUND.replace("%s", localPath);
+             }
+        },
+
+        /**
+         * Adds a local directory and all its nested files and directories to the archive
+         *
+         * @param localPath
+         * @param zipPath optional path inside zip
+         * @param filter optional RegExp or Function if files match will
+         *               be included.
+         */
+        addLocalFolder : function(/*String*/localPath, /*String*/zipPath, /*RegExp|Function*/filter) {
+            if (filter === undefined) {
+              filter = function() { return true; };
+            } else if (filter instanceof RegExp) {
+              filter = function(filter) {
+                return function(filename) {
+                  return filter.test(filename);
+                }
+              }(filter);
+            }
+
+            if(zipPath){
+                zipPath=zipPath.split("\\").join("/");
+                if(zipPath.charAt(zipPath.length - 1) != "/"){
+                    zipPath += "/";
+                }
+            }else{
+                zipPath="";
+            }
+			localPath = localPath.split("\\").join("/"); //windows fix
+            localPath = pth.normalize(localPath);
+            if (localPath.charAt(localPath.length - 1) != "/")
+                localPath += "/";
+
+            if (fs.existsSync(localPath)) {
+
+                var items = Utils.findFiles(localPath),
+                    self = this;
+
+                if (items.length) {
+                    items.forEach(function(path) {
+						var p = path.split("\\").join("/").replace( new RegExp(localPath, 'i'), ""); //windows fix
+                        if (filter(p)) {
+                            if (p.charAt(p.length - 1) !== "/") {
+                                self.addFile(zipPath+p, fs.readFileSync(path), "", 0)
+                            } else {
+                                self.addFile(zipPath+p, new Buffer(0), "", 0)
+                            }
+                        }
+                    });
+                }
+            } else {
+                throw Utils.Errors.FILE_NOT_FOUND.replace("%s", localPath);
+            }
+        },
+
+        /**
+         * Allows you to create a entry (file or directory) in the zip file.
+         * If you want to create a directory the entryName must end in / and a null buffer should be provided.
+         * Comment and attributes are optional
+         *
+         * @param entryName
+         * @param content
+         * @param comment
+         * @param attr
+         */
+        addFile : function(/*String*/entryName, /*Buffer*/content, /*String*/comment, /*Number*/attr) {
+            var entry = new ZipEntry();
+            entry.entryName = entryName;
+            entry.comment = comment || "";
+            entry.attr = attr || 438; //0666;
+            if (entry.isDirectory && content.length) {
+               // throw Utils.Errors.DIRECTORY_CONTENT_ERROR;
+            }
+            entry.setData(content);
+            _zip.setEntry(entry);
+        },
+
+        /**
+         * Returns an array of ZipEntry objects representing the files and folders inside the archive
+         *
+         * @return Array
+         */
+        getEntries : function() {
+            if (_zip) {
+               return _zip.entries;
+            } else {
+                return [];
+            }
+        },
+
+        /**
+         * Returns a ZipEntry object representing the file or folder specified by ``name``.
+         *
+         * @param name
+         * @return ZipEntry
+         */
+        getEntry : function(/*String*/name) {
+            return getEntry(name);
+        },
+
+        /**
+         * Extracts the given entry to the given targetPath
+         * If the entry is a directory inside the archive, the entire directory and it's subdirectories will be extracted
+         *
+         * @param entry ZipEntry object or String with the full path of the entry
+         * @param targetPath Target folder where to write the file
+         * @param maintainEntryPath If maintainEntryPath is true and the entry is inside a folder, the entry folder
+         *                          will be created in targetPath as well. Default is TRUE
+         * @param overwrite If the file already exists at the target path, the file will be overwriten if this is true.
+         *                  Default is FALSE
+         *
+         * @return Boolean
+         */
+        extractEntryTo : function(/*Object*/entry, /*String*/targetPath, /*Boolean*/maintainEntryPath, /*Boolean*/overwrite) {
+            overwrite = overwrite || false;
+            maintainEntryPath = typeof maintainEntryPath == "undefined" ? true : maintainEntryPath;
+
+            var item = getEntry(entry);
+            if (!item) {
+                throw Utils.Errors.NO_ENTRY;
+            }
+
+            var target = pth.resolve(targetPath, maintainEntryPath ? item.entryName : pth.basename(item.entryName));
+
+            if (item.isDirectory) {
+                target = pth.resolve(target, "..");
+                var children = _zip.getEntryChildren(item);
+                children.forEach(function(child) {
+                    if (child.isDirectory) return;
+                    var content = child.getData();
+                    if (!content) {
+                        throw Utils.Errors.CANT_EXTRACT_FILE;
+                    }
+                    Utils.writeFileTo(pth.resolve(targetPath, maintainEntryPath ? child.entryName : child.entryName.substr(item.entryName.length)), content, overwrite);
+                });
+                return true;
+            }
+
+            var content = item.getData();
+            if (!content) throw Utils.Errors.CANT_EXTRACT_FILE;
+
+            if (fs.existsSync(target) && !overwrite) {
+                throw Utils.Errors.CANT_OVERRIDE;
+            }
+            Utils.writeFileTo(target, content, overwrite);
+
+            return true;
+        },
+
+        /**
+         * Extracts the entire archive to the given location
+         *
+         * @param targetPath Target location
+         * @param overwrite If the file already exists at the target path, the file will be overwriten if this is true.
+         *                  Default is FALSE
+         */
+        extractAllTo : function(/*String*/targetPath, /*Boolean*/overwrite) {
+            overwrite = overwrite || false;
+            if (!_zip) {
+                throw Utils.Errors.NO_ZIP;
+            }
+
+            _zip.entries.forEach(function(entry) {
+                if (entry.isDirectory) {
+                    Utils.makeDir(pth.resolve(targetPath, entry.entryName.toString()));
+                    return;
+                }
+                var content = entry.getData();
+                if (!content) {
+                    throw Utils.Errors.CANT_EXTRACT_FILE + "2";
+                }
+                Utils.writeFileTo(pth.resolve(targetPath, entry.entryName.toString()), content, overwrite);
+            })
+        },
+
+        /**
+         * Asynchronous extractAllTo
+         *
+         * @param targetPath Target location
+         * @param overwrite If the file already exists at the target path, the file will be overwriten if this is true.
+         *                  Default is FALSE
+         * @param callback
+         */
+        extractAllToAsync : function(/*String*/targetPath, /*Boolean*/overwrite, /*Function*/callback) {
+            overwrite = overwrite || false;
+            if (!_zip) {
+                callback(new Error(Utils.Errors.NO_ZIP));
+                return;
+            }
+
+            var entries = _zip.entries;
+            var i = entries.length; 
+            entries.forEach(function(entry) {
+                if(i <= 0) return; // Had an error already
+
+                if (entry.isDirectory) {
+                    Utils.makeDir(pth.resolve(targetPath, entry.entryName.toString()));
+                    if(--i == 0)
+                        callback(undefined);
+                    return;
+                }
+                entry.getDataAsync(function(content) {
+                    if(i <= 0) return;
+                    if (!content) {
+                        i = 0;
+                        callback(new Error(Utils.Errors.CANT_EXTRACT_FILE + "2"));
+                        return;
+                    }
+                    Utils.writeFileToAsync(pth.resolve(targetPath, entry.entryName.toString()), content, overwrite, function(succ) {
+                        if(i <= 0) return;
+
+                        if(!succ) {
+                            i = 0;
+                            callback(new Error('Unable to write'));
+                            return;
+                        }
+
+                        if(--i == 0)
+                            callback(undefined);
+                    });
+                    
+                });
+            })
+        },
+
+        /**
+         * Writes the newly created zip file to disk at the specified location or if a zip was opened and no ``targetFileName`` is provided, it will overwrite the opened zip
+         *
+         * @param targetFileName
+         * @param callback
+         */
+        writeZip : function(/*String*/targetFileName, /*Function*/callback) {
+            if (arguments.length == 1) {
+                if (typeof targetFileName == "function") {
+                    callback = targetFileName;
+                    targetFileName = "";
+                }
+            }
+
+            if (!targetFileName && _filename) {
+                targetFileName = _filename;
+            }
+            if (!targetFileName) return;
+
+            var zipData = _zip.compressToBuffer();
+            if (zipData) {
+                var ok = Utils.writeFileTo(targetFileName, zipData, true);
+                if (typeof callback == 'function') callback(!ok? new Error("failed"): null, "");
+            }
+        },
+
+        /**
+         * Returns the content of the entire zip file as a Buffer object
+         *
+         * @return Buffer
+         */
+        toBuffer : function(/*Function*/onSuccess,/*Function*/onFail,/*Function*/onItemStart,/*Function*/onItemEnd) {
+            this.valueOf = 2;
+            if (typeof onSuccess == "function") {
+                _zip.toAsyncBuffer(onSuccess,onFail,onItemStart,onItemEnd);
+                return null;
+            }
+            return _zip.compressToBuffer()
+        }
+    }
+};
+
+
+/***/ }),
+/* 14 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var fs = __webpack_require__(0),
+    pth = __webpack_require__(1);
+
+fs.existsSync = fs.existsSync || pth.existsSync;
+
+module.exports = (function() {
+
+    var crcTable = [],
+        Constants = __webpack_require__(4),
+        Errors = __webpack_require__(5),
+
+        PATH_SEPARATOR = pth.normalize("/");
+
+
+    function mkdirSync(/*String*/path) {
+        var resolvedPath = path.split(PATH_SEPARATOR)[0];
+        path.split(PATH_SEPARATOR).forEach(function(name) {
+            if (!name || name.substr(-1,1) == ":") return;
+            resolvedPath += PATH_SEPARATOR + name;
+            var stat;
+            try {
+                stat = fs.statSync(resolvedPath);
+            } catch (e) {
+                fs.mkdirSync(resolvedPath);
+            }
+            if (stat && stat.isFile())
+                throw Errors.FILE_IN_THE_WAY.replace("%s", resolvedPath);
+        });
+    }
+
+    function findSync(/*String*/root, /*RegExp*/pattern, /*Boolean*/recoursive) {
+        if (typeof pattern === 'boolean') {
+            recoursive = pattern;
+            pattern = undefined;
+        }
+        var files = [];
+        fs.readdirSync(root).forEach(function(file) {
+            var path = pth.join(root, file);
+
+            if (fs.statSync(path).isDirectory() && recoursive)
+                files = files.concat(findSync(path, pattern, recoursive));
+
+            if (!pattern || pattern.test(path)) {
+                files.push(pth.normalize(path) + (fs.statSync(path).isDirectory() ? PATH_SEPARATOR : ""));
+            }
+
+        });
+        return files;
+    }
+
+    return {
+        makeDir : function(/*String*/path) {
+            mkdirSync(path);
+        },
+
+        crc32 : function(buf) {
+            var b = new Buffer(4);
+            if (!crcTable.length) {
+                for (var n = 0; n < 256; n++) {
+                    var c = n;
+                    for (var k = 8; --k >= 0;)  //
+                        if ((c & 1) != 0)  { c = 0xedb88320 ^ (c >>> 1); } else { c = c >>> 1; }
+                    if (c < 0) {
+                        b.writeInt32LE(c, 0);
+                        c = b.readUInt32LE(0);
+                    }
+                    crcTable[n] = c;
+                }
+            }
+            var crc = 0, off = 0, len = buf.length, c1 = ~crc;
+            while(--len >= 0) c1 = crcTable[(c1 ^ buf[off++]) & 0xff] ^ (c1 >>> 8);
+            crc = ~c1;
+            b.writeInt32LE(crc & 0xffffffff, 0);
+            return b.readUInt32LE(0);
+        },
+
+        methodToString : function(/*Number*/method) {
+            switch (method) {
+                case Constants.STORED:
+                    return 'STORED (' + method + ')';
+                case Constants.DEFLATED:
+                    return 'DEFLATED (' + method + ')';
+                default:
+                    return 'UNSUPPORTED (' + method + ')';
+            }
+
+        },
+
+        writeFileTo : function(/*String*/path, /*Buffer*/content, /*Boolean*/overwrite, /*Number*/attr) {
+            if (fs.existsSync(path)) {
+                if (!overwrite)
+                    return false; // cannot overwite
+
+                var stat = fs.statSync(path);
+                if (stat.isDirectory()) {
+                    return false;
+                }
+            }
+            var folder = pth.dirname(path);
+            if (!fs.existsSync(folder)) {
+                mkdirSync(folder);
+            }
+
+            var fd;
+            try {
+                fd = fs.openSync(path, 'w', 438); // 0666
+            } catch(e) {
+                fs.chmodSync(path, 438);
+                fd = fs.openSync(path, 'w', 438);
+            }
+            if (fd) {
+                fs.writeSync(fd, content, 0, content.length, 0);
+                fs.closeSync(fd);
+            }
+            fs.chmodSync(path, attr || 438);
+            return true;
+        },
+
+        writeFileToAsync : function(/*String*/path, /*Buffer*/content, /*Boolean*/overwrite, /*Number*/attr, /*Function*/callback) {
+            if(typeof attr === 'function') {
+                callback = attr;
+                attr = undefined;
+            }
+
+            fs.exists(path, function(exists) {
+                if(exists && !overwrite)
+                    return callback(false);
+
+                fs.stat(path, function(err, stat) {
+                    if(exists &&stat.isDirectory()) {
+                        return callback(false);
+                    }
+
+                    var folder = pth.dirname(path);
+                    fs.exists(folder, function(exists) {
+                        if(!exists)
+                            mkdirSync(folder);
+                        
+                        fs.open(path, 'w', 438, function(err, fd) {
+                            if(err) {
+                                fs.chmod(path, 438, function(err) {
+                                    fs.open(path, 'w', 438, function(err, fd) {
+                                        fs.write(fd, content, 0, content.length, 0, function(err, written, buffer) {
+                                            fs.close(fd, function(err) {
+                                                fs.chmod(path, attr || 438, function() {
+                                                    callback(true);
+                                                })
+                                            });
+                                        });
+                                    });
+                                })
+                            } else {
+                                if(fd) {
+                                    fs.write(fd, content, 0, content.length, 0, function(err, written, buffer) {
+                                        fs.close(fd, function(err) {
+                                            fs.chmod(path, attr || 438, function() {
+                                                callback(true);
+                                            })
+                                        });
+                                    });
+                                } else {
+                                    fs.chmod(path, attr || 438, function() {
+                                        callback(true);
+                                    })
+                                }
+                            }
+                        });
+                    })
+                })
+            })
+        },
+
+        findFiles : function(/*String*/path) {
+            return findSync(path, true);
+        },
+
+        getAttributes : function(/*String*/path) {
+
+        },
+
+        setAttributes : function(/*String*/path) {
+
+        },
+
+        toBuffer : function(input) {
+            if (Buffer.isBuffer(input)) {
+                return input;
+            } else {
+                if (input.length == 0) {
+                    return new Buffer(0)
+                }
+                return new Buffer(input, 'utf8');
+            }
+        },
+
+        Constants : Constants,
+        Errors : Errors
+    }
+})();
+
+
+/***/ }),
+/* 15 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var fs = __webpack_require__(0),
+    pth = __webpack_require__(1);
+	
+fs.existsSync = fs.existsSync || pth.existsSync;
+
+module.exports = function(/*String*/path) {
+
+    var _path = path || "",
+        _permissions = 0,
+        _obj = newAttr(),
+        _stat = null;
+
+    function newAttr() {
+        return {
+            directory : false,
+            readonly : false,
+            hidden : false,
+            executable : false,
+            mtime : 0,
+            atime : 0
+        }
+    }
+
+    if (_path && fs.existsSync(_path)) {
+        _stat = fs.statSync(_path);
+        _obj.directory = _stat.isDirectory();
+        _obj.mtime = _stat.mtime;
+        _obj.atime = _stat.atime;
+        _obj.executable = !!(1 & parseInt ((_stat.mode & parseInt ("777", 8)).toString (8)[0]));
+        _obj.readonly = !!(2 & parseInt ((_stat.mode & parseInt ("777", 8)).toString (8)[0]));
+        _obj.hidden = pth.basename(_path)[0] === ".";
+    } else {
+        console.warn("Invalid path: " + _path)
+    }
+
+    return {
+
+        get directory () {
+            return _obj.directory;
+        },
+
+        get readOnly () {
+            return _obj.readonly;
+        },
+
+        get hidden () {
+            return _obj.hidden;
+        },
+
+        get mtime () {
+            return _obj.mtime;
+        },
+
+        get atime () {
+           return _obj.atime;
+        },
+
+
+        get executable () {
+            return _obj.executable;
+        },
+
+        decodeAttributes : function(val) {
+
+        },
+
+        encodeAttributes : function (val) {
+
+        },
+
+        toString : function() {
+           return '{\n' +
+               '\t"path" : "' + _path + ",\n" +
+               '\t"isDirectory" : ' + _obj.directory + ",\n" +
+               '\t"isReadOnly" : ' + _obj.readonly + ",\n" +
+               '\t"isHidden" : ' + _obj.hidden + ",\n" +
+               '\t"isExecutable" : ' + _obj.executable + ",\n" +
+               '\t"mTime" : ' + _obj.mtime + "\n" +
+               '\t"aTime" : ' + _obj.atime + "\n" +
+           '}';
+        }
+    }
+
+};
+
+
+/***/ }),
+/* 16 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var Utils = __webpack_require__(2),
+    Constants = Utils.Constants;
+
+/* The central directory file header */
+module.exports = function () {
+    var _verMade = 0x0A,
+        _version = 0x0A,
+        _flags = 0,
+        _method = 0,
+        _time = 0,
+        _crc = 0,
+        _compressedSize = 0,
+        _size = 0,
+        _fnameLen = 0,
+        _extraLen = 0,
+
+        _comLen = 0,
+        _diskStart = 0,
+        _inattr = 0,
+        _attr = 0,
+        _offset = 0;
+
+    var _dataHeader = {};
+
+    function setTime(val) {
+        var val = new Date(val);
+        _time = (val.getFullYear() - 1980 & 0x7f) << 25  // b09-16 years from 1980
+            | (val.getMonth() + 1) << 21                 // b05-08 month
+            | val.getDay() << 16                         // b00-04 hour
+
+            // 2 bytes time
+            | val.getHours() << 11    // b11-15 hour
+            | val.getMinutes() << 5   // b05-10 minute
+            | val.getSeconds() >> 1;  // b00-04 seconds divided by 2
+    }
+
+    setTime(+new Date());
+
+    return {
+        get made () { return _verMade; },
+        set made (val) { _verMade = val; },
+
+        get version () { return _version; },
+        set version (val) { _version = val },
+
+        get flags () { return _flags },
+        set flags (val) { _flags = val; },
+
+        get method () { return _method; },
+        set method (val) { _method = val; },
+
+        get time () { return new Date(
+            ((_time >> 25) & 0x7f) + 1980,
+            ((_time >> 21) & 0x0f) - 1,
+            (_time >> 16) & 0x1f,
+            (_time >> 11) & 0x1f,
+            (_time >> 5) & 0x3f,
+            (_time & 0x1f) << 1
+        );
+        },
+        set time (val) {
+            setTime(val);
+        },
+
+        get crc () { return _crc; },
+        set crc (val) { _crc = val; },
+
+        get compressedSize () { return _compressedSize; },
+        set compressedSize (val) { _compressedSize = val; },
+
+        get size () { return _size; },
+        set size (val) { _size = val; },
+
+        get fileNameLength () { return _fnameLen; },
+        set fileNameLength (val) { _fnameLen = val; },
+
+        get extraLength () { return _extraLen },
+        set extraLength (val) { _extraLen = val; },
+
+        get commentLength () { return _comLen },
+        set commentLength (val) { _comLen = val },
+
+        get diskNumStart () { return _diskStart },
+        set diskNumStart (val) { _diskStart = val },
+
+        get inAttr () { return _inattr },
+        set inAttr (val) { _inattr = val },
+
+        get attr () { return _attr },
+        set attr (val) { _attr = val },
+
+        get offset () { return _offset },
+        set offset (val) { _offset = val },
+
+        get encripted () { return (_flags & 1) == 1 },
+
+        get entryHeaderSize () {
+            return Constants.CENHDR + _fnameLen + _extraLen + _comLen;
+        },
+
+        get realDataOffset () {
+            return _offset + Constants.LOCHDR + _dataHeader.fnameLen + _dataHeader.extraLen;
+        },
+
+        get dataHeader () {
+            return _dataHeader;
+        },
+
+        loadDataHeaderFromBinary : function(/*Buffer*/input) {
+            var data = input.slice(_offset, _offset + Constants.LOCHDR);
+            // 30 bytes and should start with "PK\003\004"
+            if (data.readUInt32LE(0) != Constants.LOCSIG) {
+                throw Utils.Errors.INVALID_LOC;
+            }
+            _dataHeader = {
+                // version needed to extract
+                version : data.readUInt16LE(Constants.LOCVER),
+                // general purpose bit flag
+                flags : data.readUInt16LE(Constants.LOCFLG),
+                // compression method
+                method : data.readUInt16LE(Constants.LOCHOW),
+                // modification time (2 bytes time, 2 bytes date)
+                time : data.readUInt32LE(Constants.LOCTIM),
+                // uncompressed file crc-32 value
+                crc : data.readUInt32LE(Constants.LOCCRC),
+                // compressed size
+                compressedSize : data.readUInt32LE(Constants.LOCSIZ),
+                // uncompressed size
+                size : data.readUInt32LE(Constants.LOCLEN),
+                // filename length
+                fnameLen : data.readUInt16LE(Constants.LOCNAM),
+                // extra field length
+                extraLen : data.readUInt16LE(Constants.LOCEXT)
+            }
+        },
+
+        loadFromBinary : function(/*Buffer*/data) {
+            // data should be 46 bytes and start with "PK 01 02"
+            if (data.length != Constants.CENHDR || data.readUInt32LE(0) != Constants.CENSIG) {
+                throw Utils.Errors.INVALID_CEN;
+            }
+            // version made by
+            _verMade = data.readUInt16LE(Constants.CENVEM);
+            // version needed to extract
+            _version = data.readUInt16LE(Constants.CENVER);
+            // encrypt, decrypt flags
+            _flags = data.readUInt16LE(Constants.CENFLG);
+            // compression method
+            _method = data.readUInt16LE(Constants.CENHOW);
+            // modification time (2 bytes time, 2 bytes date)
+            _time = data.readUInt32LE(Constants.CENTIM);
+            // uncompressed file crc-32 value
+            _crc = data.readUInt32LE(Constants.CENCRC);
+            // compressed size
+            _compressedSize = data.readUInt32LE(Constants.CENSIZ);
+            // uncompressed size
+            _size = data.readUInt32LE(Constants.CENLEN);
+            // filename length
+            _fnameLen = data.readUInt16LE(Constants.CENNAM);
+            // extra field length
+            _extraLen = data.readUInt16LE(Constants.CENEXT);
+            // file comment length
+            _comLen = data.readUInt16LE(Constants.CENCOM);
+            // volume number start
+            _diskStart = data.readUInt16LE(Constants.CENDSK);
+            // internal file attributes
+            _inattr = data.readUInt16LE(Constants.CENATT);
+            // external file attributes
+            _attr = data.readUInt32LE(Constants.CENATX);
+            // LOC header offset
+            _offset = data.readUInt32LE(Constants.CENOFF);
+        },
+
+        dataHeaderToBinary : function() {
+            // LOC header size (30 bytes)
+            var data = new Buffer(Constants.LOCHDR);
+            // "PK\003\004"
+            data.writeUInt32LE(Constants.LOCSIG, 0);
+            // version needed to extract
+            data.writeUInt16LE(_version, Constants.LOCVER);
+            // general purpose bit flag
+            data.writeUInt16LE(_flags, Constants.LOCFLG);
+            // compression method
+            data.writeUInt16LE(_method, Constants.LOCHOW);
+            // modification time (2 bytes time, 2 bytes date)
+            data.writeUInt32LE(_time, Constants.LOCTIM);
+            // uncompressed file crc-32 value
+            data.writeUInt32LE(_crc, Constants.LOCCRC);
+            // compressed size
+            data.writeUInt32LE(_compressedSize, Constants.LOCSIZ);
+            // uncompressed size
+            data.writeUInt32LE(_size, Constants.LOCLEN);
+            // filename length
+            data.writeUInt16LE(_fnameLen, Constants.LOCNAM);
+            // extra field length
+            data.writeUInt16LE(_extraLen, Constants.LOCEXT);
+            return data;
+        },
+
+        entryHeaderToBinary : function() {
+            // CEN header size (46 bytes)
+            var data = new Buffer(Constants.CENHDR + _fnameLen + _extraLen + _comLen);
+            // "PK\001\002"
+            data.writeUInt32LE(Constants.CENSIG, 0);
+            // version made by
+            data.writeUInt16LE(_verMade, Constants.CENVEM);
+            // version needed to extract
+            data.writeUInt16LE(_version, Constants.CENVER);
+            // encrypt, decrypt flags
+            data.writeUInt16LE(_flags, Constants.CENFLG);
+            // compression method
+            data.writeUInt16LE(_method, Constants.CENHOW);
+            // modification time (2 bytes time, 2 bytes date)
+            data.writeUInt32LE(_time, Constants.CENTIM);
+            // uncompressed file crc-32 value
+            data.writeInt32LE(_crc, Constants.CENCRC, true);
+            // compressed size
+            data.writeUInt32LE(_compressedSize, Constants.CENSIZ);
+            // uncompressed size
+            data.writeUInt32LE(_size, Constants.CENLEN);
+            // filename length
+            data.writeUInt16LE(_fnameLen, Constants.CENNAM);
+            // extra field length
+            data.writeUInt16LE(_extraLen, Constants.CENEXT);
+            // file comment length
+            data.writeUInt16LE(_comLen, Constants.CENCOM);
+            // volume number start
+            data.writeUInt16LE(_diskStart, Constants.CENDSK);
+            // internal file attributes
+            data.writeUInt16LE(_inattr, Constants.CENATT);
+            // external file attributes
+            data.writeUInt32LE(_attr, Constants.CENATX);
+            // LOC header offset
+            data.writeUInt32LE(_offset, Constants.CENOFF);
+            // fill all with
+            data.fill(0x00, Constants.CENHDR);
+            return data;
+        },
+
+        toString : function() {
+            return '{\n' +
+                '\t"made" : ' + _verMade + ",\n" +
+                '\t"version" : ' + _version + ",\n" +
+                '\t"flags" : ' + _flags + ",\n" +
+                '\t"method" : ' + Utils.methodToString(_method) + ",\n" +
+                '\t"time" : ' + _time + ",\n" +
+                '\t"crc" : 0x' + _crc.toString(16).toUpperCase() + ",\n" +
+                '\t"compressedSize" : ' + _compressedSize + " bytes,\n" +
+                '\t"size" : ' + _size + " bytes,\n" +
+                '\t"fileNameLength" : ' + _fnameLen + ",\n" +
+                '\t"extraLength" : ' + _extraLen + " bytes,\n" +
+                '\t"commentLength" : ' + _comLen + " bytes,\n" +
+                '\t"diskNumStart" : ' + _diskStart + ",\n" +
+                '\t"inAttr" : ' + _inattr + ",\n" +
+                '\t"attr" : ' + _attr + ",\n" +
+                '\t"offset" : ' + _offset + ",\n" +
+                '\t"entryHeaderSize" : ' + (Constants.CENHDR + _fnameLen + _extraLen + _comLen) + " bytes\n" +
+                '}';
+        }
+    }
+};
+
+
+/***/ }),
+/* 17 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var Utils = __webpack_require__(2),
+    Constants = Utils.Constants;
+
+/* The entries in the end of central directory */
+module.exports = function () {
+    var _volumeEntries = 0,
+        _totalEntries = 0,
+        _size = 0,
+        _offset = 0,
+        _commentLength = 0;
+
+    return {
+        get diskEntries () { return _volumeEntries },
+        set diskEntries (/*Number*/val) { _volumeEntries = _totalEntries = val; },
+
+        get totalEntries () { return _totalEntries },
+        set totalEntries (/*Number*/val) { _totalEntries = _volumeEntries = val; },
+
+        get size () { return _size },
+        set size (/*Number*/val) { _size = val; },
+
+        get offset () { return _offset },
+        set offset (/*Number*/val) { _offset = val; },
+
+        get commentLength () { return _commentLength },
+        set commentLength (/*Number*/val) { _commentLength = val; },
+
+        get mainHeaderSize () {
+            return Constants.ENDHDR + _commentLength;
+        },
+
+        loadFromBinary : function(/*Buffer*/data) {
+            // data should be 22 bytes and start with "PK 05 06"
+            if (data.length != Constants.ENDHDR || data.readUInt32LE(0) != Constants.ENDSIG)
+                throw Utils.Errors.INVALID_END;
+
+            // number of entries on this volume
+            _volumeEntries = data.readUInt16LE(Constants.ENDSUB);
+            // total number of entries
+            _totalEntries = data.readUInt16LE(Constants.ENDTOT);
+            // central directory size in bytes
+            _size = data.readUInt32LE(Constants.ENDSIZ);
+            // offset of first CEN header
+            _offset = data.readUInt32LE(Constants.ENDOFF);
+            // zip file comment length
+            _commentLength = data.readUInt16LE(Constants.ENDCOM);
+        },
+
+        toBinary : function() {
+           var b = new Buffer(Constants.ENDHDR + _commentLength);
+            // "PK 05 06" signature
+            b.writeUInt32LE(Constants.ENDSIG, 0);
+            b.writeUInt32LE(0, 4);
+            // number of entries on this volume
+            b.writeUInt16LE(_volumeEntries, Constants.ENDSUB);
+            // total number of entries
+            b.writeUInt16LE(_totalEntries, Constants.ENDTOT);
+            // central directory size in bytes
+            b.writeUInt32LE(_size, Constants.ENDSIZ);
+            // offset of first CEN header
+            b.writeUInt32LE(_offset, Constants.ENDOFF);
+            // zip file comment length
+            b.writeUInt16LE(_commentLength, Constants.ENDCOM);
+            // fill comment memory with spaces so no garbage is left there
+            b.fill(" ", Constants.ENDHDR);
+
+            return b;
+        },
+
+        toString : function() {
+            return '{\n' +
+                '\t"diskEntries" : ' + _volumeEntries + ",\n" +
+                '\t"totalEntries" : ' + _totalEntries + ",\n" +
+                '\t"size" : ' + _size + " bytes,\n" +
+                '\t"offset" : 0x' + _offset.toString(16).toUpperCase() + ",\n" +
+                '\t"commentLength" : 0x' + _commentLength + "\n" +
+            '}';
+        }
+    }
+};
+
+/***/ }),
+/* 18 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports.Deflater = __webpack_require__(19);
+exports.Inflater = __webpack_require__(20);
+
+/***/ }),
+/* 19 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/*
+ * $Id: rawdeflate.js,v 0.5 2013/04/09 14:25:38 dankogai Exp dankogai $
+ *
+ * GNU General Public License, version 2 (GPL-2.0)
+ *   http://opensource.org/licenses/GPL-2.0
+ * Original:
+ *  http://www.onicos.com/staff/iz/amuse/javascript/expert/deflate.txt
+ */
+function JSDeflater(/*inbuff*/inbuf) {
+
+    /* Copyright (C) 1999 Masanao Izumo <iz@onicos.co.jp>
+     * Version: 1.0.1
+     * LastModified: Dec 25 1999
+     */
+
+    var WSIZE = 32768,		// Sliding Window size
+        zip_STORED_BLOCK = 0,
+        zip_STATIC_TREES = 1,
+        zip_DYN_TREES = 2,
+        zip_DEFAULT_LEVEL = 6,
+        zip_FULL_SEARCH = true,
+        zip_INBUFSIZ = 32768,	// Input buffer size
+        zip_INBUF_EXTRA = 64,	// Extra buffer
+        zip_OUTBUFSIZ = 1024 * 8,
+        zip_window_size = 2 * WSIZE,
+        MIN_MATCH = 3,
+        MAX_MATCH = 258,
+        zip_BITS = 16,
+        LIT_BUFSIZE = 0x2000,
+        zip_HASH_BITS = 13,
+        zip_DIST_BUFSIZE = LIT_BUFSIZE,
+        zip_HASH_SIZE = 1 << zip_HASH_BITS,
+        zip_HASH_MASK = zip_HASH_SIZE - 1,
+        zip_WMASK = WSIZE - 1,
+        zip_NIL = 0, // Tail of hash chains
+        zip_TOO_FAR = 4096,
+        zip_MIN_LOOKAHEAD = MAX_MATCH + MIN_MATCH + 1,
+        zip_MAX_DIST = WSIZE - zip_MIN_LOOKAHEAD,
+        zip_SMALLEST = 1,
+        zip_MAX_BITS = 15,
+        zip_MAX_BL_BITS = 7,
+        zip_LENGTH_CODES = 29,
+        zip_LITERALS = 256,
+        zip_END_BLOCK = 256,
+        zip_L_CODES = zip_LITERALS + 1 + zip_LENGTH_CODES,
+        zip_D_CODES = 30,
+        zip_BL_CODES = 19,
+        zip_REP_3_6 = 16,
+        zip_REPZ_3_10 = 17,
+        zip_REPZ_11_138 = 18,
+        zip_HEAP_SIZE = 2 * zip_L_CODES + 1,
+        zip_H_SHIFT = parseInt((zip_HASH_BITS + MIN_MATCH - 1) / MIN_MATCH);
+
+    var zip_free_queue, zip_qhead, zip_qtail, zip_initflag, zip_outbuf = null, zip_outcnt, zip_outoff, zip_complete,
+        zip_window, zip_d_buf, zip_l_buf, zip_prev, zip_bi_buf, zip_bi_valid, zip_block_start, zip_ins_h, zip_hash_head,
+        zip_prev_match, zip_match_available, zip_match_length, zip_prev_length, zip_strstart, zip_match_start, zip_eofile,
+        zip_lookahead, zip_max_chain_length, zip_max_lazy_match, zip_compr_level, zip_good_match, zip_nice_match,
+        zip_dyn_ltree, zip_dyn_dtree, zip_static_ltree, zip_static_dtree, zip_bl_tree, zip_l_desc, zip_d_desc, zip_bl_desc,
+        zip_bl_count, zip_heap, zip_heap_len, zip_heap_max, zip_depth, zip_length_code, zip_dist_code, zip_base_length,
+        zip_base_dist, zip_flag_buf, zip_last_lit, zip_last_dist, zip_last_flags, zip_flags, zip_flag_bit, zip_opt_len,
+        zip_static_len, zip_deflate_data, zip_deflate_pos;
+
+    var zip_DeflateCT = function () {
+        this.fc = 0; // frequency count or bit string
+        this.dl = 0; // father node in Huffman tree or length of bit string
+    };
+
+    var zip_DeflateTreeDesc = function () {
+        this.dyn_tree = null;	// the dynamic tree
+        this.static_tree = null;	// corresponding static tree or NULL
+        this.extra_bits = null;	// extra bits for each code or NULL
+        this.extra_base = 0;	// base index for extra_bits
+        this.elems = 0;		// max number of elements in the tree
+        this.max_length = 0;	// max bit length for the codes
+        this.max_code = 0;		// largest code with non zero frequency
+    };
+
+    /* Values for max_lazy_match, good_match and max_chain_length, depending on
+     * the desired pack level (0..9). The values given below have been tuned to
+     * exclude worst case performance for pathological files. Better values may be
+     * found for specific files.
+     */
+    var zip_DeflateConfiguration = function (a, b, c, d) {
+        this.good_length = a; // reduce lazy search above this match length
+        this.max_lazy = b;    // do not perform lazy search above this match length
+        this.nice_length = c; // quit search above this match length
+        this.max_chain = d;
+    };
+
+    var zip_DeflateBuffer = function () {
+        this.next = null;
+        this.len = 0;
+        this.ptr = new Array(zip_OUTBUFSIZ);
+        this.off = 0;
+    };
+
+    /* constant tables */
+    var zip_extra_lbits = new Array(
+        0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 0);
+    var zip_extra_dbits = new Array(
+        0, 0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12, 12, 13, 13);
+    var zip_extra_blbits = new Array(
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 7);
+    var zip_bl_order = new Array(
+        16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15);
+    var zip_configuration_table = new Array(
+        new zip_DeflateConfiguration(0, 0, 0, 0),
+        new zip_DeflateConfiguration(4, 4, 8, 4),
+        new zip_DeflateConfiguration(4, 5, 16, 8),
+        new zip_DeflateConfiguration(4, 6, 32, 32),
+        new zip_DeflateConfiguration(4, 4, 16, 16),
+        new zip_DeflateConfiguration(8, 16, 32, 32),
+        new zip_DeflateConfiguration(8, 16, 128, 128),
+        new zip_DeflateConfiguration(8, 32, 128, 256),
+        new zip_DeflateConfiguration(32, 128, 258, 1024),
+        new zip_DeflateConfiguration(32, 258, 258, 4096));
+
+
+    /* routines (deflate) */
+
+    var zip_deflate_start = function (level) {
+        var i;
+
+        if (!level)
+            level = zip_DEFAULT_LEVEL;
+        else if (level < 1)
+            level = 1;
+        else if (level > 9)
+            level = 9;
+
+        zip_compr_level = level;
+        zip_initflag = false;
+        zip_eofile = false;
+        if (zip_outbuf != null)
+            return;
+
+        zip_free_queue = zip_qhead = zip_qtail = null;
+        zip_outbuf = new Array(zip_OUTBUFSIZ);
+        zip_window = new Array(zip_window_size);
+        zip_d_buf = new Array(zip_DIST_BUFSIZE);
+        zip_l_buf = new Array(zip_INBUFSIZ + zip_INBUF_EXTRA);
+        zip_prev = new Array(1 << zip_BITS);
+        zip_dyn_ltree = new Array(zip_HEAP_SIZE);
+        for (i = 0; i < zip_HEAP_SIZE; i++) zip_dyn_ltree[i] = new zip_DeflateCT();
+        zip_dyn_dtree = new Array(2 * zip_D_CODES + 1);
+        for (i = 0; i < 2 * zip_D_CODES + 1; i++) zip_dyn_dtree[i] = new zip_DeflateCT();
+        zip_static_ltree = new Array(zip_L_CODES + 2);
+        for (i = 0; i < zip_L_CODES + 2; i++) zip_static_ltree[i] = new zip_DeflateCT();
+        zip_static_dtree = new Array(zip_D_CODES);
+        for (i = 0; i < zip_D_CODES; i++) zip_static_dtree[i] = new zip_DeflateCT();
+        zip_bl_tree = new Array(2 * zip_BL_CODES + 1);
+        for (i = 0; i < 2 * zip_BL_CODES + 1; i++) zip_bl_tree[i] = new zip_DeflateCT();
+        zip_l_desc = new zip_DeflateTreeDesc();
+        zip_d_desc = new zip_DeflateTreeDesc();
+        zip_bl_desc = new zip_DeflateTreeDesc();
+        zip_bl_count = new Array(zip_MAX_BITS + 1);
+        zip_heap = new Array(2 * zip_L_CODES + 1);
+        zip_depth = new Array(2 * zip_L_CODES + 1);
+        zip_length_code = new Array(MAX_MATCH - MIN_MATCH + 1);
+        zip_dist_code = new Array(512);
+        zip_base_length = new Array(zip_LENGTH_CODES);
+        zip_base_dist = new Array(zip_D_CODES);
+        zip_flag_buf = new Array(parseInt(LIT_BUFSIZE / 8));
+    };
+
+    var zip_deflate_end = function () {
+        zip_free_queue = zip_qhead = zip_qtail = null;
+        zip_outbuf = null;
+        zip_window = null;
+        zip_d_buf = null;
+        zip_l_buf = null;
+        zip_prev = null;
+        zip_dyn_ltree = null;
+        zip_dyn_dtree = null;
+        zip_static_ltree = null;
+        zip_static_dtree = null;
+        zip_bl_tree = null;
+        zip_l_desc = null;
+        zip_d_desc = null;
+        zip_bl_desc = null;
+        zip_bl_count = null;
+        zip_heap = null;
+        zip_depth = null;
+        zip_length_code = null;
+        zip_dist_code = null;
+        zip_base_length = null;
+        zip_base_dist = null;
+        zip_flag_buf = null;
+    };
+
+    var zip_reuse_queue = function (p) {
+        p.next = zip_free_queue;
+        zip_free_queue = p;
+    };
+
+    var zip_new_queue = function () {
+        var p;
+
+        if (zip_free_queue != null) {
+            p = zip_free_queue;
+            zip_free_queue = zip_free_queue.next;
+        }
+        else
+            p = new zip_DeflateBuffer();
+        p.next = null;
+        p.len = p.off = 0;
+
+        return p;
+    };
+
+    var zip_head1 = function (i) {
+        return zip_prev[WSIZE + i];
+    };
+
+    var zip_head2 = function (i, val) {
+        return zip_prev[WSIZE + i] = val;
+    };
+
+    /* put_byte is used for the compressed output, put_ubyte for the
+     * uncompressed output. However unlzw() uses window for its
+     * suffix table instead of its output buffer, so it does not use put_ubyte
+     * (to be cleaned up).
+     */
+    var zip_put_byte = function (c) {
+        zip_outbuf[zip_outoff + zip_outcnt++] = c;
+        if (zip_outoff + zip_outcnt == zip_OUTBUFSIZ)
+            zip_qoutbuf();
+    };
+
+    /* Output a 16 bit value, lsb first */
+    var zip_put_short = function (w) {
+        w &= 0xffff;
+        if (zip_outoff + zip_outcnt < zip_OUTBUFSIZ - 2) {
+            zip_outbuf[zip_outoff + zip_outcnt++] = (w & 0xff);
+            zip_outbuf[zip_outoff + zip_outcnt++] = (w >>> 8);
+        } else {
+            zip_put_byte(w & 0xff);
+            zip_put_byte(w >>> 8);
+        }
+    };
+
+    /* ==========================================================================
+     * Insert string s in the dictionary and set match_head to the previous head
+     * of the hash chain (the most recent string with same hash key). Return
+     * the previous length of the hash chain.
+     * IN  assertion: all calls to to INSERT_STRING are made with consecutive
+     *    input characters and the first MIN_MATCH bytes of s are valid
+     *    (except for the last MIN_MATCH-1 bytes of the input file).
+     */
+    var zip_INSERT_STRING = function () {
+        zip_ins_h = ((zip_ins_h << zip_H_SHIFT)
+            ^ (zip_window[zip_strstart + MIN_MATCH - 1] & 0xff))
+            & zip_HASH_MASK;
+        zip_hash_head = zip_head1(zip_ins_h);
+        zip_prev[zip_strstart & zip_WMASK] = zip_hash_head;
+        zip_head2(zip_ins_h, zip_strstart);
+    };
+
+    /* Send a code of the given tree. c and tree must not have side effects */
+    var zip_SEND_CODE = function (c, tree) {
+        zip_send_bits(tree[c].fc, tree[c].dl);
+    };
+
+    /* Mapping from a distance to a distance code. dist is the distance - 1 and
+     * must not have side effects. dist_code[256] and dist_code[257] are never
+     * used.
+     */
+    var zip_D_CODE = function (dist) {
+        return (dist < 256 ? zip_dist_code[dist]
+            : zip_dist_code[256 + (dist >> 7)]) & 0xff;
+    };
+
+    /* ==========================================================================
+     * Compares to subtrees, using the tree depth as tie breaker when
+     * the subtrees have equal frequency. This minimizes the worst case length.
+     */
+    var zip_SMALLER = function (tree, n, m) {
+        return tree[n].fc < tree[m].fc ||
+            (tree[n].fc == tree[m].fc && zip_depth[n] <= zip_depth[m]);
+    };
+
+    /* ==========================================================================
+     * read string data
+     */
+    var zip_read_buff = function (buff, offset, n) {
+        var i;
+        for (i = 0; i < n && zip_deflate_pos < zip_deflate_data.length; i++)
+            buff[offset + i] =
+                zip_deflate_data[zip_deflate_pos++] & 0xff;
+        return i;
+    };
+
+    /* ==========================================================================
+     * Initialize the "longest match" routines for a new file
+     */
+    var zip_lm_init = function () {
+        var j;
+
+        /* Initialize the hash table. */
+        for (j = 0; j < zip_HASH_SIZE; j++)
+            zip_prev[WSIZE + j] = 0;
+        zip_max_lazy_match = zip_configuration_table[zip_compr_level].max_lazy;
+        zip_good_match = zip_configuration_table[zip_compr_level].good_length;
+        if (!zip_FULL_SEARCH)
+            zip_nice_match = zip_configuration_table[zip_compr_level].nice_length;
+        zip_max_chain_length = zip_configuration_table[zip_compr_level].max_chain;
+
+        zip_strstart = 0;
+        zip_block_start = 0;
+
+        zip_lookahead = zip_read_buff(zip_window, 0, 2 * WSIZE);
+        if (zip_lookahead <= 0) {
+            zip_eofile = true;
+            zip_lookahead = 0;
+            return;
+        }
+        zip_eofile = false;
+        /* Make sure that we always have enough lookahead. This is important
+         * if input comes from a device such as a tty.
+         */
+        while (zip_lookahead < zip_MIN_LOOKAHEAD && !zip_eofile)
+            zip_fill_window();
+
+        /* If lookahead < MIN_MATCH, ins_h is garbage, but this is
+         * not important since only literal bytes will be emitted.
+         */
+        zip_ins_h = 0;
+        for (j = 0; j < MIN_MATCH - 1; j++) {
+            zip_ins_h = ((zip_ins_h << zip_H_SHIFT) ^ (zip_window[j] & 0xff)) & zip_HASH_MASK;
+        }
+    };
+
+    /* ==========================================================================
+     * Set match_start to the longest match starting at the given string and
+     * return its length. Matches shorter or equal to prev_length are discarded,
+     * in which case the result is equal to prev_length and match_start is
+     * garbage.
+     * IN assertions: cur_match is the head of the hash chain for the current
+     *   string (strstart) and its distance is <= MAX_DIST, and prev_length >= 1
+     */
+    var zip_longest_match = function (cur_match) {
+        var chain_length = zip_max_chain_length; // max hash chain length
+        var scanp = zip_strstart; // current string
+        var matchp;		// matched string
+        var len;		// length of current match
+        var best_len = zip_prev_length;	// best match length so far
+
+        /* Stop when cur_match becomes <= limit. To simplify the code,
+         * we prevent matches with the string of window index 0.
+         */
+        var limit = (zip_strstart > zip_MAX_DIST ? zip_strstart - zip_MAX_DIST : zip_NIL);
+
+        var strendp = zip_strstart + MAX_MATCH;
+        var scan_end1 = zip_window[scanp + best_len - 1];
+        var scan_end = zip_window[scanp + best_len];
+
+        /* Do not waste too much time if we already have a good match: */
+        if (zip_prev_length >= zip_good_match)
+            chain_length >>= 2;
+
+        do {
+            matchp = cur_match;
+
+            /* Skip to next match if the match length cannot increase
+             * or if the match length is less than 2:
+             */
+            if (zip_window[matchp + best_len] != scan_end ||
+                zip_window[matchp + best_len - 1] != scan_end1 ||
+                zip_window[matchp] != zip_window[scanp] ||
+                zip_window[++matchp] != zip_window[scanp + 1]) {
+                continue;
+            }
+
+            /* The check at best_len-1 can be removed because it will be made
+             * again later. (This heuristic is not always a win.)
+             * It is not necessary to compare scan[2] and match[2] since they
+             * are always equal when the other bytes match, given that
+             * the hash keys are equal and that HASH_BITS >= 8.
+             */
+            scanp += 2;
+            matchp++;
+
+            /* We check for insufficient lookahead only every 8th comparison;
+             * the 256th check will be made at strstart+258.
+             */
+            do {
+            } while (zip_window[++scanp] == zip_window[++matchp] &&
+                zip_window[++scanp] == zip_window[++matchp] &&
+                zip_window[++scanp] == zip_window[++matchp] &&
+                zip_window[++scanp] == zip_window[++matchp] &&
+                zip_window[++scanp] == zip_window[++matchp] &&
+                zip_window[++scanp] == zip_window[++matchp] &&
+                zip_window[++scanp] == zip_window[++matchp] &&
+                zip_window[++scanp] == zip_window[++matchp] &&
+                scanp < strendp);
+
+            len = MAX_MATCH - (strendp - scanp);
+            scanp = strendp - MAX_MATCH;
+
+            if (len > best_len) {
+                zip_match_start = cur_match;
+                best_len = len;
+                if (zip_FULL_SEARCH) {
+                    if (len >= MAX_MATCH) break;
+                } else {
+                    if (len >= zip_nice_match) break;
+                }
+
+                scan_end1 = zip_window[scanp + best_len - 1];
+                scan_end = zip_window[scanp + best_len];
+            }
+        } while ((cur_match = zip_prev[cur_match & zip_WMASK]) > limit
+            && --chain_length != 0);
+
+        return best_len;
+    };
+
+    /* ==========================================================================
+     * Fill the window when the lookahead becomes insufficient.
+     * Updates strstart and lookahead, and sets eofile if end of input file.
+     * IN assertion: lookahead < MIN_LOOKAHEAD && strstart + lookahead > 0
+     * OUT assertions: at least one byte has been read, or eofile is set;
+     *    file reads are performed for at least two bytes (required for the
+     *    translate_eol option).
+     */
+    var zip_fill_window = function () {
+        var n, m;
+
+        // Amount of free space at the end of the window.
+        var more = zip_window_size - zip_lookahead - zip_strstart;
+
+        /* If the window is almost full and there is insufficient lookahead,
+         * move the upper half to the lower one to make room in the upper half.
+         */
+        if (more == -1) {
+            /* Very unlikely, but possible on 16 bit machine if strstart == 0
+             * and lookahead == 1 (input done one byte at time)
+             */
+            more--;
+        } else if (zip_strstart >= WSIZE + zip_MAX_DIST) {
+            /* By the IN assertion, the window is not empty so we can't confuse
+             * more == 0 with more == 64K on a 16 bit machine.
+             */
+            for (n = 0; n < WSIZE; n++)
+                zip_window[n] = zip_window[n + WSIZE];
+
+            zip_match_start -= WSIZE;
+            zip_strstart -= WSIZE;
+            /* we now have strstart >= MAX_DIST: */
+            zip_block_start -= WSIZE;
+
+            for (n = 0; n < zip_HASH_SIZE; n++) {
+                m = zip_head1(n);
+                zip_head2(n, m >= WSIZE ? m - WSIZE : zip_NIL);
+            }
+            for (n = 0; n < WSIZE; n++) {
+                /* If n is not on any hash chain, prev[n] is garbage but
+                 * its value will never be used.
+                 */
+                m = zip_prev[n];
+                zip_prev[n] = (m >= WSIZE ? m - WSIZE : zip_NIL);
+            }
+            more += WSIZE;
+        }
+        // At this point, more >= 2
+        if (!zip_eofile) {
+            n = zip_read_buff(zip_window, zip_strstart + zip_lookahead, more);
+            if (n <= 0)
+                zip_eofile = true;
+            else
+                zip_lookahead += n;
+        }
+    };
+
+    /* ==========================================================================
+     * Processes a new input file and return its compressed length. This
+     * function does not perform lazy evaluationof matches and inserts
+     * new strings in the dictionary only for unmatched strings or for short
+     * matches. It is used only for the fast compression options.
+     */
+    var zip_deflate_fast = function () {
+        while (zip_lookahead != 0 && zip_qhead == null) {
+            var flush; // set if current block must be flushed
+
+            /* Insert the string window[strstart .. strstart+2] in the
+             * dictionary, and set hash_head to the head of the hash chain:
+             */
+            zip_INSERT_STRING();
+
+            /* Find the longest match, discarding those <= prev_length.
+             * At this point we have always match_length < MIN_MATCH
+             */
+            if (zip_hash_head != zip_NIL &&
+                zip_strstart - zip_hash_head <= zip_MAX_DIST) {
+                /* To simplify the code, we prevent matches with the string
+                 * of window index 0 (in particular we have to avoid a match
+                 * of the string with itself at the start of the input file).
+                 */
+                zip_match_length = zip_longest_match(zip_hash_head);
+                /* longest_match() sets match_start */
+                if (zip_match_length > zip_lookahead)
+                    zip_match_length = zip_lookahead;
+            }
+            if (zip_match_length >= MIN_MATCH) {
+                flush = zip_ct_tally(zip_strstart - zip_match_start,
+                    zip_match_length - MIN_MATCH);
+                zip_lookahead -= zip_match_length;
+
+                /* Insert new strings in the hash table only if the match length
+                 * is not too large. This saves time but degrades compression.
+                 */
+                if (zip_match_length <= zip_max_lazy_match) {
+                    zip_match_length--; // string at strstart already in hash table
+                    do {
+                        zip_strstart++;
+                        zip_INSERT_STRING();
+                        /* strstart never exceeds WSIZE-MAX_MATCH, so there are
+                         * always MIN_MATCH bytes ahead. If lookahead < MIN_MATCH
+                         * these bytes are garbage, but it does not matter since
+                         * the next lookahead bytes will be emitted as literals.
+                         */
+                    } while (--zip_match_length != 0);
+                    zip_strstart++;
+                } else {
+                    zip_strstart += zip_match_length;
+                    zip_match_length = 0;
+                    zip_ins_h = zip_window[zip_strstart] & 0xff;
+                    zip_ins_h = ((zip_ins_h << zip_H_SHIFT) ^ (zip_window[zip_strstart + 1] & 0xff)) & zip_HASH_MASK;
+                }
+            } else {
+                /* No match, output a literal byte */
+                flush = zip_ct_tally(0, zip_window[zip_strstart] & 0xff);
+                zip_lookahead--;
+                zip_strstart++;
+            }
+            if (flush) {
+                zip_flush_block(0);
+                zip_block_start = zip_strstart;
+            }
+
+            /* Make sure that we always have enough lookahead, except
+             * at the end of the input file. We need MAX_MATCH bytes
+             * for the next match, plus MIN_MATCH bytes to insert the
+             * string following the next match.
+             */
+            while (zip_lookahead < zip_MIN_LOOKAHEAD && !zip_eofile)
+                zip_fill_window();
+        }
+    };
+
+    var zip_deflate_better = function () {
+        /* Process the input block. */
+        while (zip_lookahead != 0 && zip_qhead == null) {
+            /* Insert the string window[strstart .. strstart+2] in the
+             * dictionary, and set hash_head to the head of the hash chain:
+             */
+            zip_INSERT_STRING();
+
+            /* Find the longest match, discarding those <= prev_length.
+             */
+            zip_prev_length = zip_match_length;
+            zip_prev_match = zip_match_start;
+            zip_match_length = MIN_MATCH - 1;
+
+            if (zip_hash_head != zip_NIL &&
+                zip_prev_length < zip_max_lazy_match &&
+                zip_strstart - zip_hash_head <= zip_MAX_DIST) {
+                /* To simplify the code, we prevent matches with the string
+                 * of window index 0 (in particular we have to avoid a match
+                 * of the string with itself at the start of the input file).
+                 */
+                zip_match_length = zip_longest_match(zip_hash_head);
+                /* longest_match() sets match_start */
+                if (zip_match_length > zip_lookahead)
+                    zip_match_length = zip_lookahead;
+
+                /* Ignore a length 3 match if it is too distant: */
+                if (zip_match_length == MIN_MATCH &&
+                    zip_strstart - zip_match_start > zip_TOO_FAR) {
+                    /* If prev_match is also MIN_MATCH, match_start is garbage
+                     * but we will ignore the current match anyway.
+                     */
+                    zip_match_length--;
+                }
+            }
+            /* If there was a match at the previous step and the current
+             * match is not better, output the previous match:
+             */
+            if (zip_prev_length >= MIN_MATCH &&
+                zip_match_length <= zip_prev_length) {
+                var flush; // set if current block must be flushed
+                flush = zip_ct_tally(zip_strstart - 1 - zip_prev_match,
+                    zip_prev_length - MIN_MATCH);
+
+                /* Insert in hash table all strings up to the end of the match.
+                 * strstart-1 and strstart are already inserted.
+                 */
+                zip_lookahead -= zip_prev_length - 1;
+                zip_prev_length -= 2;
+                do {
+                    zip_strstart++;
+                    zip_INSERT_STRING();
+                    /* strstart never exceeds WSIZE-MAX_MATCH, so there are
+                     * always MIN_MATCH bytes ahead. If lookahead < MIN_MATCH
+                     * these bytes are garbage, but it does not matter since the
+                     * next lookahead bytes will always be emitted as literals.
+                     */
+                } while (--zip_prev_length != 0);
+                zip_match_available = 0;
+                zip_match_length = MIN_MATCH - 1;
+                zip_strstart++;
+                if (flush) {
+                    zip_flush_block(0);
+                    zip_block_start = zip_strstart;
+                }
+            } else if (zip_match_available != 0) {
+                /* If there was no match at the previous position, output a
+                 * single literal. If there was a match but the current match
+                 * is longer, truncate the previous match to a single literal.
+                 */
+                if (zip_ct_tally(0, zip_window[zip_strstart - 1] & 0xff)) {
+                    zip_flush_block(0);
+                    zip_block_start = zip_strstart;
+                }
+                zip_strstart++;
+                zip_lookahead--;
+            } else {
+                /* There is no previous match to compare with, wait for
+                 * the next step to decide.
+                 */
+                zip_match_available = 1;
+                zip_strstart++;
+                zip_lookahead--;
+            }
+
+            /* Make sure that we always have enough lookahead, except
+             * at the end of the input file. We need MAX_MATCH bytes
+             * for the next match, plus MIN_MATCH bytes to insert the
+             * string following the next match.
+             */
+            while (zip_lookahead < zip_MIN_LOOKAHEAD && !zip_eofile)
+                zip_fill_window();
+        }
+    };
+
+    var zip_init_deflate = function () {
+        if (zip_eofile)
+            return;
+        zip_bi_buf = 0;
+        zip_bi_valid = 0;
+        zip_ct_init();
+        zip_lm_init();
+
+        zip_qhead = null;
+        zip_outcnt = 0;
+        zip_outoff = 0;
+        zip_match_available = 0;
+
+        if (zip_compr_level <= 3) {
+            zip_prev_length = MIN_MATCH - 1;
+            zip_match_length = 0;
+        }
+        else {
+            zip_match_length = MIN_MATCH - 1;
+            zip_match_available = 0;
+            zip_match_available = 0;
+        }
+
+        zip_complete = false;
+    };
+
+    /* ==========================================================================
+     * Same as above, but achieves better compression. We use a lazy
+     * evaluation for matches: a match is finally adopted only if there is
+     * no better match at the next window position.
+     */
+    var zip_deflate_internal = function (buff, off, buff_size) {
+        var n;
+
+        if (!zip_initflag) {
+            zip_init_deflate();
+            zip_initflag = true;
+            if (zip_lookahead == 0) { // empty
+                zip_complete = true;
+                return 0;
+            }
+        }
+
+        if ((n = zip_qcopy(buff, off, buff_size)) == buff_size)
+            return buff_size;
+
+        if (zip_complete)
+            return n;
+
+        if (zip_compr_level <= 3) // optimized for speed
+            zip_deflate_fast();
+        else
+            zip_deflate_better();
+        if (zip_lookahead == 0) {
+            if (zip_match_available != 0)
+                zip_ct_tally(0, zip_window[zip_strstart - 1] & 0xff);
+            zip_flush_block(1);
+            zip_complete = true;
+        }
+        return n + zip_qcopy(buff, n + off, buff_size - n);
+    };
+
+    var zip_qcopy = function (buff, off, buff_size) {
+        var n, i, j;
+
+        n = 0;
+        while (zip_qhead != null && n < buff_size) {
+            i = buff_size - n;
+            if (i > zip_qhead.len)
+                i = zip_qhead.len;
+            for (j = 0; j < i; j++)
+                buff[off + n + j] = zip_qhead.ptr[zip_qhead.off + j];
+
+            zip_qhead.off += i;
+            zip_qhead.len -= i;
+            n += i;
+            if (zip_qhead.len == 0) {
+                var p;
+                p = zip_qhead;
+                zip_qhead = zip_qhead.next;
+                zip_reuse_queue(p);
+            }
+        }
+
+        if (n == buff_size)
+            return n;
+
+        if (zip_outoff < zip_outcnt) {
+            i = buff_size - n;
+            if (i > zip_outcnt - zip_outoff)
+                i = zip_outcnt - zip_outoff;
+            // System.arraycopy(outbuf, outoff, buff, off + n, i);
+            for (j = 0; j < i; j++)
+                buff[off + n + j] = zip_outbuf[zip_outoff + j];
+            zip_outoff += i;
+            n += i;
+            if (zip_outcnt == zip_outoff)
+                zip_outcnt = zip_outoff = 0;
+        }
+        return n;
+    };
+
+    /* ==========================================================================
+     * Allocate the match buffer, initialize the various tables and save the
+     * location of the internal file attribute (ascii/binary) and method
+     * (DEFLATE/STORE).
+     */
+    var zip_ct_init = function () {
+        var n;	// iterates over tree elements
+        var bits;	// bit counter
+        var length;	// length value
+        var code;	// code value
+        var dist;	// distance index
+
+        if (zip_static_dtree[0].dl != 0) return; // ct_init already called
+
+        zip_l_desc.dyn_tree = zip_dyn_ltree;
+        zip_l_desc.static_tree = zip_static_ltree;
+        zip_l_desc.extra_bits = zip_extra_lbits;
+        zip_l_desc.extra_base = zip_LITERALS + 1;
+        zip_l_desc.elems = zip_L_CODES;
+        zip_l_desc.max_length = zip_MAX_BITS;
+        zip_l_desc.max_code = 0;
+
+        zip_d_desc.dyn_tree = zip_dyn_dtree;
+        zip_d_desc.static_tree = zip_static_dtree;
+        zip_d_desc.extra_bits = zip_extra_dbits;
+        zip_d_desc.extra_base = 0;
+        zip_d_desc.elems = zip_D_CODES;
+        zip_d_desc.max_length = zip_MAX_BITS;
+        zip_d_desc.max_code = 0;
+
+        zip_bl_desc.dyn_tree = zip_bl_tree;
+        zip_bl_desc.static_tree = null;
+        zip_bl_desc.extra_bits = zip_extra_blbits;
+        zip_bl_desc.extra_base = 0;
+        zip_bl_desc.elems = zip_BL_CODES;
+        zip_bl_desc.max_length = zip_MAX_BL_BITS;
+        zip_bl_desc.max_code = 0;
+
+        // Initialize the mapping length (0..255) -> length code (0..28)
+        length = 0;
+        for (code = 0; code < zip_LENGTH_CODES - 1; code++) {
+            zip_base_length[code] = length;
+            for (n = 0; n < (1 << zip_extra_lbits[code]); n++)
+                zip_length_code[length++] = code;
+        }
+        /* Note that the length 255 (match length 258) can be represented
+         * in two different ways: code 284 + 5 bits or code 285, so we
+         * overwrite length_code[255] to use the best encoding:
+         */
+        zip_length_code[length - 1] = code;
+
+        /* Initialize the mapping dist (0..32K) -> dist code (0..29) */
+        dist = 0;
+        for (code = 0; code < 16; code++) {
+            zip_base_dist[code] = dist;
+            for (n = 0; n < (1 << zip_extra_dbits[code]); n++) {
+                zip_dist_code[dist++] = code;
+            }
+        }
+        dist >>= 7; // from now on, all distances are divided by 128
+        for (; code < zip_D_CODES; code++) {
+            zip_base_dist[code] = dist << 7;
+            for (n = 0; n < (1 << (zip_extra_dbits[code] - 7)); n++)
+                zip_dist_code[256 + dist++] = code;
+        }
+        // Construct the codes of the static literal tree
+        for (bits = 0; bits <= zip_MAX_BITS; bits++)
+            zip_bl_count[bits] = 0;
+        n = 0;
+        while (n <= 143) {
+            zip_static_ltree[n++].dl = 8;
+            zip_bl_count[8]++;
+        }
+        while (n <= 255) {
+            zip_static_ltree[n++].dl = 9;
+            zip_bl_count[9]++;
+        }
+        while (n <= 279) {
+            zip_static_ltree[n++].dl = 7;
+            zip_bl_count[7]++;
+        }
+        while (n <= 287) {
+            zip_static_ltree[n++].dl = 8;
+            zip_bl_count[8]++;
+        }
+        /* Codes 286 and 287 do not exist, but we must include them in the
+         * tree construction to get a canonical Huffman tree (longest code
+         * all ones)
+         */
+        zip_gen_codes(zip_static_ltree, zip_L_CODES + 1);
+
+        /* The static distance tree is trivial: */
+        for (n = 0; n < zip_D_CODES; n++) {
+            zip_static_dtree[n].dl = 5;
+            zip_static_dtree[n].fc = zip_bi_reverse(n, 5);
+        }
+
+        // Initialize the first block of the first file:
+        zip_init_block();
+    };
+
+    /* ==========================================================================
+     * Initialize a new block.
+     */
+    var zip_init_block = function () {
+        var n; // iterates over tree elements
+
+        // Initialize the trees.
+        for (n = 0; n < zip_L_CODES; n++) zip_dyn_ltree[n].fc = 0;
+        for (n = 0; n < zip_D_CODES; n++) zip_dyn_dtree[n].fc = 0;
+        for (n = 0; n < zip_BL_CODES; n++) zip_bl_tree[n].fc = 0;
+
+        zip_dyn_ltree[zip_END_BLOCK].fc = 1;
+        zip_opt_len = zip_static_len = 0;
+        zip_last_lit = zip_last_dist = zip_last_flags = 0;
+        zip_flags = 0;
+        zip_flag_bit = 1;
+    };
+
+    /* ==========================================================================
+     * Restore the heap property by moving down the tree starting at node k,
+     * exchanging a node with the smallest of its two sons if necessary, stopping
+     * when the heap property is re-established (each father smaller than its
+     * two sons).
+     */
+    var zip_pqdownheap = function (tree,	// the tree to restore
+                                   k) {	// node to move down
+        var v = zip_heap[k];
+        var j = k << 1;	// left son of k
+
+        while (j <= zip_heap_len) {
+            // Set j to the smallest of the two sons:
+            if (j < zip_heap_len &&
+                zip_SMALLER(tree, zip_heap[j + 1], zip_heap[j]))
+                j++;
+
+            // Exit if v is smaller than both sons
+            if (zip_SMALLER(tree, v, zip_heap[j]))
+                break;
+
+            // Exchange v with the smallest son
+            zip_heap[k] = zip_heap[j];
+            k = j;
+
+            // And continue down the tree, setting j to the left son of k
+            j <<= 1;
+        }
+        zip_heap[k] = v;
+    };
+
+    /* ==========================================================================
+     * Compute the optimal bit lengths for a tree and update the total bit length
+     * for the current block.
+     * IN assertion: the fields freq and dad are set, heap[heap_max] and
+     *    above are the tree nodes sorted by increasing frequency.
+     * OUT assertions: the field len is set to the optimal bit length, the
+     *     array bl_count contains the frequencies for each bit length.
+     *     The length opt_len is updated; static_len is also updated if stree is
+     *     not null.
+     */
+    var zip_gen_bitlen = function (desc) { // the tree descriptor
+        var tree = desc.dyn_tree;
+        var extra = desc.extra_bits;
+        var base = desc.extra_base;
+        var max_code = desc.max_code;
+        var max_length = desc.max_length;
+        var stree = desc.static_tree;
+        var h;		// heap index
+        var n, m;		// iterate over the tree elements
+        var bits;		// bit length
+        var xbits;		// extra bits
+        var f;		// frequency
+        var overflow = 0;	// number of elements with bit length too large
+
+        for (bits = 0; bits <= zip_MAX_BITS; bits++)
+            zip_bl_count[bits] = 0;
+
+        /* In a first pass, compute the optimal bit lengths (which may
+         * overflow in the case of the bit length tree).
+         */
+        tree[zip_heap[zip_heap_max]].dl = 0; // root of the heap
+
+        for (h = zip_heap_max + 1; h < zip_HEAP_SIZE; h++) {
+            n = zip_heap[h];
+            bits = tree[tree[n].dl].dl + 1;
+            if (bits > max_length) {
+                bits = max_length;
+                overflow++;
+            }
+            tree[n].dl = bits;
+            // We overwrite tree[n].dl which is no longer needed
+
+            if (n > max_code)
+                continue; // not a leaf node
+
+            zip_bl_count[bits]++;
+            xbits = 0;
+            if (n >= base)
+                xbits = extra[n - base];
+            f = tree[n].fc;
+            zip_opt_len += f * (bits + xbits);
+            if (stree != null)
+                zip_static_len += f * (stree[n].dl + xbits);
+        }
+        if (overflow == 0)
+            return;
+
+        // This happens for example on obj2 and pic of the Calgary corpus
+
+        // Find the first bit length which could increase:
+        do {
+            bits = max_length - 1;
+            while (zip_bl_count[bits] == 0)
+                bits--;
+            zip_bl_count[bits]--;		// move one leaf down the tree
+            zip_bl_count[bits + 1] += 2;	// move one overflow item as its brother
+            zip_bl_count[max_length]--;
+            /* The brother of the overflow item also moves one step up,
+             * but this does not affect bl_count[max_length]
+             */
+            overflow -= 2;
+        } while (overflow > 0);
+
+        /* Now recompute all bit lengths, scanning in increasing frequency.
+         * h is still equal to HEAP_SIZE. (It is simpler to reconstruct all
+         * lengths instead of fixing only the wrong ones. This idea is taken
+         * from 'ar' written by Haruhiko Okumura.)
+         */
+        for (bits = max_length; bits != 0; bits--) {
+            n = zip_bl_count[bits];
+            while (n != 0) {
+                m = zip_heap[--h];
+                if (m > max_code)
+                    continue;
+                if (tree[m].dl != bits) {
+                    zip_opt_len += (bits - tree[m].dl) * tree[m].fc;
+                    tree[m].fc = bits;
+                }
+                n--;
+            }
+        }
+    };
+
+    /* ==========================================================================
+     * Generate the codes for a given tree and bit counts (which need not be
+     * optimal).
+     * IN assertion: the array bl_count contains the bit length statistics for
+     * the given tree and the field len is set for all tree elements.
+     * OUT assertion: the field code is set for all tree elements of non
+     *     zero code length.
+     */
+    var zip_gen_codes = function (tree,	// the tree to decorate
+                                  max_code) {	// largest code with non zero frequency
+        var next_code = new Array(zip_MAX_BITS + 1); // next code value for each bit length
+        var code = 0;		// running code value
+        var bits;			// bit index
+        var n;			// code index
+
+        /* The distribution counts are first used to generate the code values
+         * without bit reversal.
+         */
+        for (bits = 1; bits <= zip_MAX_BITS; bits++) {
+            code = ((code + zip_bl_count[bits - 1]) << 1);
+            next_code[bits] = code;
+        }
+
+        /* Check that the bit counts in bl_count are consistent. The last code
+         * must be all ones.
+         */
+        for (n = 0; n <= max_code; n++) {
+            var len = tree[n].dl;
+            if (len == 0)
+                continue;
+            // Now reverse the bits
+            tree[n].fc = zip_bi_reverse(next_code[len]++, len);
+        }
+    };
+
+    /* ==========================================================================
+     * Construct one Huffman tree and assigns the code bit strings and lengths.
+     * Update the total bit length for the current block.
+     * IN assertion: the field freq is set for all tree elements.
+     * OUT assertions: the fields len and code are set to the optimal bit length
+     *     and corresponding code. The length opt_len is updated; static_len is
+     *     also updated if stree is not null. The field max_code is set.
+     */
+    var zip_build_tree = function (desc) { // the tree descriptor
+        var tree = desc.dyn_tree;
+        var stree = desc.static_tree;
+        var elems = desc.elems;
+        var n, m;		// iterate over heap elements
+        var max_code = -1;	// largest code with non zero frequency
+        var node = elems;	// next internal node of the tree
+
+        /* Construct the initial heap, with least frequent element in
+         * heap[SMALLEST]. The sons of heap[n] are heap[2*n] and heap[2*n+1].
+         * heap[0] is not used.
+         */
+        zip_heap_len = 0;
+        zip_heap_max = zip_HEAP_SIZE;
+
+        for (n = 0; n < elems; n++) {
+            if (tree[n].fc != 0) {
+                zip_heap[++zip_heap_len] = max_code = n;
+                zip_depth[n] = 0;
+            } else
+                tree[n].dl = 0;
+        }
+
+        /* The pkzip format requires that at least one distance code exists,
+         * and that at least one bit should be sent even if there is only one
+         * possible code. So to avoid special checks later on we force at least
+         * two codes of non zero frequency.
+         */
+        while (zip_heap_len < 2) {
+            var xnew = zip_heap[++zip_heap_len] = (max_code < 2 ? ++max_code : 0);
+            tree[xnew].fc = 1;
+            zip_depth[xnew] = 0;
+            zip_opt_len--;
+            if (stree != null)
+                zip_static_len -= stree[xnew].dl;
+            // new is 0 or 1 so it does not have extra bits
+        }
+        desc.max_code = max_code;
+
+        /* The elements heap[heap_len/2+1 .. heap_len] are leaves of the tree,
+         * establish sub-heaps of increasing lengths:
+         */
+        for (n = zip_heap_len >> 1; n >= 1; n--)
+            zip_pqdownheap(tree, n);
+
+        /* Construct the Huffman tree by repeatedly combining the least two
+         * frequent nodes.
+         */
+        do {
+            n = zip_heap[zip_SMALLEST];
+            zip_heap[zip_SMALLEST] = zip_heap[zip_heap_len--];
+            zip_pqdownheap(tree, zip_SMALLEST);
+
+            m = zip_heap[zip_SMALLEST];  // m = node of next least frequency
+
+            // keep the nodes sorted by frequency
+            zip_heap[--zip_heap_max] = n;
+            zip_heap[--zip_heap_max] = m;
+
+            // Create a new node father of n and m
+            tree[node].fc = tree[n].fc + tree[m].fc;
+            if (zip_depth[n] > zip_depth[m] + 1)
+                zip_depth[node] = zip_depth[n];
+            else
+                zip_depth[node] = zip_depth[m] + 1;
+            tree[n].dl = tree[m].dl = node;
+
+            // and insert the new node in the heap
+            zip_heap[zip_SMALLEST] = node++;
+            zip_pqdownheap(tree, zip_SMALLEST);
+
+        } while (zip_heap_len >= 2);
+
+        zip_heap[--zip_heap_max] = zip_heap[zip_SMALLEST];
+
+        /* At this point, the fields freq and dad are set. We can now
+         * generate the bit lengths.
+         */
+        zip_gen_bitlen(desc);
+
+        // The field len is now set, we can generate the bit codes
+        zip_gen_codes(tree, max_code);
+    };
+
+    /* ==========================================================================
+     * Scan a literal or distance tree to determine the frequencies of the codes
+     * in the bit length tree. Updates opt_len to take into account the repeat
+     * counts. (The contribution of the bit length codes will be added later
+     * during the construction of bl_tree.)
+     */
+    var zip_scan_tree = function (tree,// the tree to be scanned
+                                  max_code) {  // and its largest code of non zero frequency
+        var n;			// iterates over all tree elements
+        var prevlen = -1;		// last emitted length
+        var curlen;			// length of current code
+        var nextlen = tree[0].dl;	// length of next code
+        var count = 0;		// repeat count of the current code
+        var max_count = 7;		// max repeat count
+        var min_count = 4;		// min repeat count
+
+        if (nextlen == 0) {
+            max_count = 138;
+            min_count = 3;
+        }
+        tree[max_code + 1].dl = 0xffff; // guard
+
+        for (n = 0; n <= max_code; n++) {
+            curlen = nextlen;
+            nextlen = tree[n + 1].dl;
+            if (++count < max_count && curlen == nextlen)
+                continue;
+            else if (count < min_count)
+                zip_bl_tree[curlen].fc += count;
+            else if (curlen != 0) {
+                if (curlen != prevlen)
+                    zip_bl_tree[curlen].fc++;
+                zip_bl_tree[zip_REP_3_6].fc++;
+            } else if (count <= 10)
+                zip_bl_tree[zip_REPZ_3_10].fc++;
+            else
+                zip_bl_tree[zip_REPZ_11_138].fc++;
+            count = 0;
+            prevlen = curlen;
+            if (nextlen == 0) {
+                max_count = 138;
+                min_count = 3;
+            } else if (curlen == nextlen) {
+                max_count = 6;
+                min_count = 3;
+            } else {
+                max_count = 7;
+                min_count = 4;
+            }
+        }
+    };
+
+    /* ==========================================================================
+     * Send a literal or distance tree in compressed form, using the codes in
+     * bl_tree.
+     */
+    var zip_send_tree = function (tree, // the tree to be scanned
+                                  max_code) { // and its largest code of non zero frequency
+        var n;			// iterates over all tree elements
+        var prevlen = -1;		// last emitted length
+        var curlen;			// length of current code
+        var nextlen = tree[0].dl;	// length of next code
+        var count = 0;		// repeat count of the current code
+        var max_count = 7;		// max repeat count
+        var min_count = 4;		// min repeat count
+
+        /* tree[max_code+1].dl = -1; */
+        /* guard already set */
+        if (nextlen == 0) {
+            max_count = 138;
+            min_count = 3;
+        }
+
+        for (n = 0; n <= max_code; n++) {
+            curlen = nextlen;
+            nextlen = tree[n + 1].dl;
+            if (++count < max_count && curlen == nextlen) {
+                continue;
+            } else if (count < min_count) {
+                do {
+                    zip_SEND_CODE(curlen, zip_bl_tree);
+                } while (--count != 0);
+            } else if (curlen != 0) {
+                if (curlen != prevlen) {
+                    zip_SEND_CODE(curlen, zip_bl_tree);
+                    count--;
+                }
+                // Assert(count >= 3 && count <= 6, " 3_6?");
+                zip_SEND_CODE(zip_REP_3_6, zip_bl_tree);
+                zip_send_bits(count - 3, 2);
+            } else if (count <= 10) {
+                zip_SEND_CODE(zip_REPZ_3_10, zip_bl_tree);
+                zip_send_bits(count - 3, 3);
+            } else {
+                zip_SEND_CODE(zip_REPZ_11_138, zip_bl_tree);
+                zip_send_bits(count - 11, 7);
+            }
+            count = 0;
+            prevlen = curlen;
+            if (nextlen == 0) {
+                max_count = 138;
+                min_count = 3;
+            } else if (curlen == nextlen) {
+                max_count = 6;
+                min_count = 3;
+            } else {
+                max_count = 7;
+                min_count = 4;
+            }
+        }
+    };
+
+    /* ==========================================================================
+     * Construct the Huffman tree for the bit lengths and return the index in
+     * bl_order of the last bit length code to send.
+     */
+    var zip_build_bl_tree = function () {
+        var max_blindex;  // index of last bit length code of non zero freq
+
+        // Determine the bit length frequencies for literal and distance trees
+        zip_scan_tree(zip_dyn_ltree, zip_l_desc.max_code);
+        zip_scan_tree(zip_dyn_dtree, zip_d_desc.max_code);
+
+        // Build the bit length tree:
+        zip_build_tree(zip_bl_desc);
+        /* opt_len now includes the length of the tree representations, except
+         * the lengths of the bit lengths codes and the 5+5+4 bits for the counts.
+         */
+
+        /* Determine the number of bit length codes to send. The pkzip format
+         * requires that at least 4 bit length codes be sent. (appnote.txt says
+         * 3 but the actual value used is 4.)
+         */
+        for (max_blindex = zip_BL_CODES - 1; max_blindex >= 3; max_blindex--) {
+            if (zip_bl_tree[zip_bl_order[max_blindex]].dl != 0) break;
+        }
+        /* Update opt_len to include the bit length tree and counts */
+        zip_opt_len += 3 * (max_blindex + 1) + 5 + 5 + 4;
+        return max_blindex;
+    };
+
+    /* ==========================================================================
+     * Send the header for a block using dynamic Huffman trees: the counts, the
+     * lengths of the bit length codes, the literal tree and the distance tree.
+     * IN assertion: lcodes >= 257, dcodes >= 1, blcodes >= 4.
+     */
+    var zip_send_all_trees = function (lcodes, dcodes, blcodes) { // number of codes for each tree
+        var rank; // index in bl_order
+        zip_send_bits(lcodes - 257, 5); // not +255 as stated in appnote.txt
+        zip_send_bits(dcodes - 1, 5);
+        zip_send_bits(blcodes - 4, 4); // not -3 as stated in appnote.txt
+        for (rank = 0; rank < blcodes; rank++) {
+            zip_send_bits(zip_bl_tree[zip_bl_order[rank]].dl, 3);
+        }
+
+        // send the literal tree
+        zip_send_tree(zip_dyn_ltree, lcodes - 1);
+
+        // send the distance tree
+        zip_send_tree(zip_dyn_dtree, dcodes - 1);
+    };
+
+    /* ==========================================================================
+     * Determine the best encoding for the current block: dynamic trees, static
+     * trees or store, and output the encoded block to the zip file.
+     */
+    var zip_flush_block = function (eof) { // true if this is the last block for a file
+        var opt_lenb, static_lenb; // opt_len and static_len in bytes
+        var max_blindex;	// index of last bit length code of non zero freq
+        var stored_len;	// length of input block
+
+        stored_len = zip_strstart - zip_block_start;
+        zip_flag_buf[zip_last_flags] = zip_flags; // Save the flags for the last 8 items
+
+        // Construct the literal and distance trees
+        zip_build_tree(zip_l_desc);
+        zip_build_tree(zip_d_desc);
+        /* At this point, opt_len and static_len are the total bit lengths of
+         * the compressed block data, excluding the tree representations.
+         */
+
+        /* Build the bit length tree for the above two trees, and get the index
+         * in bl_order of the last bit length code to send.
+         */
+        max_blindex = zip_build_bl_tree();
+
+        // Determine the best encoding. Compute first the block length in bytes
+        opt_lenb = (zip_opt_len + 3 + 7) >> 3;
+        static_lenb = (zip_static_len + 3 + 7) >> 3;
+        if (static_lenb <= opt_lenb)
+            opt_lenb = static_lenb;
+        if (stored_len + 4 <= opt_lenb // 4: two words for the lengths
+            && zip_block_start >= 0) {
+            var i;
+
+            /* The test buf != NULL is only necessary if LIT_BUFSIZE > WSIZE.
+             * Otherwise we can't have processed more than WSIZE input bytes since
+             * the last block flush, because compression would have been
+             * successful. If LIT_BUFSIZE <= WSIZE, it is never too late to
+             * transform a block into a stored block.
+             */
+            zip_send_bits((zip_STORED_BLOCK << 1) + eof, 3);
+            /* send block type */
+            zip_bi_windup();
+            /* align on byte boundary */
+            zip_put_short(stored_len);
+            zip_put_short(~stored_len);
+
+            // copy block
+            for (i = 0; i < stored_len; i++)
+                zip_put_byte(zip_window[zip_block_start + i]);
+
+        } else if (static_lenb == opt_lenb) {
+            zip_send_bits((zip_STATIC_TREES << 1) + eof, 3);
+            zip_compress_block(zip_static_ltree, zip_static_dtree);
+        } else {
+            zip_send_bits((zip_DYN_TREES << 1) + eof, 3);
+            zip_send_all_trees(zip_l_desc.max_code + 1,
+                zip_d_desc.max_code + 1,
+                max_blindex + 1);
+            zip_compress_block(zip_dyn_ltree, zip_dyn_dtree);
+        }
+
+        zip_init_block();
+
+        if (eof != 0)
+            zip_bi_windup();
+    };
+
+    /* ==========================================================================
+     * Save the match info and tally the frequency counts. Return true if
+     * the current block must be flushed.
+     */
+    var zip_ct_tally = function (dist, // distance of matched string
+                                 lc) { // match length-MIN_MATCH or unmatched char (if dist==0)
+        zip_l_buf[zip_last_lit++] = lc;
+        if (dist == 0) {
+            // lc is the unmatched char
+            zip_dyn_ltree[lc].fc++;
+        } else {
+            // Here, lc is the match length - MIN_MATCH
+            dist--;		    // dist = match distance - 1
+            zip_dyn_ltree[zip_length_code[lc] + zip_LITERALS + 1].fc++;
+            zip_dyn_dtree[zip_D_CODE(dist)].fc++;
+
+            zip_d_buf[zip_last_dist++] = dist;
+            zip_flags |= zip_flag_bit;
+        }
+        zip_flag_bit <<= 1;
+
+        // Output the flags if they fill a byte
+        if ((zip_last_lit & 7) == 0) {
+            zip_flag_buf[zip_last_flags++] = zip_flags;
+            zip_flags = 0;
+            zip_flag_bit = 1;
+        }
+        // Try to guess if it is profitable to stop the current block here
+        if (zip_compr_level > 2 && (zip_last_lit & 0xfff) == 0) {
+            // Compute an upper bound for the compressed length
+            var out_length = zip_last_lit * 8;
+            var in_length = zip_strstart - zip_block_start;
+            var dcode;
+
+            for (dcode = 0; dcode < zip_D_CODES; dcode++) {
+                out_length += zip_dyn_dtree[dcode].fc * (5 + zip_extra_dbits[dcode]);
+            }
+            out_length >>= 3;
+            if (zip_last_dist < parseInt(zip_last_lit / 2) &&
+                out_length < parseInt(in_length / 2))
+                return true;
+        }
+        return (zip_last_lit == LIT_BUFSIZE - 1 ||
+            zip_last_dist == zip_DIST_BUFSIZE);
+        /* We avoid equality with LIT_BUFSIZE because of wraparound at 64K
+         * on 16 bit machines and because stored blocks are restricted to
+         * 64K-1 bytes.
+         */
+    };
+
+    /* ==========================================================================
+     * Send the block data compressed using the given Huffman trees
+     */
+    var zip_compress_block = function (ltree,	// literal tree
+                                       dtree) {	// distance tree
+        var dist;		// distance of matched string
+        var lc;		// match length or unmatched char (if dist == 0)
+        var lx = 0;		// running index in l_buf
+        var dx = 0;		// running index in d_buf
+        var fx = 0;		// running index in flag_buf
+        var flag = 0;	// current flags
+        var code;		// the code to send
+        var extra;		// number of extra bits to send
+
+        if (zip_last_lit != 0) do {
+            if ((lx & 7) == 0)
+                flag = zip_flag_buf[fx++];
+            lc = zip_l_buf[lx++] & 0xff;
+            if ((flag & 1) == 0) {
+                zip_SEND_CODE(lc, ltree);
+                /* send a literal byte */
+            } else {
+                // Here, lc is the match length - MIN_MATCH
+                code = zip_length_code[lc];
+                zip_SEND_CODE(code + zip_LITERALS + 1, ltree); // send the length code
+                extra = zip_extra_lbits[code];
+                if (extra != 0) {
+                    lc -= zip_base_length[code];
+                    zip_send_bits(lc, extra); // send the extra length bits
+                }
+                dist = zip_d_buf[dx++];
+                // Here, dist is the match distance - 1
+                code = zip_D_CODE(dist);
+                zip_SEND_CODE(code, dtree);	  // send the distance code
+                extra = zip_extra_dbits[code];
+                if (extra != 0) {
+                    dist -= zip_base_dist[code];
+                    zip_send_bits(dist, extra);   // send the extra distance bits
+                }
+            } // literal or match pair ?
+            flag >>= 1;
+        } while (lx < zip_last_lit);
+
+        zip_SEND_CODE(zip_END_BLOCK, ltree);
+    };
+
+    /* ==========================================================================
+     * Send a value on a given number of bits.
+     * IN assertion: length <= 16 and value fits in length bits.
+     */
+    var zip_Buf_size = 16; // bit size of bi_buf
+    var zip_send_bits = function (value,	// value to send
+                                  length) {	// number of bits
+        /* If not enough room in bi_buf, use (valid) bits from bi_buf and
+         * (16 - bi_valid) bits from value, leaving (width - (16-bi_valid))
+         * unused bits in value.
+         */
+        if (zip_bi_valid > zip_Buf_size - length) {
+            zip_bi_buf |= (value << zip_bi_valid);
+            zip_put_short(zip_bi_buf);
+            zip_bi_buf = (value >> (zip_Buf_size - zip_bi_valid));
+            zip_bi_valid += length - zip_Buf_size;
+        } else {
+            zip_bi_buf |= value << zip_bi_valid;
+            zip_bi_valid += length;
+        }
+    };
+
+    /* ==========================================================================
+     * Reverse the first len bits of a code, using straightforward code (a faster
+     * method would use a table)
+     * IN assertion: 1 <= len <= 15
+     */
+    var zip_bi_reverse = function (code,	// the value to invert
+                                   len) {	// its bit length
+        var res = 0;
+        do {
+            res |= code & 1;
+            code >>= 1;
+            res <<= 1;
+        } while (--len > 0);
+        return res >> 1;
+    };
+
+    /* ==========================================================================
+     * Write out any remaining bits in an incomplete byte.
+     */
+    var zip_bi_windup = function () {
+        if (zip_bi_valid > 8) {
+            zip_put_short(zip_bi_buf);
+        } else if (zip_bi_valid > 0) {
+            zip_put_byte(zip_bi_buf);
+        }
+        zip_bi_buf = 0;
+        zip_bi_valid = 0;
+    };
+
+    var zip_qoutbuf = function () {
+        if (zip_outcnt != 0) {
+            var q, i;
+            q = zip_new_queue();
+            if (zip_qhead == null)
+                zip_qhead = zip_qtail = q;
+            else
+                zip_qtail = zip_qtail.next = q;
+            q.len = zip_outcnt - zip_outoff;
+            for (i = 0; i < q.len; i++)
+                q.ptr[i] = zip_outbuf[zip_outoff + i];
+            zip_outcnt = zip_outoff = 0;
+        }
+    };
+
+    function deflate(buffData, level) {
+        zip_deflate_data = buffData;
+        zip_deflate_pos = 0;
+        zip_deflate_start(level);
+
+        var buff = new Array(1024),
+            pages = [],
+            totalSize = 0,
+            i;
+
+        for (i = 0; i < 1024; i++) buff[i] = 0;
+        while ((i = zip_deflate_internal(buff, 0, buff.length)) > 0) {
+            var buf = new Buffer(buff.slice(0, i));
+            pages.push(buf);
+            totalSize += buf.length;
+        }
+
+        if (pages.length == 1) {
+            return pages[0];
+        }
+
+        var result = new Buffer(totalSize),
+            index = 0;
+
+        for (i = 0; i < pages.length; i++) {
+            pages[i].copy(result, index);
+            index = index + pages[i].length
+        }
+
+        return result;
+    }
+
+    return {
+        deflate: function () {
+            return deflate(inbuf, 8);
+        }
+    }
+}
+
+module.exports = function (/*Buffer*/inbuf) {
+
+    var zlib = __webpack_require__(7);
+
+    return {
+        deflate: function () {
+            return new JSDeflater(inbuf).deflate();
+        },
+
+        deflateAsync: function (/*Function*/callback) {
+            var tmp = zlib.createDeflateRaw({chunkSize:(parseInt(inbuf.length / 1024) + 1)*1024}),
+                parts = [], total = 0;
+            tmp.on('data', function(data) {
+                parts.push(data);
+                total += data.length;
+            });
+            tmp.on('end', function() {
+                var buf = new Buffer(total), written = 0;
+                buf.fill(0);
+
+                for (var i = 0; i < parts.length; i++) {
+                    var part = parts[i];
+                    part.copy(buf, written);
+                    written += part.length;
+                }
+                callback && callback(buf);
+            });
+            tmp.end(inbuf);
+        }
+    }
+};
+
+
+/***/ }),
+/* 20 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var Buffer = __webpack_require__(21).Buffer;
+
+function JSInflater(/*Buffer*/input) {
+
+    var WSIZE = 0x8000,
+        slide = new Buffer(0x10000),
+        windowPos = 0,
+        fixedTableList = null,
+        fixedTableDist,
+        fixedLookup,
+        bitBuf = 0,
+        bitLen = 0,
+        method = -1,
+        eof = false,
+        copyLen = 0,
+        copyDist = 0,
+        tblList, tblDist, bitList, bitdist,
+
+        inputPosition = 0,
+
+        MASK_BITS = [0x0000, 0x0001, 0x0003, 0x0007, 0x000f, 0x001f, 0x003f, 0x007f, 0x00ff, 0x01ff, 0x03ff, 0x07ff, 0x0fff, 0x1fff, 0x3fff, 0x7fff, 0xffff],
+        LENS = [3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 15, 17, 19, 23, 27, 31, 35, 43, 51, 59, 67, 83, 99, 115, 131, 163, 195, 227, 258, 0, 0],
+        LEXT = [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 0, 99, 99],
+        DISTS = [1, 2, 3, 4, 5, 7, 9, 13, 17, 25, 33, 49, 65, 97, 129, 193, 257, 385, 513, 769, 1025, 1537, 2049, 3073, 4097, 6145, 8193, 12289, 16385, 24577],
+        DEXT = [0, 0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12, 12, 13, 13],
+        BITORDER = [16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15];
+
+    function HuffTable(clen, cnum, cval, blist, elist, lookupm) {
+
+        this.status = 0;
+        this.root = null;
+        this.maxbit = 0;
+
+        var el, f, tail,
+            offsets = [],
+            countTbl = [],
+            sTbl = [],
+            values = [],
+            tentry = {extra: 0, bitcnt: 0, lbase: 0, next: null};
+
+        tail = this.root = null;
+        for(var i = 0; i < 0x11; i++)  { countTbl[i] = 0; sTbl[i] = 0; offsets[i] = 0; }
+        for(i = 0; i < 0x120; i++) values[i] = 0;
+
+        el = cnum > 256 ? clen[256] : 16;
+
+        var pidx = -1;
+        while (++pidx < cnum) countTbl[clen[pidx]]++;
+
+        if(countTbl[0] == cnum) return;
+
+        for(var j = 1; j <= 16; j++) if(countTbl[j] != 0) break;
+        var bitLen = j;
+        for(i = 16; i != 0; i--) if(countTbl[i] != 0) break;
+        var maxLen = i;
+
+        lookupm < j && (lookupm = j);
+
+        var dCodes = 1 << j;
+        for(; j < i; j++, dCodes <<= 1)
+            if((dCodes -= countTbl[j]) < 0) {
+                this.status = 2;
+                this.maxbit = lookupm;
+                return;
+            }
+
+        if((dCodes -= countTbl[i]) < 0) {
+            this.status = 2;
+            this.maxbit = lookupm;
+            return;
+        }
+
+        countTbl[i] += dCodes;
+        offsets[1] = j = 0;
+        pidx = 1;
+        var xp = 2;
+        while(--i > 0) offsets[xp++] = (j += countTbl[pidx++]);
+        pidx = 0;
+        i = 0;
+        do {
+            (j = clen[pidx++]) && (values[offsets[j]++] = i);
+        } while(++i < cnum);
+        cnum = offsets[maxLen];
+        offsets[0] = i = 0;
+        pidx = 0;
+
+        var level = -1,
+            w = sTbl[0] = 0,
+            cnode = null,
+            tblCnt = 0,
+            tblStack = [];
+
+        for(; bitLen <= maxLen; bitLen++) {
+            var kccnt = countTbl[bitLen];
+            while(kccnt-- > 0) {
+                while(bitLen > w + sTbl[1 + level]) {
+                    w += sTbl[1 + level];
+                    level++;
+                    tblCnt = (tblCnt = maxLen - w) > lookupm ? lookupm : tblCnt;
+                    if((f = 1 << (j = bitLen - w)) > kccnt + 1) {
+                        f -= kccnt + 1;
+                        xp = bitLen;
+                        while(++j < tblCnt) {
+                            if((f <<= 1) <= countTbl[++xp]) break;
+                            f -= countTbl[xp];
+                        }
+                    }
+                    if(w + j > el && w < el) j = el - w;
+                    tblCnt = 1 << j;
+                    sTbl[1 + level] = j;
+                    cnode = [];
+                    while (cnode.length < tblCnt) cnode.push({extra: 0, bitcnt: 0, lbase: 0, next: null});
+                    if (tail == null) {
+                        tail = this.root = {next:null, list:null};
+                    } else {
+                        tail = tail.next = {next:null, list:null}
+                    }
+                    tail.next = null;
+                    tail.list = cnode;
+
+                    tblStack[level] = cnode;
+
+                    if(level > 0) {
+                        offsets[level] = i;
+                        tentry.bitcnt = sTbl[level];
+                        tentry.extra = 16 + j;
+                        tentry.next = cnode;
+                        j = (i & ((1 << w) - 1)) >> (w - sTbl[level]);
+
+                        tblStack[level-1][j].extra = tentry.extra;
+                        tblStack[level-1][j].bitcnt = tentry.bitcnt;
+                        tblStack[level-1][j].lbase = tentry.lbase;
+                        tblStack[level-1][j].next = tentry.next;
+                    }
+                }
+                tentry.bitcnt = bitLen - w;
+                if(pidx >= cnum)
+                    tentry.extra = 99;
+                else if(values[pidx] < cval) {
+                    tentry.extra = (values[pidx] < 256 ? 16 : 15);
+                    tentry.lbase = values[pidx++];
+                } else {
+                    tentry.extra = elist[values[pidx] - cval];
+                    tentry.lbase = blist[values[pidx++] - cval];
+                }
+
+                f = 1 << (bitLen - w);
+                for(j = i >> w; j < tblCnt; j += f) {
+                    cnode[j].extra = tentry.extra;
+                    cnode[j].bitcnt = tentry.bitcnt;
+                    cnode[j].lbase = tentry.lbase;
+                    cnode[j].next = tentry.next;
+                }
+                for(j = 1 << (bitLen - 1); (i & j) != 0; j >>= 1)
+                    i ^= j;
+                i ^= j;
+                while((i & ((1 << w) - 1)) != offsets[level]) {
+                    w -= sTbl[level];
+                    level--;
+                }
+            }
+        }
+
+        this.maxbit = sTbl[1];
+        this.status = ((dCodes != 0 && maxLen != 1) ? 1 : 0);
+    }
+
+    function addBits(n) {
+        while(bitLen < n) {
+            bitBuf |= input[inputPosition++] << bitLen;
+            bitLen += 8;
+        }
+        return bitBuf;
+    }
+
+    function cutBits(n) {
+        bitLen -= n;
+        return bitBuf >>= n;
+    }
+
+    function maskBits(n) {
+        while(bitLen < n) {
+            bitBuf |= input[inputPosition++] << bitLen;
+            bitLen += 8;
+        }
+        var res = bitBuf & MASK_BITS[n];
+        bitBuf >>= n;
+        bitLen -= n;
+        return res;
+    }
+
+    function codes(buff, off, size) {
+        var e, t;
+        if(size == 0) return 0;
+
+        var n = 0;
+        for(;;) {
+            t = tblList.list[addBits(bitList) & MASK_BITS[bitList]];
+            e = t.extra;
+            while(e > 16) {
+                if(e == 99) return -1;
+                cutBits(t.bitcnt);
+                e -= 16;
+                t = t.next[addBits(e) & MASK_BITS[e]];
+                e = t.extra;
+            }
+            cutBits(t.bitcnt);
+            if(e == 16) {
+                windowPos &= WSIZE - 1;
+                buff[off + n++] = slide[windowPos++] = t.lbase;
+                if(n == size) return size;
+                continue;
+            }
+            if(e == 15) break;
+
+            copyLen = t.lbase + maskBits(e);
+            t = tblDist.list[addBits(bitdist) & MASK_BITS[bitdist]];
+            e = t.extra;
+
+            while(e > 16) {
+                if(e == 99) return -1;
+                cutBits(t.bitcnt);
+                e -= 16;
+                t = t.next[addBits(e) & MASK_BITS[e]];
+                e = t.extra
+            }
+            cutBits(t.bitcnt);
+            copyDist = windowPos - t.lbase - maskBits(e);
+
+            while(copyLen > 0 && n < size) {
+                copyLen--;
+                copyDist &= WSIZE - 1;
+                windowPos &= WSIZE - 1;
+                buff[off + n++] = slide[windowPos++] = slide[copyDist++];
+            }
+
+            if(n == size) return size;
+        }
+
+        method = -1; // done
+        return n;
+    }
+
+    function stored(buff, off, size) {
+        cutBits(bitLen & 7);
+        var n = maskBits(0x10);
+        if(n != ((~maskBits(0x10)) & 0xffff)) return -1;
+        copyLen = n;
+
+        n = 0;
+        while(copyLen > 0 && n < size) {
+            copyLen--;
+            windowPos &= WSIZE - 1;
+            buff[off + n++] = slide[windowPos++] = maskBits(8);
+        }
+
+        if(copyLen == 0) method = -1;
+        return n;
+    }
+
+    function fixed(buff, off, size) {
+        var fixed_bd = 0;
+        if(fixedTableList == null) {
+            var lengths = [];
+
+            for(var symbol = 0; symbol < 144; symbol++) lengths[symbol] = 8;
+            for(; symbol < 256; symbol++) lengths[symbol] = 9;
+            for(; symbol < 280; symbol++) lengths[symbol] = 7;
+            for(; symbol < 288; symbol++) lengths[symbol] = 8;
+
+            fixedLookup = 7;
+
+            var htbl = new HuffTable(lengths, 288, 257, LENS, LEXT, fixedLookup);
+
+            if(htbl.status != 0) return -1;
+
+            fixedTableList = htbl.root;
+            fixedLookup = htbl.maxbit;
+
+            for(symbol = 0; symbol < 30; symbol++) lengths[symbol] = 5;
+            fixed_bd = 5;
+
+            htbl = new HuffTable(lengths, 30, 0, DISTS, DEXT, fixed_bd);
+            if(htbl.status > 1) {
+                fixedTableList = null;
+                return -1;
+            }
+            fixedTableDist = htbl.root;
+            fixed_bd = htbl.maxbit;
+        }
+
+        tblList = fixedTableList;
+        tblDist = fixedTableDist;
+        bitList = fixedLookup;
+        bitdist = fixed_bd;
+        return codes(buff, off, size);
+    }
+
+    function dynamic(buff, off, size) {
+        var ll = new Array(0x023C);
+
+        for (var m = 0; m < 0x023C; m++) ll[m] = 0;
+
+        var llencnt = 257 + maskBits(5),
+            dcodescnt = 1 + maskBits(5),
+            bitlencnt = 4 + maskBits(4);
+
+        if(llencnt > 286 || dcodescnt > 30) return -1;
+
+        for(var j = 0; j < bitlencnt; j++) ll[BITORDER[j]] = maskBits(3);
+        for(; j < 19; j++) ll[BITORDER[j]] = 0;
+
+        // build decoding table for trees--single level, 7 bit lookup
+        bitList = 7;
+        var hufTable = new HuffTable(ll, 19, 19, null, null, bitList);
+        if(hufTable.status != 0)
+            return -1;	// incomplete code set
+
+        tblList = hufTable.root;
+        bitList = hufTable.maxbit;
+        var lencnt = llencnt + dcodescnt,
+            i = 0,
+            lastLen = 0;
+        while(i < lencnt) {
+            var hufLcode = tblList.list[addBits(bitList) & MASK_BITS[bitList]];
+            j = hufLcode.bitcnt;
+            cutBits(j);
+            j = hufLcode.lbase;
+            if(j < 16)
+                ll[i++] = lastLen = j;
+            else if(j == 16) {
+                j = 3 + maskBits(2);
+                if(i + j > lencnt) return -1;
+                while(j-- > 0) ll[i++] = lastLen;
+            } else if(j == 17) {
+                j = 3 + maskBits(3);
+                if(i + j > lencnt) return -1;
+                while(j-- > 0) ll[i++] = 0;
+                lastLen = 0;
+            } else {
+                j = 11 + maskBits(7);
+                if(i + j > lencnt) return -1;
+                while(j-- > 0) ll[i++] = 0;
+                lastLen = 0;
+            }
+        }
+        bitList = 9;
+        hufTable = new HuffTable(ll, llencnt, 257, LENS, LEXT, bitList);
+        bitList == 0 && (hufTable.status = 1);
+
+        if (hufTable.status != 0) return -1;
+
+        tblList = hufTable.root;
+        bitList = hufTable.maxbit;
+
+        for(i = 0; i < dcodescnt; i++) ll[i] = ll[i + llencnt];
+        bitdist = 6;
+        hufTable = new HuffTable(ll, dcodescnt, 0, DISTS, DEXT, bitdist);
+        tblDist = hufTable.root;
+        bitdist = hufTable.maxbit;
+
+        if((bitdist == 0 && llencnt > 257) || hufTable.status != 0) return -1;
+
+        return codes(buff, off, size);
+    }
+
+    return {
+        inflate : function(/*Buffer*/outputBuffer) {
+            tblList = null;
+
+            var size = outputBuffer.length,
+                offset = 0, i;
+
+            while(offset < size) {
+                if(eof && method == -1) return;
+                if(copyLen > 0) {
+                    if(method != 0) {
+                        while(copyLen > 0 && offset < size) {
+                            copyLen--;
+                            copyDist &= WSIZE - 1;
+                            windowPos &= WSIZE - 1;
+                            outputBuffer[offset++] = (slide[windowPos++] = slide[copyDist++]);
+                        }
+                    } else {
+                        while(copyLen > 0 && offset < size) {
+                            copyLen--;
+                            windowPos &= WSIZE - 1;
+                            outputBuffer[offset++] = (slide[windowPos++] = maskBits(8));
+                        }
+                        copyLen == 0 && (method = -1); // done
+                    }
+                    if (offset == size) return;
+                }
+
+                if(method == -1) {
+                    if(eof) break;
+                    eof = maskBits(1) != 0;
+                    method = maskBits(2);
+                    tblList = null;
+                    copyLen = 0;
+                }
+                switch(method) {
+                    case 0: i = stored(outputBuffer, offset, size - offset); break;
+                    case 1: i = tblList != null ? codes(outputBuffer, offset, size - offset) : fixed(outputBuffer, offset, size - offset); break;
+                    case 2: i = tblList != null ? codes(outputBuffer, offset, size - offset) : dynamic(outputBuffer, offset, size - offset); break;
+                    default: i = -1; break;
+                }
+
+                if(i == -1) return;
+                offset += i;
+            }
+        }
+    };
+}
+
+module.exports = function(/*Buffer*/inbuf) {
+    var zlib = __webpack_require__(7);
+    return {
+        inflateAsync : function(/*Function*/callback) {
+            var tmp = zlib.createInflateRaw(),
+                parts = [], total = 0;
+            tmp.on('data', function(data) {
+                parts.push(data);
+                total += data.length;
+            });
+            tmp.on('end', function() {
+                var buf = new Buffer(total), written = 0;
+                buf.fill(0);
+
+                for (var i = 0; i < parts.length; i++) {
+                    var part = parts[i];
+                    part.copy(buf, written);
+                    written += part.length;
+                }
+                callback && callback(buf);
+            });
+            tmp.end(inbuf)
+        },
+
+        inflate : function(/*Buffer*/outputBuffer) {
+            var x = {
+                x: new JSInflater(inbuf)
+            };
+            x.x.inflate(outputBuffer);
+            delete(x.x);
+        }
+    }
+};
+
+
+/***/ }),
+/* 21 */
+/***/ (function(module, exports) {
+
+module.exports = require("buffer");
+
+/***/ }),
+/* 22 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var ZipEntry = __webpack_require__(3),
+    Headers = __webpack_require__(6),
+    Utils = __webpack_require__(2);
+
+module.exports = function(/*String|Buffer*/input, /*Number*/inputType) {
+    var entryList = [],
+        entryTable = {},
+        _comment = new Buffer(0),
+        filename = "",
+        fs = __webpack_require__(0),
+        inBuffer = null,
+        mainHeader = new Headers.MainHeader();
+
+    if (inputType == Utils.Constants.FILE) {
+        // is a filename
+        filename = input;
+        inBuffer = fs.readFileSync(filename);
+        readMainHeader();
+    } else if (inputType == Utils.Constants.BUFFER) {
+        // is a memory buffer
+        inBuffer = input;
+        readMainHeader();
+    } else {
+        // none. is a new file
+    }
+
+    function readEntries() {
+        entryTable = {};
+        entryList = new Array(mainHeader.diskEntries);  // total number of entries
+        var index = mainHeader.offset;  // offset of first CEN header
+        for(var i = 0; i < entryList.length; i++) {
+
+            var tmp = index,
+                entry = new ZipEntry(inBuffer);
+            entry.header = inBuffer.slice(tmp, tmp += Utils.Constants.CENHDR);
+
+            entry.entryName = inBuffer.slice(tmp, tmp += entry.header.fileNameLength);
+
+            if (entry.header.extraLength) {
+                entry.extra = inBuffer.slice(tmp, tmp += entry.header.extraLength);
+            }
+
+            if (entry.header.commentLength)
+                entry.comment = inBuffer.slice(tmp, tmp + entry.header.commentLength);
+
+            index += entry.header.entryHeaderSize;
+
+            entryList[i] = entry;
+            entryTable[entry.entryName] = entry;
+        }
+    }
+
+    function readMainHeader() {
+        var i = inBuffer.length - Utils.Constants.ENDHDR, // END header size
+            n = Math.max(0, i - 0xFFFF), // 0xFFFF is the max zip file comment length
+            endOffset = -1; // Start offset of the END header
+
+        for (i; i >= n; i--) {
+            if (inBuffer[i] != 0x50) continue; // quick check that the byte is 'P'
+            if (inBuffer.readUInt32LE(i) == Utils.Constants.ENDSIG) { // "PK\005\006"
+                endOffset = i;
+                break;
+            }
+        }
+        if (!~endOffset)
+            throw Utils.Errors.INVALID_FORMAT;
+
+        mainHeader.loadFromBinary(inBuffer.slice(endOffset, endOffset + Utils.Constants.ENDHDR));
+        if (mainHeader.commentLength) {
+            _comment = inBuffer.slice(endOffset + Utils.Constants.ENDHDR);
+        }
+        readEntries();
+    }
+
+    return {
+        /**
+         * Returns an array of ZipEntry objects existent in the current opened archive
+         * @return Array
+         */
+        get entries () {
+            return entryList;
+        },
+
+        /**
+         * Archive comment
+         * @return {String}
+         */
+        get comment () { return _comment.toString(); },
+        set comment(val) {
+            mainHeader.commentLength = val.length;
+            _comment = val;
+        },
+
+        /**
+         * Returns a reference to the entry with the given name or null if entry is inexistent
+         *
+         * @param entryName
+         * @return ZipEntry
+         */
+        getEntry : function(/*String*/entryName) {
+            return entryTable[entryName] || null;
+        },
+
+        /**
+         * Adds the given entry to the entry list
+         *
+         * @param entry
+         */
+        setEntry : function(/*ZipEntry*/entry) {
+            entryList.push(entry);
+            entryTable[entry.entryName] = entry;
+            mainHeader.totalEntries = entryList.length;
+        },
+
+        /**
+         * Removes the entry with the given name from the entry list.
+         *
+         * If the entry is a directory, then all nested files and directories will be removed
+         * @param entryName
+         */
+        deleteEntry : function(/*String*/entryName) {
+            var entry = entryTable[entryName];
+            if (entry && entry.isDirectory) {
+                var _self = this;
+                this.getEntryChildren(entry).forEach(function(child) {
+                    if (child.entryName != entryName) {
+                        _self.deleteEntry(child.entryName)
+                    }
+                })
+            }
+            entryList.splice(entryList.indexOf(entry), 1);
+            delete(entryTable[entryName]);
+            mainHeader.totalEntries = entryList.length;
+        },
+
+        /**
+         *  Iterates and returns all nested files and directories of the given entry
+         *
+         * @param entry
+         * @return Array
+         */
+        getEntryChildren : function(/*ZipEntry*/entry) {
+            if (entry.isDirectory) {
+                var list = [],
+                    name = entry.entryName,
+                    len = name.length;
+
+                entryList.forEach(function(zipEntry) {
+                    if (zipEntry.entryName.substr(0, len) == name) {
+                        list.push(zipEntry);
+                    }
+                });
+                return list;
+            }
+            return []
+        },
+
+        /**
+         * Returns the zip file
+         *
+         * @return Buffer
+         */
+        compressToBuffer : function() {
+            if (entryList.length > 1) {
+                entryList.sort(function(a, b) {
+                    var nameA = a.entryName.toLowerCase();
+                    var nameB = b.entryName.toLowerCase();
+                    if (nameA < nameB) {return -1}
+                    if (nameA > nameB) {return 1}
+                    return 0;
+                });
+            }
+
+            var totalSize = 0,
+                dataBlock = [],
+                entryHeaders = [],
+                dindex = 0;
+
+            mainHeader.size = 0;
+            mainHeader.offset = 0;
+
+            entryList.forEach(function(entry) {
+                entry.header.offset = dindex;
+
+                // compress data and set local and entry header accordingly. Reason why is called first
+                var compressedData = entry.getCompressedData();
+                // data header
+                var dataHeader = entry.header.dataHeaderToBinary();
+                var postHeader = new Buffer(entry.entryName + entry.extra.toString());
+                var dataLength = dataHeader.length + postHeader.length + compressedData.length;
+
+                dindex += dataLength;
+
+                dataBlock.push(dataHeader);
+                dataBlock.push(postHeader);
+                dataBlock.push(compressedData);
+
+                var entryHeader = entry.packHeader();
+                entryHeaders.push(entryHeader);
+                mainHeader.size += entryHeader.length;
+                totalSize += (dataLength + entryHeader.length);
+            });
+
+            totalSize += mainHeader.mainHeaderSize; // also includes zip file comment length
+            // point to end of data and begining of central directory first record
+            mainHeader.offset = dindex;
+
+            dindex = 0;
+            var outBuffer = new Buffer(totalSize);
+            dataBlock.forEach(function(content) {
+                content.copy(outBuffer, dindex); // write data blocks
+                dindex += content.length;
+            });
+            entryHeaders.forEach(function(content) {
+                content.copy(outBuffer, dindex); // write central directory entries
+                dindex += content.length;
+            });
+
+            var mh = mainHeader.toBinary();
+            if (_comment) {
+                _comment.copy(mh, Utils.Constants.ENDHDR); // add zip file comment
+            }
+
+            mh.copy(outBuffer, dindex); // write main header
+
+            return outBuffer
+        },
+
+        toAsyncBuffer : function(/*Function*/onSuccess,/*Function*/onFail,/*Function*/onItemStart,/*Function*/onItemEnd) {
+            if (entryList.length > 1) {
+                entryList.sort(function(a, b) {
+                    var nameA = a.entryName.toLowerCase();
+                    var nameB = b.entryName.toLowerCase();
+                    if (nameA > nameB) {return -1}
+                    if (nameA < nameB) {return 1}
+                    return 0;
+                });
+            }
+
+            var totalSize = 0,
+                dataBlock = [],
+                entryHeaders = [],
+                dindex = 0;
+
+            mainHeader.size = 0;
+            mainHeader.offset = 0;
+
+            var compress=function(entryList){
+                var self=arguments.callee;
+                var entry;
+                if(entryList.length){
+                    var entry=entryList.pop();
+                    var name=entry.entryName + entry.extra.toString();
+                    if(onItemStart)onItemStart(name);
+                    entry.getCompressedDataAsync(function(compressedData){
+                        if(onItemEnd)onItemEnd(name);
+
+                        entry.header.offset = dindex;
+                        // data header
+                        var dataHeader = entry.header.dataHeaderToBinary();
+                        var postHeader = new Buffer(name);
+                        var dataLength = dataHeader.length + postHeader.length + compressedData.length;
+
+                        dindex += dataLength;
+
+                        dataBlock.push(dataHeader);
+                        dataBlock.push(postHeader);
+                        dataBlock.push(compressedData);
+
+                        var entryHeader = entry.packHeader();
+                        entryHeaders.push(entryHeader);
+                        mainHeader.size += entryHeader.length;
+                        totalSize += (dataLength + entryHeader.length);
+
+                        if(entryList.length){
+                            self(entryList);
+                        }else{
+
+
+                            totalSize += mainHeader.mainHeaderSize; // also includes zip file comment length
+                            // point to end of data and begining of central directory first record
+                            mainHeader.offset = dindex;
+
+                            dindex = 0;
+                            var outBuffer = new Buffer(totalSize);
+                            dataBlock.forEach(function(content) {
+                                content.copy(outBuffer, dindex); // write data blocks
+                                dindex += content.length;
+                            });
+                            entryHeaders.forEach(function(content) {
+                                content.copy(outBuffer, dindex); // write central directory entries
+                                dindex += content.length;
+                            });
+
+                            var mh = mainHeader.toBinary();
+                            if (_comment) {
+                                _comment.copy(mh, Utils.Constants.ENDHDR); // add zip file comment
+                            }
+
+                            mh.copy(outBuffer, dindex); // write main header
+
+                            onSuccess(outBuffer);
+                        }
+                    });
+                }
+            };
+
+            compress(entryList);
+        }
+    }
+};
+
+
+/***/ }),
+/* 23 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _fs
+try {
+  _fs = __webpack_require__(24)
+} catch (_) {
+  _fs = __webpack_require__(0)
+}
+
+function readFile (file, options, callback) {
+  if (callback == null) {
+    callback = options
+    options = {}
+  }
+
+  if (typeof options === 'string') {
+    options = {encoding: options}
+  }
+
+  options = options || {}
+  var fs = options.fs || _fs
+
+  var shouldThrow = true
+  if ('throws' in options) {
+    shouldThrow = options.throws
+  }
+
+  fs.readFile(file, options, function (err, data) {
+    if (err) return callback(err)
+
+    data = stripBom(data)
+
+    var obj
+    try {
+      obj = JSON.parse(data, options ? options.reviver : null)
+    } catch (err2) {
+      if (shouldThrow) {
+        err2.message = file + ': ' + err2.message
+        return callback(err2)
+      } else {
+        return callback(null, null)
+      }
+    }
+
+    callback(null, obj)
+  })
+}
+
+function readFileSync (file, options) {
+  options = options || {}
+  if (typeof options === 'string') {
+    options = {encoding: options}
+  }
+
+  var fs = options.fs || _fs
+
+  var shouldThrow = true
+  if ('throws' in options) {
+    shouldThrow = options.throws
+  }
+
+  try {
+    var content = fs.readFileSync(file, options)
+    content = stripBom(content)
+    return JSON.parse(content, options.reviver)
+  } catch (err) {
+    if (shouldThrow) {
+      err.message = file + ': ' + err.message
+      throw err
+    } else {
+      return null
+    }
+  }
+}
+
+function stringify (obj, options) {
+  var spaces
+  var EOL = '\n'
+  if (typeof options === 'object' && options !== null) {
+    if (options.spaces) {
+      spaces = options.spaces
+    }
+    if (options.EOL) {
+      EOL = options.EOL
+    }
+  }
+
+  var str = JSON.stringify(obj, options ? options.replacer : null, spaces)
+
+  return str.replace(/\n/g, EOL) + EOL
+}
+
+function writeFile (file, obj, options, callback) {
+  if (callback == null) {
+    callback = options
+    options = {}
+  }
+  options = options || {}
+  var fs = options.fs || _fs
+
+  var str = ''
+  try {
+    str = stringify(obj, options)
+  } catch (err) {
+    // Need to return whether a callback was passed or not
+    if (callback) callback(err, null)
+    return
+  }
+
+  fs.writeFile(file, str, options, callback)
+}
+
+function writeFileSync (file, obj, options) {
+  options = options || {}
+  var fs = options.fs || _fs
+
+  var str = stringify(obj, options)
+  // not sure if fs.writeFileSync returns anything, but just in case
+  return fs.writeFileSync(file, str, options)
+}
+
+function stripBom (content) {
+  // we do this because JSON.parse would convert it to a utf8 string if encoding wasn't specified
+  if (Buffer.isBuffer(content)) content = content.toString('utf8')
+  content = content.replace(/^\uFEFF/, '')
+  return content
+}
+
+var jsonfile = {
+  readFile: readFile,
+  readFileSync: readFileSync,
+  writeFile: writeFile,
+  writeFileSync: writeFileSync
+}
+
+module.exports = jsonfile
+
+
+/***/ }),
+/* 24 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var fs = __webpack_require__(0)
+var polyfills = __webpack_require__(25)
+var legacy = __webpack_require__(27)
+var queue = []
+
+var util = __webpack_require__(29)
+
+function noop () {}
+
+var debug = noop
+if (util.debuglog)
+  debug = util.debuglog('gfs4')
+else if (/\bgfs4\b/i.test(process.env.NODE_DEBUG || ''))
+  debug = function() {
+    var m = util.format.apply(util, arguments)
+    m = 'GFS4: ' + m.split(/\n/).join('\nGFS4: ')
+    console.error(m)
+  }
+
+if (/\bgfs4\b/i.test(process.env.NODE_DEBUG || '')) {
+  process.on('exit', function() {
+    debug(queue)
+    __webpack_require__(30).equal(queue.length, 0)
+  })
+}
+
+module.exports = patch(__webpack_require__(8))
+if (process.env.TEST_GRACEFUL_FS_GLOBAL_PATCH) {
+  module.exports = patch(fs)
+}
+
+// Always patch fs.close/closeSync, because we want to
+// retry() whenever a close happens *anywhere* in the program.
+// This is essential when multiple graceful-fs instances are
+// in play at the same time.
+module.exports.close =
+fs.close = (function (fs$close) { return function (fd, cb) {
+  return fs$close.call(fs, fd, function (err) {
+    if (!err)
+      retry()
+
+    if (typeof cb === 'function')
+      cb.apply(this, arguments)
+  })
+}})(fs.close)
+
+module.exports.closeSync =
+fs.closeSync = (function (fs$closeSync) { return function (fd) {
+  // Note that graceful-fs also retries when fs.closeSync() fails.
+  // Looks like a bug to me, although it's probably a harmless one.
+  var rval = fs$closeSync.apply(fs, arguments)
+  retry()
+  return rval
+}})(fs.closeSync)
+
+function patch (fs) {
+  // Everything that references the open() function needs to be in here
+  polyfills(fs)
+  fs.gracefulify = patch
+  fs.FileReadStream = ReadStream;  // Legacy name.
+  fs.FileWriteStream = WriteStream;  // Legacy name.
+  fs.createReadStream = createReadStream
+  fs.createWriteStream = createWriteStream
+  var fs$readFile = fs.readFile
+  fs.readFile = readFile
+  function readFile (path, options, cb) {
+    if (typeof options === 'function')
+      cb = options, options = null
+
+    return go$readFile(path, options, cb)
+
+    function go$readFile (path, options, cb) {
+      return fs$readFile(path, options, function (err) {
+        if (err && (err.code === 'EMFILE' || err.code === 'ENFILE'))
+          enqueue([go$readFile, [path, options, cb]])
+        else {
+          if (typeof cb === 'function')
+            cb.apply(this, arguments)
+          retry()
+        }
+      })
+    }
+  }
+
+  var fs$writeFile = fs.writeFile
+  fs.writeFile = writeFile
+  function writeFile (path, data, options, cb) {
+    if (typeof options === 'function')
+      cb = options, options = null
+
+    return go$writeFile(path, data, options, cb)
+
+    function go$writeFile (path, data, options, cb) {
+      return fs$writeFile(path, data, options, function (err) {
+        if (err && (err.code === 'EMFILE' || err.code === 'ENFILE'))
+          enqueue([go$writeFile, [path, data, options, cb]])
+        else {
+          if (typeof cb === 'function')
+            cb.apply(this, arguments)
+          retry()
+        }
+      })
+    }
+  }
+
+  var fs$appendFile = fs.appendFile
+  if (fs$appendFile)
+    fs.appendFile = appendFile
+  function appendFile (path, data, options, cb) {
+    if (typeof options === 'function')
+      cb = options, options = null
+
+    return go$appendFile(path, data, options, cb)
+
+    function go$appendFile (path, data, options, cb) {
+      return fs$appendFile(path, data, options, function (err) {
+        if (err && (err.code === 'EMFILE' || err.code === 'ENFILE'))
+          enqueue([go$appendFile, [path, data, options, cb]])
+        else {
+          if (typeof cb === 'function')
+            cb.apply(this, arguments)
+          retry()
+        }
+      })
+    }
+  }
+
+  var fs$readdir = fs.readdir
+  fs.readdir = readdir
+  function readdir (path, options, cb) {
+    var args = [path]
+    if (typeof options !== 'function') {
+      args.push(options)
+    } else {
+      cb = options
+    }
+    args.push(go$readdir$cb)
+
+    return go$readdir(args)
+
+    function go$readdir$cb (err, files) {
+      if (files && files.sort)
+        files.sort()
+
+      if (err && (err.code === 'EMFILE' || err.code === 'ENFILE'))
+        enqueue([go$readdir, [args]])
+      else {
+        if (typeof cb === 'function')
+          cb.apply(this, arguments)
+        retry()
+      }
+    }
+  }
+
+  function go$readdir (args) {
+    return fs$readdir.apply(fs, args)
+  }
+
+  if (process.version.substr(0, 4) === 'v0.8') {
+    var legStreams = legacy(fs)
+    ReadStream = legStreams.ReadStream
+    WriteStream = legStreams.WriteStream
+  }
+
+  var fs$ReadStream = fs.ReadStream
+  ReadStream.prototype = Object.create(fs$ReadStream.prototype)
+  ReadStream.prototype.open = ReadStream$open
+
+  var fs$WriteStream = fs.WriteStream
+  WriteStream.prototype = Object.create(fs$WriteStream.prototype)
+  WriteStream.prototype.open = WriteStream$open
+
+  fs.ReadStream = ReadStream
+  fs.WriteStream = WriteStream
+
+  function ReadStream (path, options) {
+    if (this instanceof ReadStream)
+      return fs$ReadStream.apply(this, arguments), this
+    else
+      return ReadStream.apply(Object.create(ReadStream.prototype), arguments)
+  }
+
+  function ReadStream$open () {
+    var that = this
+    open(that.path, that.flags, that.mode, function (err, fd) {
+      if (err) {
+        if (that.autoClose)
+          that.destroy()
+
+        that.emit('error', err)
+      } else {
+        that.fd = fd
+        that.emit('open', fd)
+        that.read()
+      }
+    })
+  }
+
+  function WriteStream (path, options) {
+    if (this instanceof WriteStream)
+      return fs$WriteStream.apply(this, arguments), this
+    else
+      return WriteStream.apply(Object.create(WriteStream.prototype), arguments)
+  }
+
+  function WriteStream$open () {
+    var that = this
+    open(that.path, that.flags, that.mode, function (err, fd) {
+      if (err) {
+        that.destroy()
+        that.emit('error', err)
+      } else {
+        that.fd = fd
+        that.emit('open', fd)
+      }
+    })
+  }
+
+  function createReadStream (path, options) {
+    return new ReadStream(path, options)
+  }
+
+  function createWriteStream (path, options) {
+    return new WriteStream(path, options)
+  }
+
+  var fs$open = fs.open
+  fs.open = open
+  function open (path, flags, mode, cb) {
+    if (typeof mode === 'function')
+      cb = mode, mode = null
+
+    return go$open(path, flags, mode, cb)
+
+    function go$open (path, flags, mode, cb) {
+      return fs$open(path, flags, mode, function (err, fd) {
+        if (err && (err.code === 'EMFILE' || err.code === 'ENFILE'))
+          enqueue([go$open, [path, flags, mode, cb]])
+        else {
+          if (typeof cb === 'function')
+            cb.apply(this, arguments)
+          retry()
+        }
+      })
+    }
+  }
+
+  return fs
+}
+
+function enqueue (elem) {
+  debug('ENQUEUE', elem[0].name, elem[1])
+  queue.push(elem)
+}
+
+function retry () {
+  var elem = queue.shift()
+  if (elem) {
+    debug('RETRY', elem[0].name, elem[1])
+    elem[0].apply(null, elem[1])
+  }
+}
+
+
+/***/ }),
+/* 25 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var fs = __webpack_require__(8)
+var constants = __webpack_require__(26)
+
+var origCwd = process.cwd
+var cwd = null
+
+var platform = process.env.GRACEFUL_FS_PLATFORM || process.platform
+
+process.cwd = function() {
+  if (!cwd)
+    cwd = origCwd.call(process)
+  return cwd
+}
+try {
+  process.cwd()
+} catch (er) {}
+
+var chdir = process.chdir
+process.chdir = function(d) {
+  cwd = null
+  chdir.call(process, d)
+}
+
+module.exports = patch
+
+function patch (fs) {
+  // (re-)implement some things that are known busted or missing.
+
+  // lchmod, broken prior to 0.6.2
+  // back-port the fix here.
+  if (constants.hasOwnProperty('O_SYMLINK') &&
+      process.version.match(/^v0\.6\.[0-2]|^v0\.5\./)) {
+    patchLchmod(fs)
+  }
+
+  // lutimes implementation, or no-op
+  if (!fs.lutimes) {
+    patchLutimes(fs)
+  }
+
+  // https://github.com/isaacs/node-graceful-fs/issues/4
+  // Chown should not fail on einval or eperm if non-root.
+  // It should not fail on enosys ever, as this just indicates
+  // that a fs doesn't support the intended operation.
+
+  fs.chown = chownFix(fs.chown)
+  fs.fchown = chownFix(fs.fchown)
+  fs.lchown = chownFix(fs.lchown)
+
+  fs.chmod = chmodFix(fs.chmod)
+  fs.fchmod = chmodFix(fs.fchmod)
+  fs.lchmod = chmodFix(fs.lchmod)
+
+  fs.chownSync = chownFixSync(fs.chownSync)
+  fs.fchownSync = chownFixSync(fs.fchownSync)
+  fs.lchownSync = chownFixSync(fs.lchownSync)
+
+  fs.chmodSync = chmodFixSync(fs.chmodSync)
+  fs.fchmodSync = chmodFixSync(fs.fchmodSync)
+  fs.lchmodSync = chmodFixSync(fs.lchmodSync)
+
+  fs.stat = statFix(fs.stat)
+  fs.fstat = statFix(fs.fstat)
+  fs.lstat = statFix(fs.lstat)
+
+  fs.statSync = statFixSync(fs.statSync)
+  fs.fstatSync = statFixSync(fs.fstatSync)
+  fs.lstatSync = statFixSync(fs.lstatSync)
+
+  // if lchmod/lchown do not exist, then make them no-ops
+  if (!fs.lchmod) {
+    fs.lchmod = function (path, mode, cb) {
+      if (cb) process.nextTick(cb)
+    }
+    fs.lchmodSync = function () {}
+  }
+  if (!fs.lchown) {
+    fs.lchown = function (path, uid, gid, cb) {
+      if (cb) process.nextTick(cb)
+    }
+    fs.lchownSync = function () {}
+  }
+
+  // on Windows, A/V software can lock the directory, causing this
+  // to fail with an EACCES or EPERM if the directory contains newly
+  // created files.  Try again on failure, for up to 60 seconds.
+
+  // Set the timeout this long because some Windows Anti-Virus, such as Parity
+  // bit9, may lock files for up to a minute, causing npm package install
+  // failures. Also, take care to yield the scheduler. Windows scheduling gives
+  // CPU to a busy looping process, which can cause the program causing the lock
+  // contention to be starved of CPU by node, so the contention doesn't resolve.
+  if (platform === "win32") {
+    fs.rename = (function (fs$rename) { return function (from, to, cb) {
+      var start = Date.now()
+      var backoff = 0;
+      fs$rename(from, to, function CB (er) {
+        if (er
+            && (er.code === "EACCES" || er.code === "EPERM")
+            && Date.now() - start < 60000) {
+          setTimeout(function() {
+            fs.stat(to, function (stater, st) {
+              if (stater && stater.code === "ENOENT")
+                fs$rename(from, to, CB);
+              else
+                cb(er)
+            })
+          }, backoff)
+          if (backoff < 100)
+            backoff += 10;
+          return;
+        }
+        if (cb) cb(er)
+      })
+    }})(fs.rename)
+  }
+
+  // if read() returns EAGAIN, then just try it again.
+  fs.read = (function (fs$read) { return function (fd, buffer, offset, length, position, callback_) {
+    var callback
+    if (callback_ && typeof callback_ === 'function') {
+      var eagCounter = 0
+      callback = function (er, _, __) {
+        if (er && er.code === 'EAGAIN' && eagCounter < 10) {
+          eagCounter ++
+          return fs$read.call(fs, fd, buffer, offset, length, position, callback)
+        }
+        callback_.apply(this, arguments)
+      }
+    }
+    return fs$read.call(fs, fd, buffer, offset, length, position, callback)
+  }})(fs.read)
+
+  fs.readSync = (function (fs$readSync) { return function (fd, buffer, offset, length, position) {
+    var eagCounter = 0
+    while (true) {
+      try {
+        return fs$readSync.call(fs, fd, buffer, offset, length, position)
+      } catch (er) {
+        if (er.code === 'EAGAIN' && eagCounter < 10) {
+          eagCounter ++
+          continue
+        }
+        throw er
+      }
+    }
+  }})(fs.readSync)
+}
+
+function patchLchmod (fs) {
+  fs.lchmod = function (path, mode, callback) {
+    fs.open( path
+           , constants.O_WRONLY | constants.O_SYMLINK
+           , mode
+           , function (err, fd) {
+      if (err) {
+        if (callback) callback(err)
+        return
+      }
+      // prefer to return the chmod error, if one occurs,
+      // but still try to close, and report closing errors if they occur.
+      fs.fchmod(fd, mode, function (err) {
+        fs.close(fd, function(err2) {
+          if (callback) callback(err || err2)
+        })
+      })
+    })
+  }
+
+  fs.lchmodSync = function (path, mode) {
+    var fd = fs.openSync(path, constants.O_WRONLY | constants.O_SYMLINK, mode)
+
+    // prefer to return the chmod error, if one occurs,
+    // but still try to close, and report closing errors if they occur.
+    var threw = true
+    var ret
+    try {
+      ret = fs.fchmodSync(fd, mode)
+      threw = false
+    } finally {
+      if (threw) {
+        try {
+          fs.closeSync(fd)
+        } catch (er) {}
+      } else {
+        fs.closeSync(fd)
+      }
+    }
+    return ret
+  }
+}
+
+function patchLutimes (fs) {
+  if (constants.hasOwnProperty("O_SYMLINK")) {
+    fs.lutimes = function (path, at, mt, cb) {
+      fs.open(path, constants.O_SYMLINK, function (er, fd) {
+        if (er) {
+          if (cb) cb(er)
+          return
+        }
+        fs.futimes(fd, at, mt, function (er) {
+          fs.close(fd, function (er2) {
+            if (cb) cb(er || er2)
+          })
+        })
+      })
+    }
+
+    fs.lutimesSync = function (path, at, mt) {
+      var fd = fs.openSync(path, constants.O_SYMLINK)
+      var ret
+      var threw = true
+      try {
+        ret = fs.futimesSync(fd, at, mt)
+        threw = false
+      } finally {
+        if (threw) {
+          try {
+            fs.closeSync(fd)
+          } catch (er) {}
+        } else {
+          fs.closeSync(fd)
+        }
+      }
+      return ret
+    }
+
+  } else {
+    fs.lutimes = function (_a, _b, _c, cb) { if (cb) process.nextTick(cb) }
+    fs.lutimesSync = function () {}
+  }
+}
+
+function chmodFix (orig) {
+  if (!orig) return orig
+  return function (target, mode, cb) {
+    return orig.call(fs, target, mode, function (er) {
+      if (chownErOk(er)) er = null
+      if (cb) cb.apply(this, arguments)
+    })
+  }
+}
+
+function chmodFixSync (orig) {
+  if (!orig) return orig
+  return function (target, mode) {
+    try {
+      return orig.call(fs, target, mode)
+    } catch (er) {
+      if (!chownErOk(er)) throw er
+    }
+  }
+}
+
+
+function chownFix (orig) {
+  if (!orig) return orig
+  return function (target, uid, gid, cb) {
+    return orig.call(fs, target, uid, gid, function (er) {
+      if (chownErOk(er)) er = null
+      if (cb) cb.apply(this, arguments)
+    })
+  }
+}
+
+function chownFixSync (orig) {
+  if (!orig) return orig
+  return function (target, uid, gid) {
+    try {
+      return orig.call(fs, target, uid, gid)
+    } catch (er) {
+      if (!chownErOk(er)) throw er
+    }
+  }
+}
+
+
+function statFix (orig) {
+  if (!orig) return orig
+  // Older versions of Node erroneously returned signed integers for
+  // uid + gid.
+  return function (target, cb) {
+    return orig.call(fs, target, function (er, stats) {
+      if (!stats) return cb.apply(this, arguments)
+      if (stats.uid < 0) stats.uid += 0x100000000
+      if (stats.gid < 0) stats.gid += 0x100000000
+      if (cb) cb.apply(this, arguments)
+    })
+  }
+}
+
+function statFixSync (orig) {
+  if (!orig) return orig
+  // Older versions of Node erroneously returned signed integers for
+  // uid + gid.
+  return function (target) {
+    var stats = orig.call(fs, target)
+    if (stats.uid < 0) stats.uid += 0x100000000
+    if (stats.gid < 0) stats.gid += 0x100000000
+    return stats;
+  }
+}
+
+// ENOSYS means that the fs doesn't support the op. Just ignore
+// that, because it doesn't matter.
+//
+// if there's no getuid, or if getuid() is something other
+// than 0, and the error is EINVAL or EPERM, then just ignore
+// it.
+//
+// This specific case is a silent failure in cp, install, tar,
+// and most other unix tools that manage permissions.
+//
+// When running as root, or if other types of errors are
+// encountered, then it's strict.
+function chownErOk (er) {
+  if (!er)
+    return true
+
+  if (er.code === "ENOSYS")
+    return true
+
+  var nonroot = !process.getuid || process.getuid() !== 0
+  if (nonroot) {
+    if (er.code === "EINVAL" || er.code === "EPERM")
+      return true
+  }
+
+  return false
+}
+
+
+/***/ }),
+/* 26 */
+/***/ (function(module, exports) {
+
+module.exports = require("constants");
+
+/***/ }),
+/* 27 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var Stream = __webpack_require__(28).Stream
+
+module.exports = legacy
+
+function legacy (fs) {
+  return {
+    ReadStream: ReadStream,
+    WriteStream: WriteStream
+  }
+
+  function ReadStream (path, options) {
+    if (!(this instanceof ReadStream)) return new ReadStream(path, options);
+
+    Stream.call(this);
+
+    var self = this;
+
+    this.path = path;
+    this.fd = null;
+    this.readable = true;
+    this.paused = false;
+
+    this.flags = 'r';
+    this.mode = 438; /*=0666*/
+    this.bufferSize = 64 * 1024;
+
+    options = options || {};
+
+    // Mixin options into this
+    var keys = Object.keys(options);
+    for (var index = 0, length = keys.length; index < length; index++) {
+      var key = keys[index];
+      this[key] = options[key];
+    }
+
+    if (this.encoding) this.setEncoding(this.encoding);
+
+    if (this.start !== undefined) {
+      if ('number' !== typeof this.start) {
+        throw TypeError('start must be a Number');
+      }
+      if (this.end === undefined) {
+        this.end = Infinity;
+      } else if ('number' !== typeof this.end) {
+        throw TypeError('end must be a Number');
+      }
+
+      if (this.start > this.end) {
+        throw new Error('start must be <= end');
+      }
+
+      this.pos = this.start;
+    }
+
+    if (this.fd !== null) {
+      process.nextTick(function() {
+        self._read();
+      });
+      return;
+    }
+
+    fs.open(this.path, this.flags, this.mode, function (err, fd) {
+      if (err) {
+        self.emit('error', err);
+        self.readable = false;
+        return;
+      }
+
+      self.fd = fd;
+      self.emit('open', fd);
+      self._read();
+    })
+  }
+
+  function WriteStream (path, options) {
+    if (!(this instanceof WriteStream)) return new WriteStream(path, options);
+
+    Stream.call(this);
+
+    this.path = path;
+    this.fd = null;
+    this.writable = true;
+
+    this.flags = 'w';
+    this.encoding = 'binary';
+    this.mode = 438; /*=0666*/
+    this.bytesWritten = 0;
+
+    options = options || {};
+
+    // Mixin options into this
+    var keys = Object.keys(options);
+    for (var index = 0, length = keys.length; index < length; index++) {
+      var key = keys[index];
+      this[key] = options[key];
+    }
+
+    if (this.start !== undefined) {
+      if ('number' !== typeof this.start) {
+        throw TypeError('start must be a Number');
+      }
+      if (this.start < 0) {
+        throw new Error('start must be >= zero');
+      }
+
+      this.pos = this.start;
+    }
+
+    this.busy = false;
+    this._queue = [];
+
+    if (this.fd === null) {
+      this._open = fs.open;
+      this._queue.push([this._open, this.path, this.flags, this.mode, undefined]);
+      this.flush();
+    }
+  }
+}
+
+
+/***/ }),
+/* 28 */
+/***/ (function(module, exports) {
+
+module.exports = require("stream");
+
+/***/ }),
+/* 29 */
+/***/ (function(module, exports) {
+
+module.exports = require("util");
+
+/***/ }),
+/* 30 */
+/***/ (function(module, exports) {
+
+module.exports = require("assert");
+
+/***/ }),
+/* 31 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var path = __webpack_require__(1);
+var fs = __webpack_require__(0);
+var _0777 = parseInt('0777', 8);
+
+module.exports = mkdirP.mkdirp = mkdirP.mkdirP = mkdirP;
+
+function mkdirP (p, opts, f, made) {
+    if (typeof opts === 'function') {
+        f = opts;
+        opts = {};
+    }
+    else if (!opts || typeof opts !== 'object') {
+        opts = { mode: opts };
+    }
+    
+    var mode = opts.mode;
+    var xfs = opts.fs || fs;
+    
+    if (mode === undefined) {
+        mode = _0777 & (~process.umask());
+    }
+    if (!made) made = null;
+    
+    var cb = f || function () {};
+    p = path.resolve(p);
+    
+    xfs.mkdir(p, mode, function (er) {
+        if (!er) {
+            made = made || p;
+            return cb(null, made);
+        }
+        switch (er.code) {
+            case 'ENOENT':
+                mkdirP(path.dirname(p), opts, function (er, made) {
+                    if (er) cb(er, made);
+                    else mkdirP(p, opts, cb, made);
+                });
+                break;
+
+            // In the case of any other error, just see if there's a dir
+            // there already.  If so, then hooray!  If not, then something
+            // is borked.
+            default:
+                xfs.stat(p, function (er2, stat) {
+                    // if the stat fails, then that's super weird.
+                    // let the original error be the failure reason.
+                    if (er2 || !stat.isDirectory()) cb(er, made)
+                    else cb(null, made);
+                });
+                break;
+        }
+    });
+}
+
+mkdirP.sync = function sync (p, opts, made) {
+    if (!opts || typeof opts !== 'object') {
+        opts = { mode: opts };
+    }
+    
+    var mode = opts.mode;
+    var xfs = opts.fs || fs;
+    
+    if (mode === undefined) {
+        mode = _0777 & (~process.umask());
+    }
+    if (!made) made = null;
+
+    p = path.resolve(p);
+
+    try {
+        xfs.mkdirSync(p, mode);
+        made = made || p;
+    }
+    catch (err0) {
+        switch (err0.code) {
+            case 'ENOENT' :
+                made = sync(path.dirname(p), opts, made);
+                sync(p, opts, made);
+                break;
+
+            // In the case of any other error, just see if there's a dir
+            // there already.  If so, then hooray!  If not, then something
+            // is borked.
+            default:
+                var stat;
+                try {
+                    stat = xfs.statSync(p);
+                }
+                catch (err1) {
+                    throw err0;
+                }
+                if (!stat.isDirectory()) throw err0;
+                break;
+        }
+    }
+
+    return made;
+};
+
+
+/***/ }),
+/* 32 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// vim:ts=4:sts=4:sw=4:
+/*!
+ *
+ * Copyright 2009-2017 Kris Kowal under the terms of the MIT
+ * license found at https://github.com/kriskowal/q/blob/v1/LICENSE
  *
  * With parts by Tyler Close
  * Copyright 2007-2009 Tyler Close under the terms of the MIT X license found
@@ -24,5 +5729,2062 @@
  * limitations under the License.
  *
  */
-!function(n){"use strict";if("function"==typeof bootstrap)bootstrap("promise",n);else{t.exports=n()}}(function(){"use strict";function t(t){return function(){return X.apply(t,arguments)}}function n(t){return t===Object(t)}function e(t){return"[object StopIteration]"===nt(t)||t instanceof G}function r(t,n){if(H&&n.stack&&"object"==typeof t&&null!==t&&t.stack&&t.stack.indexOf(et)===-1){for(var e=[],r=n;r;r=r.source)r.stack&&e.unshift(r.stack);e.unshift(t.stack);var i=e.join("\n"+et+"\n");t.stack=o(i)}}function o(t){for(var n=t.split("\n"),e=[],r=0;r<n.length;++r){var o=n[r];u(o)||i(o)||!o||e.push(o)}return e.join("\n")}function i(t){return t.indexOf("(module.js:")!==-1||t.indexOf("(node.js:")!==-1}function c(t){var n=/at .+ \((.+):(\d+):(?:\d+)\)$/.exec(t);if(n)return[n[1],Number(n[2])];var e=/at ([^ ]+):(\d+):(?:\d+)$/.exec(t);if(e)return[e[1],Number(e[2])];var r=/.*@(.+):(\d+)$/.exec(t);return r?[r[1],Number(r[2])]:void 0}function u(t){var n=c(t);if(!n)return!1;var e=n[0],r=n[1];return e===Z&&r>=z&&r<=ut}function f(){if(H)try{throw new Error}catch(r){var t=r.stack.split("\n"),n=t[0].indexOf("@")>0?t[1]:t[2],e=c(n);if(!e)return;return Z=e[0],e[1]}}function a(t,n,e){return function(){return"undefined"!=typeof console&&"function"==typeof console.warn&&console.warn(n+" is deprecated, use "+e+" instead.",new Error("").stack),t.apply(t,arguments)}}function s(t){return t instanceof h?t:m(t)?j(t):_(t)}function l(){function t(t){n=t,i.source=t,Y(e,function(n,e){s.nextTick(function(){t.promiseDispatch.apply(t,e)})},void 0),e=void 0,r=void 0}var n,e=[],r=[],o=Q(l.prototype),i=Q(h.prototype);if(i.promiseDispatch=function(t,o,i){var c=K(arguments);e?(e.push(c),"when"===o&&i[1]&&r.push(i[1])):s.nextTick(function(){n.promiseDispatch.apply(n,c)})},i.valueOf=function(){if(e)return i;var t=v(n);return E(t)&&(n=t),t},i.inspect=function(){return n?n.inspect():{state:"pending"}},s.longStackSupport&&H)try{throw new Error}catch(t){i.stack=t.stack.substring(t.stack.indexOf("\n")+1)}return o.promise=i,o.resolve=function(e){n||t(s(e))},o.fulfill=function(e){n||t(_(e))},o.reject=function(e){n||t(S(e))},o.notify=function(t){n||Y(r,function(n,e){s.nextTick(function(){e(t)})},void 0)},o}function d(t){if("function"!=typeof t)throw new TypeError("resolver must be a function.");var n=l();try{t(n.resolve,n.reject,n.notify)}catch(t){n.reject(t)}return n.promise}function p(t){return d(function(n,e){for(var r=0,o=t.length;r<o;r++)s(t[r]).then(n,e)})}function h(t,n,e){void 0===n&&(n=function(t){return S(new Error("Promise does not support operation: "+t))}),void 0===e&&(e=function(){return{state:"unknown"}});var r=Q(h.prototype);if(r.promiseDispatch=function(e,o,i){var c;try{c=t[o]?t[o].apply(r,i):n.call(r,o,i)}catch(t){c=S(t)}e&&e(c)},r.inspect=e,e){var o=e();"rejected"===o.state&&(r.exception=o.reason),r.valueOf=function(){var t=e();return"pending"===t.state||"rejected"===t.state?r:t.value}}return r}function y(t,n,e,r){return s(t).then(n,e,r)}function v(t){if(E(t)){var n=t.inspect();if("fulfilled"===n.state)return n.value}return t}function E(t){return t instanceof h}function m(t){return n(t)&&"function"==typeof t.then}function g(t){return E(t)&&"pending"===t.inspect().state}function w(t){return!E(t)||"fulfilled"===t.inspect().state}function b(t){return E(t)&&"rejected"===t.inspect().state}function N(){rt.length=0,ot.length=0,ct||(ct=!0)}function I(t,n){ct&&("object"==typeof process&&"function"==typeof process.emit&&s.nextTick.runAfter(function(){q(ot,t)!==-1&&(process.emit("unhandledRejection",n,t),it.push(t))}),ot.push(t),n&&"undefined"!=typeof n.stack?rt.push(n.stack):rt.push("(no stack) "+n))}function O(t){if(ct){var n=q(ot,t);n!==-1&&("object"==typeof process&&"function"==typeof process.emit&&s.nextTick.runAfter(function(){var e=q(it,t);e!==-1&&(process.emit("rejectionHandled",rt[n],t),it.splice(e,1))}),ot.splice(n,1),rt.splice(n,1))}}function S(t){var n=h({when:function(n){return n&&O(this),n?n(t):this}},function(){return this},function(){return{state:"rejected",reason:t}});return I(n,t),n}function _(t){return h({when:function(){return t},get:function(n){return t[n]},set:function(n,e){t[n]=e},delete:function(n){delete t[n]},post:function(n,e){return null===n||void 0===n?t.apply(void 0,e):t[n].apply(t,e)},apply:function(n,e){return t.apply(n,e)},keys:function(){return tt(t)}},void 0,function(){return{state:"fulfilled",value:t}})}function j(t){var n=l();return s.nextTick(function(){try{t.then(n.resolve,n.reject,n.notify)}catch(t){n.reject(t)}}),n.promise}function D(t){return h({isDef:function(){}},function(n,e){return F(t,n,e)},function(){return s(t).inspect()})}function C(t,n,e){return s(t).spread(n,e)}function L(t){return function(){function n(t,n){var c;if("undefined"==typeof StopIteration){try{c=r[t](n)}catch(t){return S(t)}return c.done?s(c.value):y(c.value,o,i)}try{c=r[t](n)}catch(t){return e(t)?s(t.value):S(t)}return y(c,o,i)}var r=t.apply(this,arguments),o=n.bind(n,"next"),i=n.bind(n,"throw");return o()}}function x(t){s.done(s.async(t)())}function T(t){throw new G(t)}function A(t){return function(){return C([this,R(arguments)],function(n,e){return t.apply(n,e)})}}function F(t,n,e){return s(t).dispatch(n,e)}function R(t){return y(t,function(t){var n=0,e=l();return Y(t,function(r,o,i){var c;E(o)&&"fulfilled"===(c=o.inspect()).state?t[i]=c.value:(++n,y(o,function(r){t[i]=r,0===--n&&e.resolve(t)},e.reject,function(t){e.notify({index:i,value:t})}))},void 0),0===n&&e.resolve(t),e.promise})}function k(t){if(0===t.length)return s.resolve();var n=s.defer(),e=0;return Y(t,function(r,o,i){function c(t){n.resolve(t)}function u(){e--,0===e&&n.reject(new Error("Can't get fulfillment value from any promise, all promises were rejected."))}function f(t){n.notify({index:i,value:t})}var a=t[i];e++,y(a,c,u,f)},void 0),n.promise}function U(t){return y(t,function(t){return t=J(t,s),y(R(J(t,function(t){return y(t,V,V)})),function(){return t})})}function B(t){return s(t).allSettled()}function M(t,n){return s(t).then(void 0,void 0,n)}function P(t,n){return s(t).nodeify(n)}var H=!1;try{throw new Error}catch(t){H=!!t.stack}var Z,G,z=f(),V=function(){},W=function(){function t(){for(var t,r;e.next;)e=e.next,t=e.task,e.task=void 0,r=e.domain,r&&(e.domain=void 0,r.enter()),n(t,r);for(;u.length;)t=u.pop(),n(t);o=!1}function n(n,e){try{n()}catch(n){if(c)throw e&&e.exit(),setTimeout(t,0),e&&e.enter(),n;setTimeout(function(){throw n},0)}e&&e.exit()}var e={task:void 0,next:null},r=e,o=!1,i=void 0,c=!1,u=[];if(W=function(t){r=r.next={task:t,domain:c&&process.domain,next:null},o||(o=!0,i())},"object"==typeof process&&"[object process]"===process.toString()&&process.nextTick)c=!0,i=function(){process.nextTick(t)};else if("function"==typeof setImmediate)i="undefined"!=typeof window?setImmediate.bind(window,t):function(){setImmediate(t)};else if("undefined"!=typeof MessageChannel){var f=new MessageChannel;f.port1.onmessage=function(){i=a,f.port1.onmessage=t,t()};var a=function(){f.port2.postMessage(0)};i=function(){setTimeout(t,0),a()}}else i=function(){setTimeout(t,0)};return W.runAfter=function(t){u.push(t),o||(o=!0,i())},W}(),X=Function.call,K=t(Array.prototype.slice),Y=t(Array.prototype.reduce||function(t,n){var e=0,r=this.length;if(1===arguments.length)for(;;){if(e in this){n=this[e++];break}if(++e>=r)throw new TypeError}for(;e<r;e++)e in this&&(n=t(n,this[e],e));return n}),q=t(Array.prototype.indexOf||function(t){for(var n=0;n<this.length;n++)if(this[n]===t)return n;return-1}),J=t(Array.prototype.map||function(t,n){var e=this,r=[];return Y(e,function(o,i,c){r.push(t.call(n,i,c,e))},void 0),r}),Q=Object.create||function(t){function n(){}return n.prototype=t,new n},$=t(Object.prototype.hasOwnProperty),tt=Object.keys||function(t){var n=[];for(var e in t)$(t,e)&&n.push(e);return n},nt=t(Object.prototype.toString);G="undefined"!=typeof ReturnValue?ReturnValue:function(t){this.value=t};var et="From previous event:";s.resolve=s,s.nextTick=W,s.longStackSupport=!1,"object"==typeof process&&process&&process.env&&process.env.Q_DEBUG&&(s.longStackSupport=!0),s.defer=l,l.prototype.makeNodeResolver=function(){var t=this;return function(n,e){n?t.reject(n):arguments.length>2?t.resolve(K(arguments,1)):t.resolve(e)}},s.Promise=d,s.promise=d,d.race=p,d.all=R,d.reject=S,d.resolve=s,s.passByCopy=function(t){return t},h.prototype.passByCopy=function(){return this},s.join=function(t,n){return s(t).join(n)},h.prototype.join=function(t){return s([this,t]).spread(function(t,n){if(t===n)return t;throw new Error("Can't join: not the same: "+t+" "+n)})},s.race=p,h.prototype.race=function(){return this.then(s.race)},s.makePromise=h,h.prototype.toString=function(){return"[object Promise]"},h.prototype.then=function(t,n,e){function o(n){try{return"function"==typeof t?t(n):n}catch(t){return S(t)}}function i(t){if("function"==typeof n){r(t,u);try{return n(t)}catch(t){return S(t)}}return S(t)}function c(t){return"function"==typeof e?e(t):t}var u=this,f=l(),a=!1;return s.nextTick(function(){u.promiseDispatch(function(t){a||(a=!0,f.resolve(o(t)))},"when",[function(t){a||(a=!0,f.resolve(i(t)))}])}),u.promiseDispatch(void 0,"when",[void 0,function(t){var n,e=!1;try{n=c(t)}catch(t){if(e=!0,!s.onerror)throw t;s.onerror(t)}e||f.notify(n)}]),f.promise},s.tap=function(t,n){return s(t).tap(n)},h.prototype.tap=function(t){return t=s(t),this.then(function(n){return t.fcall(n).thenResolve(n)})},s.when=y,h.prototype.thenResolve=function(t){return this.then(function(){return t})},s.thenResolve=function(t,n){return s(t).thenResolve(n)},h.prototype.thenReject=function(t){return this.then(function(){throw t})},s.thenReject=function(t,n){return s(t).thenReject(n)},s.nearer=v,s.isPromise=E,s.isPromiseAlike=m,s.isPending=g,h.prototype.isPending=function(){return"pending"===this.inspect().state},s.isFulfilled=w,h.prototype.isFulfilled=function(){return"fulfilled"===this.inspect().state},s.isRejected=b,h.prototype.isRejected=function(){return"rejected"===this.inspect().state};var rt=[],ot=[],it=[],ct=!0;s.resetUnhandledRejections=N,s.getUnhandledReasons=function(){return rt.slice()},s.stopUnhandledRejectionTracking=function(){N(),ct=!1},N(),s.reject=S,s.fulfill=_,s.master=D,s.spread=C,h.prototype.spread=function(t,n){return this.all().then(function(n){return t.apply(void 0,n)},n)},s.async=L,s.spawn=x,s.return=T,s.promised=A,s.dispatch=F,h.prototype.dispatch=function(t,n){var e=this,r=l();return s.nextTick(function(){e.promiseDispatch(r.resolve,t,n)}),r.promise},s.get=function(t,n){return s(t).dispatch("get",[n])},h.prototype.get=function(t){return this.dispatch("get",[t])},s.set=function(t,n,e){return s(t).dispatch("set",[n,e])},h.prototype.set=function(t,n){return this.dispatch("set",[t,n])},s.del=s.delete=function(t,n){return s(t).dispatch("delete",[n])},h.prototype.del=h.prototype.delete=function(t){return this.dispatch("delete",[t])},s.mapply=s.post=function(t,n,e){return s(t).dispatch("post",[n,e])},h.prototype.mapply=h.prototype.post=function(t,n){return this.dispatch("post",[t,n])},s.send=s.mcall=s.invoke=function(t,n){return s(t).dispatch("post",[n,K(arguments,2)])},h.prototype.send=h.prototype.mcall=h.prototype.invoke=function(t){return this.dispatch("post",[t,K(arguments,1)])},s.fapply=function(t,n){return s(t).dispatch("apply",[void 0,n])},h.prototype.fapply=function(t){return this.dispatch("apply",[void 0,t])},s.try=s.fcall=function(t){return s(t).dispatch("apply",[void 0,K(arguments,1)])},h.prototype.fcall=function(){return this.dispatch("apply",[void 0,K(arguments)])},s.fbind=function(t){var n=s(t),e=K(arguments,1);return function(){return n.dispatch("apply",[this,e.concat(K(arguments))])}},h.prototype.fbind=function(){var t=this,n=K(arguments);return function(){return t.dispatch("apply",[this,n.concat(K(arguments))])}},s.keys=function(t){return s(t).dispatch("keys",[])},h.prototype.keys=function(){return this.dispatch("keys",[])},s.all=R,h.prototype.all=function(){return R(this)},s.any=k,h.prototype.any=function(){return k(this)},s.allResolved=a(U,"allResolved","allSettled"),h.prototype.allResolved=function(){return U(this)},s.allSettled=B,h.prototype.allSettled=function(){return this.then(function(t){return R(J(t,function(t){function n(){return t.inspect()}return t=s(t),t.then(n,n)}))})},s.fail=s.catch=function(t,n){return s(t).then(void 0,n)},h.prototype.fail=h.prototype.catch=function(t){return this.then(void 0,t)},s.progress=M,h.prototype.progress=function(t){return this.then(void 0,void 0,t)},s.fin=s.finally=function(t,n){return s(t).finally(n)},h.prototype.fin=h.prototype.finally=function(t){return t=s(t),this.then(function(n){return t.fcall().then(function(){return n})},function(n){return t.fcall().then(function(){throw n})})},s.done=function(t,n,e,r){return s(t).done(n,e,r)},h.prototype.done=function(t,n,e){var o=function(t){s.nextTick(function(){if(r(t,i),!s.onerror)throw t;s.onerror(t)})},i=t||n||e?this.then(t,n,e):this;"object"==typeof process&&process&&process.domain&&(o=process.domain.bind(o)),i.then(void 0,o)},s.timeout=function(t,n,e){return s(t).timeout(n,e)},h.prototype.timeout=function(t,n){var e=l(),r=setTimeout(function(){n&&"string"!=typeof n||(n=new Error(n||"Timed out after "+t+" ms"),n.code="ETIMEDOUT"),e.reject(n)},t);return this.then(function(t){clearTimeout(r),e.resolve(t)},function(t){clearTimeout(r),e.reject(t)},e.notify),e.promise},s.delay=function(t,n){return void 0===n&&(n=t,t=void 0),s(t).delay(n)},h.prototype.delay=function(t){return this.then(function(n){var e=l();return setTimeout(function(){e.resolve(n)},t),e.promise})},s.nfapply=function(t,n){return s(t).nfapply(n)},h.prototype.nfapply=function(t){var n=l(),e=K(t);return e.push(n.makeNodeResolver()),this.fapply(e).fail(n.reject),n.promise},s.nfcall=function(t){var n=K(arguments,1);return s(t).nfapply(n)},h.prototype.nfcall=function(){var t=K(arguments),n=l();return t.push(n.makeNodeResolver()),this.fapply(t).fail(n.reject),n.promise},s.nfbind=s.denodeify=function(t){var n=K(arguments,1);return function(){var e=n.concat(K(arguments)),r=l();return e.push(r.makeNodeResolver()),s(t).fapply(e).fail(r.reject),r.promise}},h.prototype.nfbind=h.prototype.denodeify=function(){var t=K(arguments);return t.unshift(this),s.denodeify.apply(void 0,t)},s.nbind=function(t,n){var e=K(arguments,2);return function(){function r(){return t.apply(n,arguments)}var o=e.concat(K(arguments)),i=l();return o.push(i.makeNodeResolver()),s(r).fapply(o).fail(i.reject),i.promise}},h.prototype.nbind=function(){var t=K(arguments,0);return t.unshift(this),s.nbind.apply(void 0,t)},s.nmapply=s.npost=function(t,n,e){return s(t).npost(n,e)},h.prototype.nmapply=h.prototype.npost=function(t,n){var e=K(n||[]),r=l();return e.push(r.makeNodeResolver()),this.dispatch("post",[t,e]).fail(r.reject),r.promise},s.nsend=s.nmcall=s.ninvoke=function(t,n){var e=K(arguments,2),r=l();return e.push(r.makeNodeResolver()),s(t).dispatch("post",[n,e]).fail(r.reject),r.promise},h.prototype.nsend=h.prototype.nmcall=h.prototype.ninvoke=function(t){var n=K(arguments,1),e=l();return n.push(e.makeNodeResolver()),this.dispatch("post",[t,n]).fail(e.reject),e.promise},s.nodeify=P,h.prototype.nodeify=function(t){return t?void this.then(function(n){s.nextTick(function(){t(null,n)})},function(n){s.nextTick(function(){t(n)})}):this},s.noConflict=function(){throw new Error("Q.noConflict only works when Q is used as a global")};var ut=f();return s})},function(t,n){t.exports=require("nw.gui")},function(t,n,e){var r=e(2),o=r.Constants;t.exports=function(){function t(t){var t=new Date(t);u=(t.getFullYear()-1980&127)<<25|t.getMonth()+1<<21|t.getDay()<<16|t.getHours()<<11|t.getMinutes()<<5|t.getSeconds()>>1}var n=10,e=10,i=0,c=0,u=0,f=0,a=0,s=0,l=0,d=0,p=0,h=0,y=0,v=0,E=0,m={};return t(+new Date),{get made(){return n},set made(t){n=t},get version(){return e},set version(t){e=t},get flags(){return i},set flags(t){i=t},get method(){return c},set method(t){c=t},get time(){return new Date((u>>25&127)+1980,(u>>21&15)-1,u>>16&31,u>>11&31,u>>5&63,(31&u)<<1)},set time(n){t(n)},get crc(){return f},set crc(t){f=t},get compressedSize(){return a},set compressedSize(t){a=t},get size(){return s},set size(t){s=t},get fileNameLength(){return l},set fileNameLength(t){l=t},get extraLength(){return d},set extraLength(t){d=t},get commentLength(){return p},set commentLength(t){p=t},get diskNumStart(){return h},set diskNumStart(t){h=t},get inAttr(){return y},set inAttr(t){y=t},get attr(){return v},set attr(t){v=t},get offset(){return E},set offset(t){E=t},get encripted(){return 1==(1&i)},get entryHeaderSize(){return o.CENHDR+l+d+p},get realDataOffset(){return E+o.LOCHDR+m.fnameLen+m.extraLen},get dataHeader(){return m},loadDataHeaderFromBinary:function(t){var n=t.slice(E,E+o.LOCHDR);if(n.readUInt32LE(0)!=o.LOCSIG)throw r.Errors.INVALID_LOC;m={version:n.readUInt16LE(o.LOCVER),flags:n.readUInt16LE(o.LOCFLG),method:n.readUInt16LE(o.LOCHOW),time:n.readUInt32LE(o.LOCTIM),crc:n.readUInt32LE(o.LOCCRC),compressedSize:n.readUInt32LE(o.LOCSIZ),size:n.readUInt32LE(o.LOCLEN),fnameLen:n.readUInt16LE(o.LOCNAM),extraLen:n.readUInt16LE(o.LOCEXT)}},loadFromBinary:function(t){if(t.length!=o.CENHDR||t.readUInt32LE(0)!=o.CENSIG)throw r.Errors.INVALID_CEN;n=t.readUInt16LE(o.CENVEM),e=t.readUInt16LE(o.CENVER),i=t.readUInt16LE(o.CENFLG),c=t.readUInt16LE(o.CENHOW),u=t.readUInt32LE(o.CENTIM),f=t.readUInt32LE(o.CENCRC),a=t.readUInt32LE(o.CENSIZ),s=t.readUInt32LE(o.CENLEN),l=t.readUInt16LE(o.CENNAM),d=t.readUInt16LE(o.CENEXT),p=t.readUInt16LE(o.CENCOM),h=t.readUInt16LE(o.CENDSK),y=t.readUInt16LE(o.CENATT),v=t.readUInt32LE(o.CENATX),E=t.readUInt32LE(o.CENOFF)},dataHeaderToBinary:function(){var t=new Buffer(o.LOCHDR);return t.writeUInt32LE(o.LOCSIG,0),t.writeUInt16LE(e,o.LOCVER),t.writeUInt16LE(i,o.LOCFLG),t.writeUInt16LE(c,o.LOCHOW),t.writeUInt32LE(u,o.LOCTIM),t.writeUInt32LE(f,o.LOCCRC),t.writeUInt32LE(a,o.LOCSIZ),t.writeUInt32LE(s,o.LOCLEN),t.writeUInt16LE(l,o.LOCNAM),t.writeUInt16LE(d,o.LOCEXT),t},entryHeaderToBinary:function(){var t=new Buffer(o.CENHDR+l+d+p);return t.writeUInt32LE(o.CENSIG,0),t.writeUInt16LE(n,o.CENVEM),t.writeUInt16LE(e,o.CENVER),t.writeUInt16LE(i,o.CENFLG),t.writeUInt16LE(c,o.CENHOW),t.writeUInt32LE(u,o.CENTIM),t.writeInt32LE(f,o.CENCRC,!0),t.writeUInt32LE(a,o.CENSIZ),t.writeUInt32LE(s,o.CENLEN),t.writeUInt16LE(l,o.CENNAM),t.writeUInt16LE(d,o.CENEXT),t.writeUInt16LE(p,o.CENCOM),t.writeUInt16LE(h,o.CENDSK),t.writeUInt16LE(y,o.CENATT),t.writeUInt32LE(v,o.CENATX),t.writeUInt32LE(E,o.CENOFF),t.fill(0,o.CENHDR),t},toString:function(){return'{\n\t"made" : '+n+',\n\t"version" : '+e+',\n\t"flags" : '+i+',\n\t"method" : '+r.methodToString(c)+',\n\t"time" : '+u+',\n\t"crc" : 0x'+f.toString(16).toUpperCase()+',\n\t"compressedSize" : '+a+' bytes,\n\t"size" : '+s+' bytes,\n\t"fileNameLength" : '+l+',\n\t"extraLength" : '+d+' bytes,\n\t"commentLength" : '+p+' bytes,\n\t"diskNumStart" : '+h+',\n\t"inAttr" : '+y+',\n\t"attr" : '+v+',\n\t"offset" : '+E+',\n\t"entryHeaderSize" : '+(o.CENHDR+l+d+p)+" bytes\n}"}}}},function(t,n,e){var r=e(2),o=r.Constants;t.exports=function(){var t=0,n=0,e=0,i=0,c=0;return{get diskEntries(){return t},set diskEntries(e){t=n=e},get totalEntries(){return n},set totalEntries(e){n=t=e},get size(){return e},set size(t){e=t},get offset(){return i},set offset(t){i=t},get commentLength(){return c},set commentLength(t){c=t},get mainHeaderSize(){return o.ENDHDR+c},loadFromBinary:function(u){if(u.length!=o.ENDHDR||u.readUInt32LE(0)!=o.ENDSIG)throw r.Errors.INVALID_END;t=u.readUInt16LE(o.ENDSUB),n=u.readUInt16LE(o.ENDTOT),e=u.readUInt32LE(o.ENDSIZ),i=u.readUInt32LE(o.ENDOFF),c=u.readUInt16LE(o.ENDCOM)},toBinary:function(){var r=new Buffer(o.ENDHDR+c);return r.writeUInt32LE(o.ENDSIG,0),r.writeUInt32LE(0,4),r.writeUInt16LE(t,o.ENDSUB),r.writeUInt16LE(n,o.ENDTOT),r.writeUInt32LE(e,o.ENDSIZ),r.writeUInt32LE(i,o.ENDOFF),r.writeUInt16LE(c,o.ENDCOM),r.fill(" ",o.ENDHDR),r},toString:function(){return'{\n\t"diskEntries" : '+t+',\n\t"totalEntries" : '+n+',\n\t"size" : '+e+' bytes,\n\t"offset" : 0x'+i.toString(16).toUpperCase()+',\n\t"commentLength" : 0x'+c+"\n}"}}}},function(t,n,e){function r(t){function n(t,n){et=t,rt=0,Jt(n);var e,r=new Array(1024),o=[],i=0;for(e=0;e<1024;e++)r[e]=0;for(;(e=vn(r,0,r.length))>0;){var c=new Buffer(r.slice(0,e));o.push(c),i+=c.length}if(1==o.length)return o[0];var u=new Buffer(i),f=0;for(e=0;e<o.length;e++)o[e].copy(u,f),f+=o[e].length;return u}var e,r,o,i,c,u,f,a,s,l,d,p,h,y,v,E,m,g,w,b,N,I,O,S,_,j,D,C,L,x,T,A,F,R,k,U,B,M,P,H,Z,G,z,V,W,X,K,Y,q,J,Q,$,tt,nt,et,rt,ot=32768,it=0,ct=1,ut=2,ft=6,at=!0,st=32768,lt=64,dt=8192,pt=2*ot,ht=3,yt=258,vt=16,Et=8192,mt=13,gt=Et,wt=1<<mt,bt=wt-1,Nt=ot-1,It=0,Ot=4096,St=yt+ht+1,_t=ot-St,jt=1,Dt=15,Ct=7,Lt=29,xt=256,Tt=256,At=xt+1+Lt,Ft=30,Rt=19,kt=16,Ut=17,Bt=18,Mt=2*At+1,Pt=parseInt((mt+ht-1)/ht),Ht=null,Zt=function(){this.fc=0,this.dl=0},Gt=function(){this.dyn_tree=null,this.static_tree=null,this.extra_bits=null,this.extra_base=0,this.elems=0,this.max_length=0,this.max_code=0},zt=function(t,n,e,r){this.good_length=t,this.max_lazy=n,this.nice_length=e,this.max_chain=r},Vt=function(){this.next=null,this.len=0,this.ptr=new Array(dt),this.off=0},Wt=new Array(0,0,0,0,0,0,0,0,1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5,0),Xt=new Array(0,0,0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13),Kt=new Array(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,3,7),Yt=new Array(16,17,18,0,8,7,9,6,10,5,11,4,12,3,13,2,14,1,15),qt=new Array(new zt(0,0,0,0),new zt(4,4,8,4),new zt(4,5,16,8),new zt(4,6,32,32),new zt(4,4,16,16),new zt(8,16,32,32),new zt(8,16,128,128),new zt(8,32,128,256),new zt(32,128,258,1024),new zt(32,258,258,4096)),Jt=function(t){var n;if(t?t<1?t=1:t>9&&(t=9):t=ft,D=t,i=!1,O=!1,null==Ht){for(e=r=o=null,Ht=new Array(dt),a=new Array(pt),s=new Array(gt),l=new Array(st+lt),d=new Array(1<<vt),x=new Array(Mt),n=0;n<Mt;n++)x[n]=new Zt;for(T=new Array(2*Ft+1),n=0;n<2*Ft+1;n++)T[n]=new Zt;for(A=new Array(At+2),n=0;n<At+2;n++)A[n]=new Zt;for(F=new Array(Ft),n=0;n<Ft;n++)F[n]=new Zt;for(R=new Array(2*Rt+1),n=0;n<2*Rt+1;n++)R[n]=new Zt;k=new Gt,U=new Gt,B=new Gt,M=new Array(Dt+1),P=new Array(2*At+1),G=new Array(2*At+1),z=new Array(yt-ht+1),V=new Array(512),W=new Array(Lt),X=new Array(Ft),K=new Array(parseInt(Et/8))}},Qt=function(t){t.next=e,e=t},$t=function(){var t;return null!=e?(t=e,e=e.next):t=new Vt,t.next=null,t.len=t.off=0,t},tn=function(t){return d[ot+t]},nn=function(t,n){return d[ot+t]=n},en=function(t){Ht[u+c++]=t,u+c==dt&&Rn()},rn=function(t){t&=65535,u+c<dt-2?(Ht[u+c++]=255&t,Ht[u+c++]=t>>>8):(en(255&t),en(t>>>8))},on=function(){v=(v<<Pt^255&a[N+ht-1])&bt,E=tn(v),d[N&Nt]=E,nn(v,N)},cn=function(t,n){Tn(n[t].fc,n[t].dl)},un=function(t){return 255&(t<256?V[t]:V[256+(t>>7)])},fn=function(t,n,e){return t[n].fc<t[e].fc||t[n].fc==t[e].fc&&G[n]<=G[e]},an=function(t,n,e){var r;for(r=0;r<e&&rt<et.length;r++)t[n+r]=255&et[rt++];return r},sn=function(){var t;for(t=0;t<wt;t++)d[ot+t]=0;if(j=qt[D].max_lazy,C=qt[D].good_length,at||(L=qt[D].nice_length),_=qt[D].max_chain,N=0,y=0,S=an(a,0,2*ot),S<=0)return O=!0,void(S=0);for(O=!1;S<St&&!O;)dn();for(v=0,t=0;t<ht-1;t++)v=(v<<Pt^255&a[t])&bt},ln=function(t){var n,e,r=_,o=N,i=b,c=N>_t?N-_t:It,u=N+yt,f=a[o+i-1],s=a[o+i];b>=C&&(r>>=2);do if(n=t,a[n+i]==s&&a[n+i-1]==f&&a[n]==a[o]&&a[++n]==a[o+1]){o+=2,n++;do;while(a[++o]==a[++n]&&a[++o]==a[++n]&&a[++o]==a[++n]&&a[++o]==a[++n]&&a[++o]==a[++n]&&a[++o]==a[++n]&&a[++o]==a[++n]&&a[++o]==a[++n]&&o<u);if(e=yt-(u-o),o=u-yt,e>i){if(I=t,i=e,at){if(e>=yt)break}else if(e>=L)break;f=a[o+i-1],s=a[o+i]}}while((t=d[t&Nt])>c&&0!=--r);return i},dn=function(){var t,n,e=pt-S-N;if(e==-1)e--;else if(N>=ot+_t){for(t=0;t<ot;t++)a[t]=a[t+ot];for(I-=ot,N-=ot,y-=ot,t=0;t<wt;t++)n=tn(t),nn(t,n>=ot?n-ot:It);for(t=0;t<ot;t++)n=d[t],d[t]=n>=ot?n-ot:It;e+=ot}O||(t=an(a,N+S,e),t<=0?O=!0:S+=t)},pn=function(){for(;0!=S&&null==r;){var t;if(on(),E!=It&&N-E<=_t&&(w=ln(E),w>S&&(w=S)),w>=ht)if(t=Cn(N-I,w-ht),S-=w,w<=j){w--;do N++,on();while(0!=--w);N++}else N+=w,w=0,v=255&a[N],v=(v<<Pt^255&a[N+1])&bt;else t=Cn(0,255&a[N]),S--,N++;for(t&&(Dn(0),y=N);S<St&&!O;)dn()}},hn=function(){for(;0!=S&&null==r;){if(on(),b=w,m=I,w=ht-1,E!=It&&b<j&&N-E<=_t&&(w=ln(E),w>S&&(w=S),w==ht&&N-I>Ot&&w--),b>=ht&&w<=b){var t;t=Cn(N-1-m,b-ht),S-=b-1,b-=2;do N++,on();while(0!=--b);g=0,w=ht-1,N++,t&&(Dn(0),y=N)}else 0!=g?(Cn(0,255&a[N-1])&&(Dn(0),y=N),N++,S--):(g=1,N++,S--);for(;S<St&&!O;)dn()}},yn=function(){O||(p=0,h=0,mn(),sn(),r=null,c=0,u=0,g=0,D<=3?(b=ht-1,w=0):(w=ht-1,g=0,g=0),f=!1)},vn=function(t,n,e){var r;return i||(yn(),i=!0,0!=S)?(r=En(t,n,e))==e?e:f?r:(D<=3?pn():hn(),0==S&&(0!=g&&Cn(0,255&a[N-1]),Dn(1),f=!0),r+En(t,r+n,e-r)):(f=!0,0)},En=function(t,n,e){var o,i,f;for(o=0;null!=r&&o<e;){for(i=e-o,i>r.len&&(i=r.len),f=0;f<i;f++)t[n+o+f]=r.ptr[r.off+f];if(r.off+=i,r.len-=i,o+=i,0==r.len){var a;a=r,r=r.next,Qt(a)}}if(o==e)return o;if(u<c){for(i=e-o,i>c-u&&(i=c-u),f=0;f<i;f++)t[n+o+f]=Ht[u+f];u+=i,o+=i,c==u&&(c=u=0)}return o},mn=function(){var t,n,e,r,o;if(0==F[0].dl){for(k.dyn_tree=x,k.static_tree=A,k.extra_bits=Wt,k.extra_base=xt+1,k.elems=At,k.max_length=Dt,k.max_code=0,U.dyn_tree=T,U.static_tree=F,U.extra_bits=Xt,U.extra_base=0,U.elems=Ft,U.max_length=Dt,U.max_code=0,B.dyn_tree=R,B.static_tree=null,B.extra_bits=Kt,B.extra_base=0,B.elems=Rt,B.max_length=Ct,B.max_code=0,e=0,r=0;r<Lt-1;r++)for(W[r]=e,t=0;t<1<<Wt[r];t++)z[e++]=r;for(z[e-1]=r,o=0,r=0;r<16;r++)for(X[r]=o,t=0;t<1<<Xt[r];t++)V[o++]=r;for(o>>=7;r<Ft;r++)for(X[r]=o<<7,t=0;t<1<<Xt[r]-7;t++)V[256+o++]=r;for(n=0;n<=Dt;n++)M[n]=0;for(t=0;t<=143;)A[t++].dl=8,M[8]++;for(;t<=255;)A[t++].dl=9,M[9]++;for(;t<=279;)A[t++].dl=7,M[7]++;for(;t<=287;)A[t++].dl=8,M[8]++;for(Nn(A,At+1),t=0;t<Ft;t++)F[t].dl=5,F[t].fc=An(t,5);gn()}},gn=function(){var t;for(t=0;t<At;t++)x[t].fc=0;for(t=0;t<Ft;t++)T[t].fc=0;for(t=0;t<Rt;t++)R[t].fc=0;x[Tt].fc=1,tt=nt=0,Y=q=J=0,Q=0,$=1},wn=function(t,n){for(var e=P[n],r=n<<1;r<=H&&(r<H&&fn(t,P[r+1],P[r])&&r++,!fn(t,e,P[r]));)P[n]=P[r],n=r,r<<=1;P[n]=e},bn=function(t){var n,e,r,o,i,c,u=t.dyn_tree,f=t.extra_bits,a=t.extra_base,s=t.max_code,l=t.max_length,d=t.static_tree,p=0;for(o=0;o<=Dt;o++)M[o]=0;for(u[P[Z]].dl=0,n=Z+1;n<Mt;n++)e=P[n],o=u[u[e].dl].dl+1,o>l&&(o=l,p++),u[e].dl=o,e>s||(M[o]++,i=0,e>=a&&(i=f[e-a]),c=u[e].fc,tt+=c*(o+i),null!=d&&(nt+=c*(d[e].dl+i)));if(0!=p){do{for(o=l-1;0==M[o];)o--;M[o]--,M[o+1]+=2,M[l]--,p-=2}while(p>0);for(o=l;0!=o;o--)for(e=M[o];0!=e;)r=P[--n],r>s||(u[r].dl!=o&&(tt+=(o-u[r].dl)*u[r].fc,u[r].fc=o),e--)}},Nn=function(t,n){var e,r,o=new Array(Dt+1),i=0;for(e=1;e<=Dt;e++)i=i+M[e-1]<<1,o[e]=i;for(r=0;r<=n;r++){var c=t[r].dl;0!=c&&(t[r].fc=An(o[c]++,c))}},In=function(t){var n,e,r=t.dyn_tree,o=t.static_tree,i=t.elems,c=-1,u=i;for(H=0,Z=Mt,n=0;n<i;n++)0!=r[n].fc?(P[++H]=c=n,G[n]=0):r[n].dl=0;for(;H<2;){var f=P[++H]=c<2?++c:0;r[f].fc=1,G[f]=0,tt--,null!=o&&(nt-=o[f].dl)}for(t.max_code=c,n=H>>1;n>=1;n--)wn(r,n);do n=P[jt],P[jt]=P[H--],wn(r,jt),e=P[jt],P[--Z]=n,P[--Z]=e,r[u].fc=r[n].fc+r[e].fc,G[n]>G[e]+1?G[u]=G[n]:G[u]=G[e]+1,r[n].dl=r[e].dl=u,P[jt]=u++,wn(r,jt);while(H>=2);P[--Z]=P[jt],bn(t),Nn(r,c)},On=function(t,n){var e,r,o=-1,i=t[0].dl,c=0,u=7,f=4;for(0==i&&(u=138,f=3),t[n+1].dl=65535,e=0;e<=n;e++)r=i,i=t[e+1].dl,++c<u&&r==i||(c<f?R[r].fc+=c:0!=r?(r!=o&&R[r].fc++,R[kt].fc++):c<=10?R[Ut].fc++:R[Bt].fc++,c=0,o=r,0==i?(u=138,f=3):r==i?(u=6,f=3):(u=7,f=4))},Sn=function(t,n){var e,r,o=-1,i=t[0].dl,c=0,u=7,f=4;for(0==i&&(u=138,f=3),e=0;e<=n;e++)if(r=i,i=t[e+1].dl,!(++c<u&&r==i)){if(c<f){do cn(r,R);while(0!=--c)}else 0!=r?(r!=o&&(cn(r,R),c--),cn(kt,R),Tn(c-3,2)):c<=10?(cn(Ut,R),Tn(c-3,3)):(cn(Bt,R),Tn(c-11,7));c=0,o=r,0==i?(u=138,f=3):r==i?(u=6,f=3):(u=7,f=4)}},_n=function(){var t;for(On(x,k.max_code),On(T,U.max_code),In(B),t=Rt-1;t>=3&&0==R[Yt[t]].dl;t--);return tt+=3*(t+1)+5+5+4,t},jn=function(t,n,e){var r;for(Tn(t-257,5),Tn(n-1,5),Tn(e-4,4),r=0;r<e;r++)Tn(R[Yt[r]].dl,3);Sn(x,t-1),Sn(T,n-1)},Dn=function(t){var n,e,r,o;if(o=N-y,K[J]=Q,In(k),In(U),r=_n(),n=tt+3+7>>3,e=nt+3+7>>3,e<=n&&(n=e),o+4<=n&&y>=0){var i;for(Tn((it<<1)+t,3),Fn(),rn(o),rn(~o),i=0;i<o;i++)en(a[y+i])}else e==n?(Tn((ct<<1)+t,3),Ln(A,F)):(Tn((ut<<1)+t,3),jn(k.max_code+1,U.max_code+1,r+1),Ln(x,T));gn(),0!=t&&Fn()},Cn=function(t,n){if(l[Y++]=n,0==t?x[n].fc++:(t--,x[z[n]+xt+1].fc++,T[un(t)].fc++,s[q++]=t,Q|=$),$<<=1,0==(7&Y)&&(K[J++]=Q,Q=0,$=1),D>2&&0==(4095&Y)){var e,r=8*Y,o=N-y;for(e=0;e<Ft;e++)r+=T[e].fc*(5+Xt[e]);if(r>>=3,q<parseInt(Y/2)&&r<parseInt(o/2))return!0}return Y==Et-1||q==gt},Ln=function(t,n){var e,r,o,i,c=0,u=0,f=0,a=0;if(0!=Y)do 0==(7&c)&&(a=K[f++]),r=255&l[c++],0==(1&a)?cn(r,t):(o=z[r],cn(o+xt+1,t),i=Wt[o],0!=i&&(r-=W[o],Tn(r,i)),e=s[u++],o=un(e),cn(o,n),i=Xt[o],0!=i&&(e-=X[o],Tn(e,i))),a>>=1;while(c<Y);cn(Tt,t)},xn=16,Tn=function(t,n){h>xn-n?(p|=t<<h,rn(p),p=t>>xn-h,h+=n-xn):(p|=t<<h,h+=n)},An=function(t,n){var e=0;do e|=1&t,t>>=1,e<<=1;while(--n>0);return e>>1},Fn=function(){h>8?rn(p):h>0&&en(p),p=0,h=0},Rn=function(){if(0!=c){var t,n;for(t=$t(),null==r?r=o=t:o=o.next=t,t.len=c-u,n=0;n<t.len;n++)t.ptr[n]=Ht[u+n];c=u=0}};return{deflate:function(){return n(t,8)}}}t.exports=function(t){var n=e(8);return{deflate:function(){return new r(t).deflate()},deflateAsync:function(e){var r=n.createDeflateRaw({chunkSize:1024*(parseInt(t.length/1024)+1)}),o=[],i=0;r.on("data",function(t){o.push(t),i+=t.length}),r.on("end",function(){var t=new Buffer(i),n=0;t.fill(0);for(var r=0;r<o.length;r++){var c=o[r];c.copy(t,n),n+=c.length}e&&e(t)}),r.end(t)}}}},function(t,n,e){n.Deflater=e(19),n.Inflater=e(21)},function(t,n,e){function r(t){function n(t,n,e,r,o,i){this.status=0,this.root=null,this.maxbit=0;var c,u,f,a=[],s=[],l=[],d=[],p={extra:0,bitcnt:0,lbase:0,next:null};f=this.root=null;for(var h=0;h<17;h++)s[h]=0,l[h]=0,a[h]=0;for(h=0;h<288;h++)d[h]=0;c=n>256?t[256]:16;for(var y=-1;++y<n;)s[t[y]]++;if(s[0]!=n){for(var v=1;v<=16&&0==s[v];v++);var E=v;for(h=16;0!=h&&0==s[h];h--);var m=h;i<v&&(i=v);for(var g=1<<v;v<h;v++,g<<=1)if((g-=s[v])<0)return this.status=2,void(this.maxbit=i);if((g-=s[h])<0)return this.status=2,void(this.maxbit=i);s[h]+=g,a[1]=v=0,y=1;for(var w=2;--h>0;)a[w++]=v+=s[y++];y=0,h=0;do(v=t[y++])&&(d[a[v]++]=h);while(++h<n);n=a[m],a[0]=h=0,y=0;for(var b=-1,N=l[0]=0,I=null,O=0,S=[];E<=m;E++)for(var _=s[E];_-- >0;){for(;E>N+l[1+b];){if(N+=l[1+b],b++,O=(O=m-N)>i?i:O,(u=1<<(v=E-N))>_+1)for(u-=_+1,w=E;++v<O&&!((u<<=1)<=s[++w]);)u-=s[w];for(N+v>c&&N<c&&(v=c-N),O=1<<v,l[1+b]=v,I=[];I.length<O;)I.push({extra:0,bitcnt:0,lbase:0,next:null});f=null==f?this.root={next:null,list:null}:f.next={next:null,list:null},f.next=null,f.list=I,S[b]=I,b>0&&(a[b]=h,p.bitcnt=l[b],p.extra=16+v,p.next=I,v=(h&(1<<N)-1)>>N-l[b],S[b-1][v].extra=p.extra,S[b-1][v].bitcnt=p.bitcnt,S[b-1][v].lbase=p.lbase,S[b-1][v].next=p.next)}for(p.bitcnt=E-N,y>=n?p.extra=99:d[y]<e?(p.extra=d[y]<256?16:15,p.lbase=d[y++]):(p.extra=o[d[y]-e],p.lbase=r[d[y++]-e]),u=1<<E-N,v=h>>N;v<O;v+=u)I[v].extra=p.extra,I[v].bitcnt=p.bitcnt,I[v].lbase=p.lbase,I[v].next=p.next;for(v=1<<E-1;0!=(h&v);v>>=1)h^=v;for(h^=v;(h&(1<<N)-1)!=a[b];)N-=l[b],b--}this.maxbit=l[1],this.status=0!=g&&1!=m?1:0}}function e(n){for(;b<n;)w|=t[_++]<<b,b+=8;return w}function r(t){return b-=t,w>>=t}function i(n){for(;b<n;)w|=t[_++]<<b,b+=8;var e=w&j[n];return w>>=n,b-=n,e}function c(t,n,o){var c,u;if(0==o)return 0;for(var f=0;;){for(u=d.list[e(h)&j[h]],c=u.extra;c>16;){if(99==c)return-1;r(u.bitcnt),c-=16,u=u.next[e(c)&j[c]],c=u.extra}if(r(u.bitcnt),16!=c){if(15==c)break;for(O=u.lbase+i(c),u=p.list[e(y)&j[y]],c=u.extra;c>16;){if(99==c)return-1;r(u.bitcnt),c-=16,u=u.next[e(c)&j[c]],c=u.extra}for(r(u.bitcnt),S=m-u.lbase-i(c);O>0&&f<o;)O--,S&=v-1,m&=v-1,t[n+f++]=E[m++]=E[S++];if(f==o)return o}else if(m&=v-1,t[n+f++]=E[m++]=u.lbase,f==o)return o}return N=-1,f}function u(t,n,e){r(7&b);var o=i(16);if(o!=(65535&~i(16)))return-1;for(O=o,o=0;O>0&&o<e;)O--,m&=v-1,t[n+o++]=E[m++]=i(8);return 0==O&&(N=-1),o}function f(t,e,r){var o=0;if(null==g){for(var i=[],u=0;u<144;u++)i[u]=8;for(;u<256;u++)i[u]=9;for(;u<280;u++)i[u]=7;for(;u<288;u++)i[u]=8;l=7;var f=new n(i,288,257,D,C,l);if(0!=f.status)return-1;for(g=f.root,l=f.maxbit,u=0;u<30;u++)i[u]=5;if(o=5,f=new n(i,30,0,L,x,o),
-f.status>1)return g=null,-1;s=f.root,o=f.maxbit}return d=g,p=s,h=l,y=o,c(t,e,r)}function a(t,o,u){for(var f=new Array(572),a=0;a<572;a++)f[a]=0;var s=257+i(5),l=1+i(5),v=4+i(4);if(s>286||l>30)return-1;for(var E=0;E<v;E++)f[T[E]]=i(3);for(;E<19;E++)f[T[E]]=0;h=7;var m=new n(f,19,19,null,null,h);if(0!=m.status)return-1;d=m.root,h=m.maxbit;for(var g=s+l,w=0,b=0;w<g;){var N=d.list[e(h)&j[h]];if(E=N.bitcnt,r(E),E=N.lbase,E<16)f[w++]=b=E;else if(16==E){if(E=3+i(2),w+E>g)return-1;for(;E-- >0;)f[w++]=b}else if(17==E){if(E=3+i(3),w+E>g)return-1;for(;E-- >0;)f[w++]=0;b=0}else{if(E=11+i(7),w+E>g)return-1;for(;E-- >0;)f[w++]=0;b=0}}if(h=9,m=new n(f,s,257,D,C,h),0==h&&(m.status=1),0!=m.status)return-1;for(d=m.root,h=m.maxbit,w=0;w<l;w++)f[w]=f[w+s];return y=6,m=new n(f,l,0,L,x,y),p=m.root,y=m.maxbit,0==y&&s>257||0!=m.status?-1:c(t,o,u)}var s,l,d,p,h,y,v=32768,E=new o(65536),m=0,g=null,w=0,b=0,N=-1,I=!1,O=0,S=0,_=0,j=[0,1,3,7,15,31,63,127,255,511,1023,2047,4095,8191,16383,32767,65535],D=[3,4,5,6,7,8,9,10,11,13,15,17,19,23,27,31,35,43,51,59,67,83,99,115,131,163,195,227,258,0,0],C=[0,0,0,0,0,0,0,0,1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5,0,99,99],L=[1,2,3,4,5,7,9,13,17,25,33,49,65,97,129,193,257,385,513,769,1025,1537,2049,3073,4097,6145,8193,12289,16385,24577],x=[0,0,0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13],T=[16,17,18,0,8,7,9,6,10,5,11,4,12,3,13,2,14,1,15];return{inflate:function(t){d=null;for(var n,e=t.length,r=0;r<e;){if(I&&N==-1)return;if(O>0){if(0!=N)for(;O>0&&r<e;)O--,S&=v-1,m&=v-1,t[r++]=E[m++]=E[S++];else{for(;O>0&&r<e;)O--,m&=v-1,t[r++]=E[m++]=i(8);0==O&&(N=-1)}if(r==e)return}if(N==-1){if(I)break;I=0!=i(1),N=i(2),d=null,O=0}switch(N){case 0:n=u(t,r,e-r);break;case 1:n=null!=d?c(t,r,e-r):f(t,r,e-r);break;case 2:n=null!=d?c(t,r,e-r):a(t,r,e-r);break;default:n=-1}if(n==-1)return;r+=n}}}}var o=e(29).Buffer;t.exports=function(t){var n=e(8);return{inflateAsync:function(e){var r=n.createInflateRaw(),i=[],c=0;r.on("data",function(t){i.push(t),c+=t.length}),r.on("end",function(){var t=new o(c),n=0;t.fill(0);for(var r=0;r<i.length;r++){var u=i[r];u.copy(t,n),n+=u.length}e&&e(t)}),r.end(t)},inflate:function(n){var e={x:new r(t)};e.x.inflate(n),delete e.x}}}},function(t,n,e){var r=e(0),o=e(1);r.existsSync=r.existsSync||o.existsSync,t.exports=function(t){function n(){return{directory:!1,readonly:!1,hidden:!1,executable:!1,mtime:0,atime:0}}var e=t||"",i=n(),c=null;return e&&r.existsSync(e)?(c=r.statSync(e),i.directory=c.isDirectory(),i.mtime=c.mtime,i.atime=c.atime,i.executable=!!(1&parseInt((c.mode&parseInt("777",8)).toString(8)[0])),i.readonly=!!(2&parseInt((c.mode&parseInt("777",8)).toString(8)[0])),i.hidden="."===o.basename(e)[0]):console.warn("Invalid path: "+e),{get directory(){return i.directory},get readOnly(){return i.readonly},get hidden(){return i.hidden},get mtime(){return i.mtime},get atime(){return i.atime},get executable(){return i.executable},decodeAttributes:function(t){},encodeAttributes:function(t){},toString:function(){return'{\n\t"path" : "'+e+',\n\t"isDirectory" : '+i.directory+',\n\t"isReadOnly" : '+i.readonly+',\n\t"isHidden" : '+i.hidden+',\n\t"isExecutable" : '+i.executable+',\n\t"mTime" : '+i.mtime+'\n\t"aTime" : '+i.atime+"\n}"}}}},function(t,n,e){var r=e(0),o=e(1);r.existsSync=r.existsSync||o.existsSync,t.exports=function(){function t(t){var n=t.split(f)[0];t.split(f).forEach(function(t){if(t&&":"!=t.substr(-1,1)){n+=f+t;var e;try{e=r.statSync(n)}catch(t){r.mkdirSync(n)}if(e&&e.isFile())throw u.FILE_IN_THE_WAY.replace("%s",n)}})}function n(t,e,i){"boolean"==typeof e&&(i=e,e=void 0);var c=[];return r.readdirSync(t).forEach(function(u){var a=o.join(t,u);r.statSync(a).isDirectory()&&i&&(c=c.concat(n(a,e,i))),e&&!e.test(a)||c.push(o.normalize(a)+(r.statSync(a).isDirectory()?f:""))}),c}var i=[],c=e(4),u=e(5),f=o.normalize("/");return{makeDir:function(n){t(n)},crc32:function(t){var n=new Buffer(4);if(!i.length)for(var e=0;e<256;e++){for(var r=e,o=8;--o>=0;)0!=(1&r)?r=3988292384^r>>>1:r>>>=1;r<0&&(n.writeInt32LE(r,0),r=n.readUInt32LE(0)),i[e]=r}for(var c=0,u=0,f=t.length,a=~c;--f>=0;)a=i[255&(a^t[u++])]^a>>>8;return c=~a,n.writeInt32LE(4294967295&c,0),n.readUInt32LE(0)},methodToString:function(t){switch(t){case c.STORED:return"STORED ("+t+")";case c.DEFLATED:return"DEFLATED ("+t+")";default:return"UNSUPPORTED ("+t+")"}},writeFileTo:function(n,e,i,c){if(r.existsSync(n)){if(!i)return!1;var u=r.statSync(n);if(u.isDirectory())return!1}var f=o.dirname(n);r.existsSync(f)||t(f);var a;try{a=r.openSync(n,"w",438)}catch(t){r.chmodSync(n,438),a=r.openSync(n,"w",438)}return a&&(r.writeSync(a,e,0,e.length,0),r.closeSync(a)),r.chmodSync(n,c||438),!0},writeFileToAsync:function(n,e,i,c,u){"function"==typeof c&&(u=c,c=void 0),r.exists(n,function(f){return f&&!i?u(!1):void r.stat(n,function(i,a){if(f&&a.isDirectory())return u(!1);var s=o.dirname(n);r.exists(s,function(o){o||t(s),r.open(n,"w",438,function(t,o){t?r.chmod(n,438,function(t){r.open(n,"w",438,function(t,o){r.write(o,e,0,e.length,0,function(t,e,i){r.close(o,function(t){r.chmod(n,c||438,function(){u(!0)})})})})}):o?r.write(o,e,0,e.length,0,function(t,e,i){r.close(o,function(t){r.chmod(n,c||438,function(){u(!0)})})}):r.chmod(n,c||438,function(){u(!0)})})})})})},findFiles:function(t){return n(t,!0)},getAttributes:function(t){},setAttributes:function(t){},toBuffer:function(t){return Buffer.isBuffer(t)?t:0==t.length?new Buffer(0):new Buffer(t,"utf8")},Constants:c,Errors:u}}()},function(t,n,e){var r=e(6),o=e(3),i=e(2);t.exports=function(t,n){function c(){a={},f=new Array(h.diskEntries);for(var t=h.offset,n=0;n<f.length;n++){var e=t,o=new r(p);o.header=p.slice(e,e+=i.Constants.CENHDR),o.entryName=p.slice(e,e+=o.header.fileNameLength),o.header.extraLength&&(o.extra=p.slice(e,e+=o.header.extraLength)),o.header.commentLength&&(o.comment=p.slice(e,e+o.header.commentLength)),t+=o.header.entryHeaderSize,f[n]=o,a[o.entryName]=o}}function u(){var t=p.length-i.Constants.ENDHDR,n=Math.max(0,t-65535),e=-1;for(t;t>=n;t--)if(80==p[t]&&p.readUInt32LE(t)==i.Constants.ENDSIG){e=t;break}if(!~e)throw i.Errors.INVALID_FORMAT;h.loadFromBinary(p.slice(e,e+i.Constants.ENDHDR)),h.commentLength&&(s=p.slice(e+i.Constants.ENDHDR)),c()}var f=[],a={},s=new Buffer(0),l="",d=e(0),p=null,h=new o.MainHeader;return n==i.Constants.FILE?(l=t,p=d.readFileSync(l),u()):n==i.Constants.BUFFER&&(p=t,u()),{get entries(){return f},get comment(){return s.toString()},set comment(t){h.commentLength=t.length,s=t},getEntry:function(t){return a[t]||null},setEntry:function(t){f.push(t),a[t.entryName]=t,h.totalEntries=f.length},deleteEntry:function(t){var n=a[t];if(n&&n.isDirectory){var e=this;this.getEntryChildren(n).forEach(function(n){n.entryName!=t&&e.deleteEntry(n.entryName)})}f.splice(f.indexOf(n),1),delete a[t],h.totalEntries=f.length},getEntryChildren:function(t){if(t.isDirectory){var n=[],e=t.entryName,r=e.length;return f.forEach(function(t){t.entryName.substr(0,r)==e&&n.push(t)}),n}return[]},compressToBuffer:function(){f.length>1&&f.sort(function(t,n){var e=t.entryName.toLowerCase(),r=n.entryName.toLowerCase();return e<r?-1:e>r?1:0});var t=0,n=[],e=[],r=0;h.size=0,h.offset=0,f.forEach(function(o){o.header.offset=r;var i=o.getCompressedData(),c=o.header.dataHeaderToBinary(),u=new Buffer(o.entryName+o.extra.toString()),f=c.length+u.length+i.length;r+=f,n.push(c),n.push(u),n.push(i);var a=o.packHeader();e.push(a),h.size+=a.length,t+=f+a.length}),t+=h.mainHeaderSize,h.offset=r,r=0;var o=new Buffer(t);n.forEach(function(t){t.copy(o,r),r+=t.length}),e.forEach(function(t){t.copy(o,r),r+=t.length});var c=h.toBinary();return s&&s.copy(c,i.Constants.ENDHDR),c.copy(o,r),o},toAsyncBuffer:function(t,n,e,r){f.length>1&&f.sort(function(t,n){var e=t.entryName.toLowerCase(),r=n.entryName.toLowerCase();return e>r?-1:e<r?1:0});var o=0,c=[],u=[],a=0;h.size=0,h.offset=0;var l=function(n){var f,l=arguments.callee;if(n.length){var f=n.pop(),d=f.entryName+f.extra.toString();e&&e(d),f.getCompressedDataAsync(function(e){r&&r(d),f.header.offset=a;var p=f.header.dataHeaderToBinary(),y=new Buffer(d),v=p.length+y.length+e.length;a+=v,c.push(p),c.push(y),c.push(e);var E=f.packHeader();if(u.push(E),h.size+=E.length,o+=v+E.length,n.length)l(n);else{o+=h.mainHeaderSize,h.offset=a,a=0;var m=new Buffer(o);c.forEach(function(t){t.copy(m,a),a+=t.length}),u.forEach(function(t){t.copy(m,a),a+=t.length});var g=h.toBinary();s&&s.copy(g,i.Constants.ENDHDR),g.copy(m,a),t(m)}})}};l(f)}}}},function(t,n,e){function r(){}function o(t){function n(t,n,e){function r(t,n,e){return m(t,n,function(o){!o||"EMFILE"!==o.code&&"ENFILE"!==o.code?("function"==typeof e&&e.apply(this,arguments),c()):i([r,[t,n,e]])})}return"function"==typeof n&&(e=n,n=null),r(t,n,e)}function e(t,n,e,r){function o(t,n,e,r){return g(t,n,e,function(u){!u||"EMFILE"!==u.code&&"ENFILE"!==u.code?("function"==typeof r&&r.apply(this,arguments),c()):i([o,[t,n,e,r]])})}return"function"==typeof e&&(r=e,e=null),o(t,n,e,r)}function r(t,n,e,r){function o(t,n,e,r){return w(t,n,e,function(u){!u||"EMFILE"!==u.code&&"ENFILE"!==u.code?("function"==typeof r&&r.apply(this,arguments),c()):i([o,[t,n,e,r]])})}return"function"==typeof e&&(r=e,e=null),o(t,n,e,r)}function u(t,n,e){function r(t,n){n&&n.sort&&n.sort(),!t||"EMFILE"!==t.code&&"ENFILE"!==t.code?("function"==typeof e&&e.apply(this,arguments),c()):i([s,[o]])}var o=[t];return"function"!=typeof n?o.push(n):e=n,o.push(r),s(o)}function s(n){return b.apply(t,n)}function l(t,n){return this instanceof l?(I.apply(this,arguments),this):l.apply(Object.create(l.prototype),arguments)}function d(){var t=this;E(t.path,t.flags,t.mode,function(n,e){n?(t.autoClose&&t.destroy(),t.emit("error",n)):(t.fd=e,t.emit("open",e),t.read())})}function p(t,n){return this instanceof p?(O.apply(this,arguments),this):p.apply(Object.create(p.prototype),arguments)}function h(){var t=this;E(t.path,t.flags,t.mode,function(n,e){n?(t.destroy(),t.emit("error",n)):(t.fd=e,t.emit("open",e))})}function y(t,n){return new l(t,n)}function v(t,n){return new p(t,n)}function E(t,n,e,r){function o(t,n,e,r){return S(t,n,e,function(u,f){!u||"EMFILE"!==u.code&&"ENFILE"!==u.code?("function"==typeof r&&r.apply(this,arguments),c()):i([o,[t,n,e,r]])})}return"function"==typeof e&&(r=e,e=null),o(t,n,e,r)}f(t),t.gracefulify=o,t.FileReadStream=l,t.FileWriteStream=p,t.createReadStream=y,t.createWriteStream=v;var m=t.readFile;t.readFile=n;var g=t.writeFile;t.writeFile=e;var w=t.appendFile;w&&(t.appendFile=r);var b=t.readdir;if(t.readdir=u,"v0.8"===process.version.substr(0,4)){var N=a(t);l=N.ReadStream,p=N.WriteStream}var I=t.ReadStream;l.prototype=Object.create(I.prototype),l.prototype.open=d;var O=t.WriteStream;p.prototype=Object.create(O.prototype),p.prototype.open=h,t.ReadStream=l,t.WriteStream=p;var S=t.open;return t.open=E,t}function i(t){d("ENQUEUE",t[0].name,t[1]),s.push(t)}function c(){var t=s.shift();t&&(d("RETRY",t[0].name,t[1]),t[0].apply(null,t[1]))}var u=e(0),f=e(27),a=e(26),s=[],l=e(32),d=r;l.debuglog?d=l.debuglog("gfs4"):/\bgfs4\b/i.test(process.env.NODE_DEBUG||"")&&(d=function(){var t=l.format.apply(l,arguments);t="GFS4: "+t.split(/\n/).join("\nGFS4: "),console.error(t)}),/\bgfs4\b/i.test(process.env.NODE_DEBUG||"")&&process.on("exit",function(){d(s),e(28).equal(s.length,0)}),t.exports=o(e(7)),process.env.TEST_GRACEFUL_FS_GLOBAL_PATCH&&(t.exports=o(u)),t.exports.close=u.close=function(t){return function(n,e){return t.call(u,n,function(t){t||c(),"function"==typeof e&&e.apply(this,arguments)})}}(u.close),t.exports.closeSync=u.closeSync=function(t){return function(n){var e=t.apply(u,arguments);return c(),e}}(u.closeSync)},function(t,n,e){function r(t){function n(e,r){if(!(this instanceof n))return new n(e,r);o.call(this);var i=this;this.path=e,this.fd=null,this.readable=!0,this.paused=!1,this.flags="r",this.mode=438,this.bufferSize=65536,r=r||{};for(var c=Object.keys(r),u=0,f=c.length;u<f;u++){var a=c[u];this[a]=r[a]}if(this.encoding&&this.setEncoding(this.encoding),void 0!==this.start){if("number"!=typeof this.start)throw TypeError("start must be a Number");if(void 0===this.end)this.end=1/0;else if("number"!=typeof this.end)throw TypeError("end must be a Number");if(this.start>this.end)throw new Error("start must be <= end");this.pos=this.start}return null!==this.fd?void process.nextTick(function(){i._read()}):void t.open(this.path,this.flags,this.mode,function(t,n){return t?(i.emit("error",t),void(i.readable=!1)):(i.fd=n,i.emit("open",n),void i._read())})}function e(n,r){if(!(this instanceof e))return new e(n,r);o.call(this),this.path=n,this.fd=null,this.writable=!0,this.flags="w",this.encoding="binary",this.mode=438,this.bytesWritten=0,r=r||{};for(var i=Object.keys(r),c=0,u=i.length;c<u;c++){var f=i[c];this[f]=r[f]}if(void 0!==this.start){if("number"!=typeof this.start)throw TypeError("start must be a Number");if(this.start<0)throw new Error("start must be >= zero");this.pos=this.start}this.busy=!1,this._queue=[],null===this.fd&&(this._open=t.open,this._queue.push([this._open,this.path,this.flags,this.mode,void 0]),this.flush())}return{ReadStream:n,WriteStream:e}}var o=e(31).Stream;t.exports=r},function(t,n,e){function r(t){h.hasOwnProperty("O_SYMLINK")&&process.version.match(/^v0\.6\.[0-2]|^v0\.5\./)&&o(t),t.lutimes||i(t),t.chown=f(t.chown),t.fchown=f(t.fchown),t.lchown=f(t.lchown),t.chmod=c(t.chmod),t.fchmod=c(t.fchmod),t.lchmod=c(t.lchmod),t.chownSync=a(t.chownSync),t.fchownSync=a(t.fchownSync),t.lchownSync=a(t.lchownSync),t.chmodSync=u(t.chmodSync),t.fchmodSync=u(t.fchmodSync),t.lchmodSync=u(t.lchmodSync),t.stat=s(t.stat),t.fstat=s(t.fstat),t.lstat=s(t.lstat),t.statSync=l(t.statSync),t.fstatSync=l(t.fstatSync),t.lstatSync=l(t.lstatSync),t.lchmod||(t.lchmod=function(t,n,e){e&&process.nextTick(e)},t.lchmodSync=function(){}),t.lchown||(t.lchown=function(t,n,e,r){r&&process.nextTick(r)},t.lchownSync=function(){}),"win32"===process.platform&&(t.rename=function(t){return function(n,e,r){var o=Date.now(),i=0;t(n,e,function c(u){return u&&("EACCES"===u.code||"EPERM"===u.code)&&Date.now()-o<6e4?(setTimeout(function(){t(n,e,c)},i),void(i<100&&(i+=10))):void(r&&r(u))})}}(t.rename)),t.read=function(n){return function(e,r,o,i,c,u){var f;if(u&&"function"==typeof u){var a=0;f=function(s,l,d){return s&&"EAGAIN"===s.code&&a<10?(a++,n.call(t,e,r,o,i,c,f)):void u.apply(this,arguments)}}return n.call(t,e,r,o,i,c,f)}}(t.read),t.readSync=function(n){return function(e,r,o,i,c){for(var u=0;;)try{return n.call(t,e,r,o,i,c)}catch(t){if("EAGAIN"===t.code&&u<10){u++;continue}throw t}}}(t.readSync)}function o(t){t.lchmod=function(n,e,r){t.open(n,h.O_WRONLY|h.O_SYMLINK,e,function(n,o){return n?void(r&&r(n)):void t.fchmod(o,e,function(n){t.close(o,function(t){r&&r(n||t)})})})},t.lchmodSync=function(n,e){var r,o=t.openSync(n,h.O_WRONLY|h.O_SYMLINK,e),i=!0;try{r=t.fchmodSync(o,e),i=!1}finally{if(i)try{t.closeSync(o)}catch(t){}else t.closeSync(o)}return r}}function i(t){h.hasOwnProperty("O_SYMLINK")?(t.lutimes=function(n,e,r,o){t.open(n,h.O_SYMLINK,function(n,i){return n?void(o&&o(n)):void t.futimes(i,e,r,function(n){t.close(i,function(t){o&&o(n||t)})})})},t.lutimesSync=function(n,e,r){var o,i=t.openSync(n,h.O_SYMLINK),c=!0;try{o=t.futimesSync(i,e,r),c=!1}finally{if(c)try{t.closeSync(i)}catch(t){}else t.closeSync(i)}return o}):(t.lutimes=function(t,n,e,r){r&&process.nextTick(r)},t.lutimesSync=function(){})}function c(t){return t?function(n,e,r){return t.call(p,n,e,function(t){d(t)&&(t=null),r&&r.apply(this,arguments)})}:t}function u(t){return t?function(n,e){try{return t.call(p,n,e)}catch(t){if(!d(t))throw t}}:t}function f(t){return t?function(n,e,r,o){return t.call(p,n,e,r,function(t){d(t)&&(t=null),o&&o.apply(this,arguments)})}:t}function a(t){return t?function(n,e,r){try{return t.call(p,n,e,r)}catch(t){if(!d(t))throw t}}:t}function s(t){return t?function(n,e){return t.call(p,n,function(t,n){return n?(n.uid<0&&(n.uid+=4294967296),n.gid<0&&(n.gid+=4294967296),void(e&&e.apply(this,arguments))):e.apply(this,arguments)})}:t}function l(t){return t?function(n){var e=t.call(p,n);return e.uid<0&&(e.uid+=4294967296),e.gid<0&&(e.gid+=4294967296),e}:t}function d(t){if(!t)return!0;if("ENOSYS"===t.code)return!0;var n=!process.getuid||0!==process.getuid();return!(!n||"EINVAL"!==t.code&&"EPERM"!==t.code)}var p=e(7),h=e(30),y=process.cwd,v=null;process.cwd=function(){return v||(v=y.call(process)),v};try{process.cwd()}catch(t){}var E=process.chdir;process.chdir=function(t){v=null,E.call(process,t)},t.exports=r},function(t,n){t.exports=require("assert")},function(t,n){t.exports=require("buffer")},function(t,n){t.exports=require("constants")},function(t,n){t.exports=require("stream")},function(t,n){t.exports=require("util")},function(t,n,e){"use strict";function r(t){return t&&t.__esModule?t:{default:t}}var o="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(t){return typeof t}:function(t){return t&&"function"==typeof Symbol&&t.constructor===Symbol&&t!==Symbol.prototype?"symbol":typeof t},i=e(10),c=r(i),u=e(11),f=r(u),a=e(12),s=r(a),l=e(9),d=r(l),p=e(13),h=r(p),y=e(14),v=r(y),E=e(15),m=r(E);!function(){var t=e(0),n=e(1),r=e(16),i=r.Window.get(),u=window.localStorage,a=window.process;if("darwin"===a.platform){var l=new r.Menu({type:"menubar"});l.createMacBuiltin("YourAPPName",{hideEdit:!1}),r.Window.get().menu=l}var p=[],y=[],E={},g={},w=!1,b=void 0,N=[n.dirname(a.execPath),a.cwd()];N.some(function(e){try{return t.accessSync(n.join(e,"data"),t.F_OK),b=e,!0}catch(t){return!1}});var I=n.join(b,"/data/"),O=r.App.dataPath,S=n.join(O,"/Extracted Data/"),_={};try{_=JSON.parse(u["nwjs-data-version"])}catch(t){}var j=function(e){t.appendFileSync(n.join(b,"errorlog.txt"),new Date+"\r\n"+(e instanceof Error?e.message||"":e)+"\r\n\r\n========================================\r\n\r\n")},D=function(n){var e=m.default.defer();return t.readdir(n,function(t,n){t?e.reject(new Error(t)):e.resolve(n)}),e.promise},C=function(t){var e=arguments.length>1&&void 0!==arguments[1]?arguments[1]:m.default.defer(),r="object"==("undefined"==typeof t?"undefined":o(t))?t:n.parse(t),i=n.join(r.dir,r.base),u=new d.default(i),a=u.getZipComment(),l=_[r.name]||"0",p=y.indexOf(r.name)>-1,h=E[r.name],v=!p||!h,b=function(t){t&&j(t),setTimeout(function(){e.resolve()},200)};if(v||(0,c.default)(a,l)){var N={};N[r.name]=a,(0,s.default)(_,N),p&&h&&(0,f.default)(n.join(S,r.name)),g[r.name]=a,w=!0,u.extractAllToAsync(S,!0,function(t){b(t)})}else b();return e.promise},L=m.default.fcall(function(){});L.catch(function(t){return j(t)}).then(function(){return(0,v.default)(S)}).then(function(){return D(I)}).then(function(t){return p=t}).then(function(){return D(S)}).then(function(t){return y=t}).then(function(){var e=(0,m.default)(),r=m.default.defer();return y.forEach(function(r){e=e.then(function(){var e=m.default.defer(),o=n.join(S,r);return t.stat(o,function(n,i){n||!i.isDirectory()?(n&&j(new Error(n)),e.resolve()):t.readdir(o,function(t,n){t?j(new Error(t)):E[r]=!!n.length,e.resolve()})}),e.promise})}),e=e.then(function(){r.resolve()}),r.promise}).then(function(){var t=(0,m.default)(),e=m.default.defer();return p.forEach(function(e){t=t.then(function(){console.log(e);var t=m.default.defer(),r=n.parse(n.join(I,e),e);switch(r.ext){case".nwjs-data":C(r,t);break;default:t.resolve()}return u["nwjs-data-version"]=JSON.stringify(_),t.promise})}),t=t.then(function(){e.resolve()}),e.promise}).then(function(){console.log("finished");var t=m.default.defer(),e=h.default.readFileSync("./package-app.json");console.log("exist options: ",JSON.stringify(e)),e.window.focus=!0,w&&(e.dataUpdated=g);var o=Math.min(e.window.max_width||screen.availWidth,screen.availWidth),c=Math.min(e.window.max_height||screen.availHeight,screen.availHeight);delete e.window.max_width,delete e.window.max_height,e.window.min_width=Math.min(e.window.min_width||0,o),e.window.min_height=Math.min(e.window.min_height||0,c),e.window.width=Math.min(e.window.width||screen.availWidth,o),e.window.height=Math.min(e.window.height||screen.availHeight,c);var f=e.platformOverrides||{};console.log("platformOverrides: ",JSON.stringify(f)),/^win[0-9]+/i.test(a.platform)?((0,s.default)(e,f.win||{}),"x64"==a.arch?(0,s.default)(e,f.win64||{}):(0,s.default)(e,f.win32||{})):/^darwin/i.test(a.platform)?((0,s.default)(e,f.osx||{}),"ia64"==a.arch?(0,s.default)(e,f.osx64||{}):(0,s.default)(e,f.osx32||{})):/^Linux/i.test(a.platform)&&((0,s.default)(e,f.linux||{}),"x64"==a.arch?(0,s.default)(e,f.linux64||{}):(0,s.default)(e,f.linux32||{})),console.log("new options: ",JSON.stringify(e)),global.launcherOptions=e,u.setItem("nwManifest",JSON.stringify(e));var l=r.Window.open("file://"+n.join(S,e.main),e.window);return l.on("loaded",function(){i.hide(),t.resolve()}),l.on("closed",function(){u.removeItem("nwManifest"),i.close()}),t.promise})}()}]);
+
+(function (definition) {
+    "use strict";
+
+    // This file will function properly as a <script> tag, or a module
+    // using CommonJS and NodeJS or RequireJS module formats.  In
+    // Common/Node/RequireJS, the module exports the Q API and when
+    // executed as a simple <script>, it creates a Q global instead.
+
+    // Montage Require
+    if (typeof bootstrap === "function") {
+        bootstrap("promise", definition);
+
+    // CommonJS
+    } else if (true) {
+        module.exports = definition();
+
+    // RequireJS
+    } else if (typeof define === "function" && define.amd) {
+        define(definition);
+
+    // SES (Secure EcmaScript)
+    } else if (typeof ses !== "undefined") {
+        if (!ses.ok()) {
+            return;
+        } else {
+            ses.makeQ = definition;
+        }
+
+    // <script>
+    } else if (typeof window !== "undefined" || typeof self !== "undefined") {
+        // Prefer window over self for add-on scripts. Use self for
+        // non-windowed contexts.
+        var global = typeof window !== "undefined" ? window : self;
+
+        // Get the `window` object, save the previous Q global
+        // and initialize Q as a global.
+        var previousQ = global.Q;
+        global.Q = definition();
+
+        // Add a noConflict function so Q can be removed from the
+        // global namespace.
+        global.Q.noConflict = function () {
+            global.Q = previousQ;
+            return this;
+        };
+
+    } else {
+        throw new Error("This environment was not anticipated by Q. Please file a bug.");
+    }
+
+})(function () {
+"use strict";
+
+var hasStacks = false;
+try {
+    throw new Error();
+} catch (e) {
+    hasStacks = !!e.stack;
+}
+
+// All code after this point will be filtered from stack traces reported
+// by Q.
+var qStartingLine = captureLine();
+var qFileName;
+
+// shims
+
+// used for fallback in "allResolved"
+var noop = function () {};
+
+// Use the fastest possible means to execute a task in a future turn
+// of the event loop.
+var nextTick =(function () {
+    // linked list of tasks (single, with head node)
+    var head = {task: void 0, next: null};
+    var tail = head;
+    var flushing = false;
+    var requestTick = void 0;
+    var isNodeJS = false;
+    // queue for late tasks, used by unhandled rejection tracking
+    var laterQueue = [];
+
+    function flush() {
+        /* jshint loopfunc: true */
+        var task, domain;
+
+        while (head.next) {
+            head = head.next;
+            task = head.task;
+            head.task = void 0;
+            domain = head.domain;
+
+            if (domain) {
+                head.domain = void 0;
+                domain.enter();
+            }
+            runSingle(task, domain);
+
+        }
+        while (laterQueue.length) {
+            task = laterQueue.pop();
+            runSingle(task);
+        }
+        flushing = false;
+    }
+    // runs a single function in the async queue
+    function runSingle(task, domain) {
+        try {
+            task();
+
+        } catch (e) {
+            if (isNodeJS) {
+                // In node, uncaught exceptions are considered fatal errors.
+                // Re-throw them synchronously to interrupt flushing!
+
+                // Ensure continuation if the uncaught exception is suppressed
+                // listening "uncaughtException" events (as domains does).
+                // Continue in next event to avoid tick recursion.
+                if (domain) {
+                    domain.exit();
+                }
+                setTimeout(flush, 0);
+                if (domain) {
+                    domain.enter();
+                }
+
+                throw e;
+
+            } else {
+                // In browsers, uncaught exceptions are not fatal.
+                // Re-throw them asynchronously to avoid slow-downs.
+                setTimeout(function () {
+                    throw e;
+                }, 0);
+            }
+        }
+
+        if (domain) {
+            domain.exit();
+        }
+    }
+
+    nextTick = function (task) {
+        tail = tail.next = {
+            task: task,
+            domain: isNodeJS && process.domain,
+            next: null
+        };
+
+        if (!flushing) {
+            flushing = true;
+            requestTick();
+        }
+    };
+
+    if (typeof process === "object" &&
+        process.toString() === "[object process]" && process.nextTick) {
+        // Ensure Q is in a real Node environment, with a `process.nextTick`.
+        // To see through fake Node environments:
+        // * Mocha test runner - exposes a `process` global without a `nextTick`
+        // * Browserify - exposes a `process.nexTick` function that uses
+        //   `setTimeout`. In this case `setImmediate` is preferred because
+        //    it is faster. Browserify's `process.toString()` yields
+        //   "[object Object]", while in a real Node environment
+        //   `process.toString()` yields "[object process]".
+        isNodeJS = true;
+
+        requestTick = function () {
+            process.nextTick(flush);
+        };
+
+    } else if (typeof setImmediate === "function") {
+        // In IE10, Node.js 0.9+, or https://github.com/NobleJS/setImmediate
+        if (typeof window !== "undefined") {
+            requestTick = setImmediate.bind(window, flush);
+        } else {
+            requestTick = function () {
+                setImmediate(flush);
+            };
+        }
+
+    } else if (typeof MessageChannel !== "undefined") {
+        // modern browsers
+        // http://www.nonblocking.io/2011/06/windownexttick.html
+        var channel = new MessageChannel();
+        // At least Safari Version 6.0.5 (8536.30.1) intermittently cannot create
+        // working message ports the first time a page loads.
+        channel.port1.onmessage = function () {
+            requestTick = requestPortTick;
+            channel.port1.onmessage = flush;
+            flush();
+        };
+        var requestPortTick = function () {
+            // Opera requires us to provide a message payload, regardless of
+            // whether we use it.
+            channel.port2.postMessage(0);
+        };
+        requestTick = function () {
+            setTimeout(flush, 0);
+            requestPortTick();
+        };
+
+    } else {
+        // old browsers
+        requestTick = function () {
+            setTimeout(flush, 0);
+        };
+    }
+    // runs a task after all other tasks have been run
+    // this is useful for unhandled rejection tracking that needs to happen
+    // after all `then`d tasks have been run.
+    nextTick.runAfter = function (task) {
+        laterQueue.push(task);
+        if (!flushing) {
+            flushing = true;
+            requestTick();
+        }
+    };
+    return nextTick;
+})();
+
+// Attempt to make generics safe in the face of downstream
+// modifications.
+// There is no situation where this is necessary.
+// If you need a security guarantee, these primordials need to be
+// deeply frozen anyway, and if you don’t need a security guarantee,
+// this is just plain paranoid.
+// However, this **might** have the nice side-effect of reducing the size of
+// the minified code by reducing x.call() to merely x()
+// See Mark Miller’s explanation of what this does.
+// http://wiki.ecmascript.org/doku.php?id=conventions:safe_meta_programming
+var call = Function.call;
+function uncurryThis(f) {
+    return function () {
+        return call.apply(f, arguments);
+    };
+}
+// This is equivalent, but slower:
+// uncurryThis = Function_bind.bind(Function_bind.call);
+// http://jsperf.com/uncurrythis
+
+var array_slice = uncurryThis(Array.prototype.slice);
+
+var array_reduce = uncurryThis(
+    Array.prototype.reduce || function (callback, basis) {
+        var index = 0,
+            length = this.length;
+        // concerning the initial value, if one is not provided
+        if (arguments.length === 1) {
+            // seek to the first value in the array, accounting
+            // for the possibility that is is a sparse array
+            do {
+                if (index in this) {
+                    basis = this[index++];
+                    break;
+                }
+                if (++index >= length) {
+                    throw new TypeError();
+                }
+            } while (1);
+        }
+        // reduce
+        for (; index < length; index++) {
+            // account for the possibility that the array is sparse
+            if (index in this) {
+                basis = callback(basis, this[index], index);
+            }
+        }
+        return basis;
+    }
+);
+
+var array_indexOf = uncurryThis(
+    Array.prototype.indexOf || function (value) {
+        // not a very good shim, but good enough for our one use of it
+        for (var i = 0; i < this.length; i++) {
+            if (this[i] === value) {
+                return i;
+            }
+        }
+        return -1;
+    }
+);
+
+var array_map = uncurryThis(
+    Array.prototype.map || function (callback, thisp) {
+        var self = this;
+        var collect = [];
+        array_reduce(self, function (undefined, value, index) {
+            collect.push(callback.call(thisp, value, index, self));
+        }, void 0);
+        return collect;
+    }
+);
+
+var object_create = Object.create || function (prototype) {
+    function Type() { }
+    Type.prototype = prototype;
+    return new Type();
+};
+
+var object_defineProperty = Object.defineProperty || function (obj, prop, descriptor) {
+    obj[prop] = descriptor.value;
+    return obj;
+};
+
+var object_hasOwnProperty = uncurryThis(Object.prototype.hasOwnProperty);
+
+var object_keys = Object.keys || function (object) {
+    var keys = [];
+    for (var key in object) {
+        if (object_hasOwnProperty(object, key)) {
+            keys.push(key);
+        }
+    }
+    return keys;
+};
+
+var object_toString = uncurryThis(Object.prototype.toString);
+
+function isObject(value) {
+    return value === Object(value);
+}
+
+// generator related shims
+
+// FIXME: Remove this function once ES6 generators are in SpiderMonkey.
+function isStopIteration(exception) {
+    return (
+        object_toString(exception) === "[object StopIteration]" ||
+        exception instanceof QReturnValue
+    );
+}
+
+// FIXME: Remove this helper and Q.return once ES6 generators are in
+// SpiderMonkey.
+var QReturnValue;
+if (typeof ReturnValue !== "undefined") {
+    QReturnValue = ReturnValue;
+} else {
+    QReturnValue = function (value) {
+        this.value = value;
+    };
+}
+
+// long stack traces
+
+var STACK_JUMP_SEPARATOR = "From previous event:";
+
+function makeStackTraceLong(error, promise) {
+    // If possible, transform the error stack trace by removing Node and Q
+    // cruft, then concatenating with the stack trace of `promise`. See #57.
+    if (hasStacks &&
+        promise.stack &&
+        typeof error === "object" &&
+        error !== null &&
+        error.stack
+    ) {
+        var stacks = [];
+        for (var p = promise; !!p; p = p.source) {
+            if (p.stack && (!error.__minimumStackCounter__ || error.__minimumStackCounter__ > p.stackCounter)) {
+                object_defineProperty(error, "__minimumStackCounter__", {value: p.stackCounter, configurable: true});
+                stacks.unshift(p.stack);
+            }
+        }
+        stacks.unshift(error.stack);
+
+        var concatedStacks = stacks.join("\n" + STACK_JUMP_SEPARATOR + "\n");
+        var stack = filterStackString(concatedStacks);
+        object_defineProperty(error, "stack", {value: stack, configurable: true});
+    }
+}
+
+function filterStackString(stackString) {
+    var lines = stackString.split("\n");
+    var desiredLines = [];
+    for (var i = 0; i < lines.length; ++i) {
+        var line = lines[i];
+
+        if (!isInternalFrame(line) && !isNodeFrame(line) && line) {
+            desiredLines.push(line);
+        }
+    }
+    return desiredLines.join("\n");
+}
+
+function isNodeFrame(stackLine) {
+    return stackLine.indexOf("(module.js:") !== -1 ||
+           stackLine.indexOf("(node.js:") !== -1;
+}
+
+function getFileNameAndLineNumber(stackLine) {
+    // Named functions: "at functionName (filename:lineNumber:columnNumber)"
+    // In IE10 function name can have spaces ("Anonymous function") O_o
+    var attempt1 = /at .+ \((.+):(\d+):(?:\d+)\)$/.exec(stackLine);
+    if (attempt1) {
+        return [attempt1[1], Number(attempt1[2])];
+    }
+
+    // Anonymous functions: "at filename:lineNumber:columnNumber"
+    var attempt2 = /at ([^ ]+):(\d+):(?:\d+)$/.exec(stackLine);
+    if (attempt2) {
+        return [attempt2[1], Number(attempt2[2])];
+    }
+
+    // Firefox style: "function@filename:lineNumber or @filename:lineNumber"
+    var attempt3 = /.*@(.+):(\d+)$/.exec(stackLine);
+    if (attempt3) {
+        return [attempt3[1], Number(attempt3[2])];
+    }
+}
+
+function isInternalFrame(stackLine) {
+    var fileNameAndLineNumber = getFileNameAndLineNumber(stackLine);
+
+    if (!fileNameAndLineNumber) {
+        return false;
+    }
+
+    var fileName = fileNameAndLineNumber[0];
+    var lineNumber = fileNameAndLineNumber[1];
+
+    return fileName === qFileName &&
+        lineNumber >= qStartingLine &&
+        lineNumber <= qEndingLine;
+}
+
+// discover own file name and line number range for filtering stack
+// traces
+function captureLine() {
+    if (!hasStacks) {
+        return;
+    }
+
+    try {
+        throw new Error();
+    } catch (e) {
+        var lines = e.stack.split("\n");
+        var firstLine = lines[0].indexOf("@") > 0 ? lines[1] : lines[2];
+        var fileNameAndLineNumber = getFileNameAndLineNumber(firstLine);
+        if (!fileNameAndLineNumber) {
+            return;
+        }
+
+        qFileName = fileNameAndLineNumber[0];
+        return fileNameAndLineNumber[1];
+    }
+}
+
+function deprecate(callback, name, alternative) {
+    return function () {
+        if (typeof console !== "undefined" &&
+            typeof console.warn === "function") {
+            console.warn(name + " is deprecated, use " + alternative +
+                         " instead.", new Error("").stack);
+        }
+        return callback.apply(callback, arguments);
+    };
+}
+
+// end of shims
+// beginning of real work
+
+/**
+ * Constructs a promise for an immediate reference, passes promises through, or
+ * coerces promises from different systems.
+ * @param value immediate reference or promise
+ */
+function Q(value) {
+    // If the object is already a Promise, return it directly.  This enables
+    // the resolve function to both be used to created references from objects,
+    // but to tolerably coerce non-promises to promises.
+    if (value instanceof Promise) {
+        return value;
+    }
+
+    // assimilate thenables
+    if (isPromiseAlike(value)) {
+        return coerce(value);
+    } else {
+        return fulfill(value);
+    }
+}
+Q.resolve = Q;
+
+/**
+ * Performs a task in a future turn of the event loop.
+ * @param {Function} task
+ */
+Q.nextTick = nextTick;
+
+/**
+ * Controls whether or not long stack traces will be on
+ */
+Q.longStackSupport = false;
+
+/**
+ * The counter is used to determine the stopping point for building
+ * long stack traces. In makeStackTraceLong we walk backwards through
+ * the linked list of promises, only stacks which were created before
+ * the rejection are concatenated.
+ */
+var longStackCounter = 1;
+
+// enable long stacks if Q_DEBUG is set
+if (typeof process === "object" && process && process.env && process.env.Q_DEBUG) {
+    Q.longStackSupport = true;
+}
+
+/**
+ * Constructs a {promise, resolve, reject} object.
+ *
+ * `resolve` is a callback to invoke with a more resolved value for the
+ * promise. To fulfill the promise, invoke `resolve` with any value that is
+ * not a thenable. To reject the promise, invoke `resolve` with a rejected
+ * thenable, or invoke `reject` with the reason directly. To resolve the
+ * promise to another thenable, thus putting it in the same state, invoke
+ * `resolve` with that other thenable.
+ */
+Q.defer = defer;
+function defer() {
+    // if "messages" is an "Array", that indicates that the promise has not yet
+    // been resolved.  If it is "undefined", it has been resolved.  Each
+    // element of the messages array is itself an array of complete arguments to
+    // forward to the resolved promise.  We coerce the resolution value to a
+    // promise using the `resolve` function because it handles both fully
+    // non-thenable values and other thenables gracefully.
+    var messages = [], progressListeners = [], resolvedPromise;
+
+    var deferred = object_create(defer.prototype);
+    var promise = object_create(Promise.prototype);
+
+    promise.promiseDispatch = function (resolve, op, operands) {
+        var args = array_slice(arguments);
+        if (messages) {
+            messages.push(args);
+            if (op === "when" && operands[1]) { // progress operand
+                progressListeners.push(operands[1]);
+            }
+        } else {
+            Q.nextTick(function () {
+                resolvedPromise.promiseDispatch.apply(resolvedPromise, args);
+            });
+        }
+    };
+
+    // XXX deprecated
+    promise.valueOf = function () {
+        if (messages) {
+            return promise;
+        }
+        var nearerValue = nearer(resolvedPromise);
+        if (isPromise(nearerValue)) {
+            resolvedPromise = nearerValue; // shorten chain
+        }
+        return nearerValue;
+    };
+
+    promise.inspect = function () {
+        if (!resolvedPromise) {
+            return { state: "pending" };
+        }
+        return resolvedPromise.inspect();
+    };
+
+    if (Q.longStackSupport && hasStacks) {
+        try {
+            throw new Error();
+        } catch (e) {
+            // NOTE: don't try to use `Error.captureStackTrace` or transfer the
+            // accessor around; that causes memory leaks as per GH-111. Just
+            // reify the stack trace as a string ASAP.
+            //
+            // At the same time, cut off the first line; it's always just
+            // "[object Promise]\n", as per the `toString`.
+            promise.stack = e.stack.substring(e.stack.indexOf("\n") + 1);
+            promise.stackCounter = longStackCounter++;
+        }
+    }
+
+    // NOTE: we do the checks for `resolvedPromise` in each method, instead of
+    // consolidating them into `become`, since otherwise we'd create new
+    // promises with the lines `become(whatever(value))`. See e.g. GH-252.
+
+    function become(newPromise) {
+        resolvedPromise = newPromise;
+
+        if (Q.longStackSupport && hasStacks) {
+            // Only hold a reference to the new promise if long stacks
+            // are enabled to reduce memory usage
+            promise.source = newPromise;
+        }
+
+        array_reduce(messages, function (undefined, message) {
+            Q.nextTick(function () {
+                newPromise.promiseDispatch.apply(newPromise, message);
+            });
+        }, void 0);
+
+        messages = void 0;
+        progressListeners = void 0;
+    }
+
+    deferred.promise = promise;
+    deferred.resolve = function (value) {
+        if (resolvedPromise) {
+            return;
+        }
+
+        become(Q(value));
+    };
+
+    deferred.fulfill = function (value) {
+        if (resolvedPromise) {
+            return;
+        }
+
+        become(fulfill(value));
+    };
+    deferred.reject = function (reason) {
+        if (resolvedPromise) {
+            return;
+        }
+
+        become(reject(reason));
+    };
+    deferred.notify = function (progress) {
+        if (resolvedPromise) {
+            return;
+        }
+
+        array_reduce(progressListeners, function (undefined, progressListener) {
+            Q.nextTick(function () {
+                progressListener(progress);
+            });
+        }, void 0);
+    };
+
+    return deferred;
+}
+
+/**
+ * Creates a Node-style callback that will resolve or reject the deferred
+ * promise.
+ * @returns a nodeback
+ */
+defer.prototype.makeNodeResolver = function () {
+    var self = this;
+    return function (error, value) {
+        if (error) {
+            self.reject(error);
+        } else if (arguments.length > 2) {
+            self.resolve(array_slice(arguments, 1));
+        } else {
+            self.resolve(value);
+        }
+    };
+};
+
+/**
+ * @param resolver {Function} a function that returns nothing and accepts
+ * the resolve, reject, and notify functions for a deferred.
+ * @returns a promise that may be resolved with the given resolve and reject
+ * functions, or rejected by a thrown exception in resolver
+ */
+Q.Promise = promise; // ES6
+Q.promise = promise;
+function promise(resolver) {
+    if (typeof resolver !== "function") {
+        throw new TypeError("resolver must be a function.");
+    }
+    var deferred = defer();
+    try {
+        resolver(deferred.resolve, deferred.reject, deferred.notify);
+    } catch (reason) {
+        deferred.reject(reason);
+    }
+    return deferred.promise;
+}
+
+promise.race = race; // ES6
+promise.all = all; // ES6
+promise.reject = reject; // ES6
+promise.resolve = Q; // ES6
+
+// XXX experimental.  This method is a way to denote that a local value is
+// serializable and should be immediately dispatched to a remote upon request,
+// instead of passing a reference.
+Q.passByCopy = function (object) {
+    //freeze(object);
+    //passByCopies.set(object, true);
+    return object;
+};
+
+Promise.prototype.passByCopy = function () {
+    //freeze(object);
+    //passByCopies.set(object, true);
+    return this;
+};
+
+/**
+ * If two promises eventually fulfill to the same value, promises that value,
+ * but otherwise rejects.
+ * @param x {Any*}
+ * @param y {Any*}
+ * @returns {Any*} a promise for x and y if they are the same, but a rejection
+ * otherwise.
+ *
+ */
+Q.join = function (x, y) {
+    return Q(x).join(y);
+};
+
+Promise.prototype.join = function (that) {
+    return Q([this, that]).spread(function (x, y) {
+        if (x === y) {
+            // TODO: "===" should be Object.is or equiv
+            return x;
+        } else {
+            throw new Error("Q can't join: not the same: " + x + " " + y);
+        }
+    });
+};
+
+/**
+ * Returns a promise for the first of an array of promises to become settled.
+ * @param answers {Array[Any*]} promises to race
+ * @returns {Any*} the first promise to be settled
+ */
+Q.race = race;
+function race(answerPs) {
+    return promise(function (resolve, reject) {
+        // Switch to this once we can assume at least ES5
+        // answerPs.forEach(function (answerP) {
+        //     Q(answerP).then(resolve, reject);
+        // });
+        // Use this in the meantime
+        for (var i = 0, len = answerPs.length; i < len; i++) {
+            Q(answerPs[i]).then(resolve, reject);
+        }
+    });
+}
+
+Promise.prototype.race = function () {
+    return this.then(Q.race);
+};
+
+/**
+ * Constructs a Promise with a promise descriptor object and optional fallback
+ * function.  The descriptor contains methods like when(rejected), get(name),
+ * set(name, value), post(name, args), and delete(name), which all
+ * return either a value, a promise for a value, or a rejection.  The fallback
+ * accepts the operation name, a resolver, and any further arguments that would
+ * have been forwarded to the appropriate method above had a method been
+ * provided with the proper name.  The API makes no guarantees about the nature
+ * of the returned object, apart from that it is usable whereever promises are
+ * bought and sold.
+ */
+Q.makePromise = Promise;
+function Promise(descriptor, fallback, inspect) {
+    if (fallback === void 0) {
+        fallback = function (op) {
+            return reject(new Error(
+                "Promise does not support operation: " + op
+            ));
+        };
+    }
+    if (inspect === void 0) {
+        inspect = function () {
+            return {state: "unknown"};
+        };
+    }
+
+    var promise = object_create(Promise.prototype);
+
+    promise.promiseDispatch = function (resolve, op, args) {
+        var result;
+        try {
+            if (descriptor[op]) {
+                result = descriptor[op].apply(promise, args);
+            } else {
+                result = fallback.call(promise, op, args);
+            }
+        } catch (exception) {
+            result = reject(exception);
+        }
+        if (resolve) {
+            resolve(result);
+        }
+    };
+
+    promise.inspect = inspect;
+
+    // XXX deprecated `valueOf` and `exception` support
+    if (inspect) {
+        var inspected = inspect();
+        if (inspected.state === "rejected") {
+            promise.exception = inspected.reason;
+        }
+
+        promise.valueOf = function () {
+            var inspected = inspect();
+            if (inspected.state === "pending" ||
+                inspected.state === "rejected") {
+                return promise;
+            }
+            return inspected.value;
+        };
+    }
+
+    return promise;
+}
+
+Promise.prototype.toString = function () {
+    return "[object Promise]";
+};
+
+Promise.prototype.then = function (fulfilled, rejected, progressed) {
+    var self = this;
+    var deferred = defer();
+    var done = false;   // ensure the untrusted promise makes at most a
+                        // single call to one of the callbacks
+
+    function _fulfilled(value) {
+        try {
+            return typeof fulfilled === "function" ? fulfilled(value) : value;
+        } catch (exception) {
+            return reject(exception);
+        }
+    }
+
+    function _rejected(exception) {
+        if (typeof rejected === "function") {
+            makeStackTraceLong(exception, self);
+            try {
+                return rejected(exception);
+            } catch (newException) {
+                return reject(newException);
+            }
+        }
+        return reject(exception);
+    }
+
+    function _progressed(value) {
+        return typeof progressed === "function" ? progressed(value) : value;
+    }
+
+    Q.nextTick(function () {
+        self.promiseDispatch(function (value) {
+            if (done) {
+                return;
+            }
+            done = true;
+
+            deferred.resolve(_fulfilled(value));
+        }, "when", [function (exception) {
+            if (done) {
+                return;
+            }
+            done = true;
+
+            deferred.resolve(_rejected(exception));
+        }]);
+    });
+
+    // Progress propagator need to be attached in the current tick.
+    self.promiseDispatch(void 0, "when", [void 0, function (value) {
+        var newValue;
+        var threw = false;
+        try {
+            newValue = _progressed(value);
+        } catch (e) {
+            threw = true;
+            if (Q.onerror) {
+                Q.onerror(e);
+            } else {
+                throw e;
+            }
+        }
+
+        if (!threw) {
+            deferred.notify(newValue);
+        }
+    }]);
+
+    return deferred.promise;
+};
+
+Q.tap = function (promise, callback) {
+    return Q(promise).tap(callback);
+};
+
+/**
+ * Works almost like "finally", but not called for rejections.
+ * Original resolution value is passed through callback unaffected.
+ * Callback may return a promise that will be awaited for.
+ * @param {Function} callback
+ * @returns {Q.Promise}
+ * @example
+ * doSomething()
+ *   .then(...)
+ *   .tap(console.log)
+ *   .then(...);
+ */
+Promise.prototype.tap = function (callback) {
+    callback = Q(callback);
+
+    return this.then(function (value) {
+        return callback.fcall(value).thenResolve(value);
+    });
+};
+
+/**
+ * Registers an observer on a promise.
+ *
+ * Guarantees:
+ *
+ * 1. that fulfilled and rejected will be called only once.
+ * 2. that either the fulfilled callback or the rejected callback will be
+ *    called, but not both.
+ * 3. that fulfilled and rejected will not be called in this turn.
+ *
+ * @param value      promise or immediate reference to observe
+ * @param fulfilled  function to be called with the fulfilled value
+ * @param rejected   function to be called with the rejection exception
+ * @param progressed function to be called on any progress notifications
+ * @return promise for the return value from the invoked callback
+ */
+Q.when = when;
+function when(value, fulfilled, rejected, progressed) {
+    return Q(value).then(fulfilled, rejected, progressed);
+}
+
+Promise.prototype.thenResolve = function (value) {
+    return this.then(function () { return value; });
+};
+
+Q.thenResolve = function (promise, value) {
+    return Q(promise).thenResolve(value);
+};
+
+Promise.prototype.thenReject = function (reason) {
+    return this.then(function () { throw reason; });
+};
+
+Q.thenReject = function (promise, reason) {
+    return Q(promise).thenReject(reason);
+};
+
+/**
+ * If an object is not a promise, it is as "near" as possible.
+ * If a promise is rejected, it is as "near" as possible too.
+ * If it’s a fulfilled promise, the fulfillment value is nearer.
+ * If it’s a deferred promise and the deferred has been resolved, the
+ * resolution is "nearer".
+ * @param object
+ * @returns most resolved (nearest) form of the object
+ */
+
+// XXX should we re-do this?
+Q.nearer = nearer;
+function nearer(value) {
+    if (isPromise(value)) {
+        var inspected = value.inspect();
+        if (inspected.state === "fulfilled") {
+            return inspected.value;
+        }
+    }
+    return value;
+}
+
+/**
+ * @returns whether the given object is a promise.
+ * Otherwise it is a fulfilled value.
+ */
+Q.isPromise = isPromise;
+function isPromise(object) {
+    return object instanceof Promise;
+}
+
+Q.isPromiseAlike = isPromiseAlike;
+function isPromiseAlike(object) {
+    return isObject(object) && typeof object.then === "function";
+}
+
+/**
+ * @returns whether the given object is a pending promise, meaning not
+ * fulfilled or rejected.
+ */
+Q.isPending = isPending;
+function isPending(object) {
+    return isPromise(object) && object.inspect().state === "pending";
+}
+
+Promise.prototype.isPending = function () {
+    return this.inspect().state === "pending";
+};
+
+/**
+ * @returns whether the given object is a value or fulfilled
+ * promise.
+ */
+Q.isFulfilled = isFulfilled;
+function isFulfilled(object) {
+    return !isPromise(object) || object.inspect().state === "fulfilled";
+}
+
+Promise.prototype.isFulfilled = function () {
+    return this.inspect().state === "fulfilled";
+};
+
+/**
+ * @returns whether the given object is a rejected promise.
+ */
+Q.isRejected = isRejected;
+function isRejected(object) {
+    return isPromise(object) && object.inspect().state === "rejected";
+}
+
+Promise.prototype.isRejected = function () {
+    return this.inspect().state === "rejected";
+};
+
+//// BEGIN UNHANDLED REJECTION TRACKING
+
+// This promise library consumes exceptions thrown in handlers so they can be
+// handled by a subsequent promise.  The exceptions get added to this array when
+// they are created, and removed when they are handled.  Note that in ES6 or
+// shimmed environments, this would naturally be a `Set`.
+var unhandledReasons = [];
+var unhandledRejections = [];
+var reportedUnhandledRejections = [];
+var trackUnhandledRejections = true;
+
+function resetUnhandledRejections() {
+    unhandledReasons.length = 0;
+    unhandledRejections.length = 0;
+
+    if (!trackUnhandledRejections) {
+        trackUnhandledRejections = true;
+    }
+}
+
+function trackRejection(promise, reason) {
+    if (!trackUnhandledRejections) {
+        return;
+    }
+    if (typeof process === "object" && typeof process.emit === "function") {
+        Q.nextTick.runAfter(function () {
+            if (array_indexOf(unhandledRejections, promise) !== -1) {
+                process.emit("unhandledRejection", reason, promise);
+                reportedUnhandledRejections.push(promise);
+            }
+        });
+    }
+
+    unhandledRejections.push(promise);
+    if (reason && typeof reason.stack !== "undefined") {
+        unhandledReasons.push(reason.stack);
+    } else {
+        unhandledReasons.push("(no stack) " + reason);
+    }
+}
+
+function untrackRejection(promise) {
+    if (!trackUnhandledRejections) {
+        return;
+    }
+
+    var at = array_indexOf(unhandledRejections, promise);
+    if (at !== -1) {
+        if (typeof process === "object" && typeof process.emit === "function") {
+            Q.nextTick.runAfter(function () {
+                var atReport = array_indexOf(reportedUnhandledRejections, promise);
+                if (atReport !== -1) {
+                    process.emit("rejectionHandled", unhandledReasons[at], promise);
+                    reportedUnhandledRejections.splice(atReport, 1);
+                }
+            });
+        }
+        unhandledRejections.splice(at, 1);
+        unhandledReasons.splice(at, 1);
+    }
+}
+
+Q.resetUnhandledRejections = resetUnhandledRejections;
+
+Q.getUnhandledReasons = function () {
+    // Make a copy so that consumers can't interfere with our internal state.
+    return unhandledReasons.slice();
+};
+
+Q.stopUnhandledRejectionTracking = function () {
+    resetUnhandledRejections();
+    trackUnhandledRejections = false;
+};
+
+resetUnhandledRejections();
+
+//// END UNHANDLED REJECTION TRACKING
+
+/**
+ * Constructs a rejected promise.
+ * @param reason value describing the failure
+ */
+Q.reject = reject;
+function reject(reason) {
+    var rejection = Promise({
+        "when": function (rejected) {
+            // note that the error has been handled
+            if (rejected) {
+                untrackRejection(this);
+            }
+            return rejected ? rejected(reason) : this;
+        }
+    }, function fallback() {
+        return this;
+    }, function inspect() {
+        return { state: "rejected", reason: reason };
+    });
+
+    // Note that the reason has not been handled.
+    trackRejection(rejection, reason);
+
+    return rejection;
+}
+
+/**
+ * Constructs a fulfilled promise for an immediate reference.
+ * @param value immediate reference
+ */
+Q.fulfill = fulfill;
+function fulfill(value) {
+    return Promise({
+        "when": function () {
+            return value;
+        },
+        "get": function (name) {
+            return value[name];
+        },
+        "set": function (name, rhs) {
+            value[name] = rhs;
+        },
+        "delete": function (name) {
+            delete value[name];
+        },
+        "post": function (name, args) {
+            // Mark Miller proposes that post with no name should apply a
+            // promised function.
+            if (name === null || name === void 0) {
+                return value.apply(void 0, args);
+            } else {
+                return value[name].apply(value, args);
+            }
+        },
+        "apply": function (thisp, args) {
+            return value.apply(thisp, args);
+        },
+        "keys": function () {
+            return object_keys(value);
+        }
+    }, void 0, function inspect() {
+        return { state: "fulfilled", value: value };
+    });
+}
+
+/**
+ * Converts thenables to Q promises.
+ * @param promise thenable promise
+ * @returns a Q promise
+ */
+function coerce(promise) {
+    var deferred = defer();
+    Q.nextTick(function () {
+        try {
+            promise.then(deferred.resolve, deferred.reject, deferred.notify);
+        } catch (exception) {
+            deferred.reject(exception);
+        }
+    });
+    return deferred.promise;
+}
+
+/**
+ * Annotates an object such that it will never be
+ * transferred away from this process over any promise
+ * communication channel.
+ * @param object
+ * @returns promise a wrapping of that object that
+ * additionally responds to the "isDef" message
+ * without a rejection.
+ */
+Q.master = master;
+function master(object) {
+    return Promise({
+        "isDef": function () {}
+    }, function fallback(op, args) {
+        return dispatch(object, op, args);
+    }, function () {
+        return Q(object).inspect();
+    });
+}
+
+/**
+ * Spreads the values of a promised array of arguments into the
+ * fulfillment callback.
+ * @param fulfilled callback that receives variadic arguments from the
+ * promised array
+ * @param rejected callback that receives the exception if the promise
+ * is rejected.
+ * @returns a promise for the return value or thrown exception of
+ * either callback.
+ */
+Q.spread = spread;
+function spread(value, fulfilled, rejected) {
+    return Q(value).spread(fulfilled, rejected);
+}
+
+Promise.prototype.spread = function (fulfilled, rejected) {
+    return this.all().then(function (array) {
+        return fulfilled.apply(void 0, array);
+    }, rejected);
+};
+
+/**
+ * The async function is a decorator for generator functions, turning
+ * them into asynchronous generators.  Although generators are only part
+ * of the newest ECMAScript 6 drafts, this code does not cause syntax
+ * errors in older engines.  This code should continue to work and will
+ * in fact improve over time as the language improves.
+ *
+ * ES6 generators are currently part of V8 version 3.19 with the
+ * --harmony-generators runtime flag enabled.  SpiderMonkey has had them
+ * for longer, but under an older Python-inspired form.  This function
+ * works on both kinds of generators.
+ *
+ * Decorates a generator function such that:
+ *  - it may yield promises
+ *  - execution will continue when that promise is fulfilled
+ *  - the value of the yield expression will be the fulfilled value
+ *  - it returns a promise for the return value (when the generator
+ *    stops iterating)
+ *  - the decorated function returns a promise for the return value
+ *    of the generator or the first rejected promise among those
+ *    yielded.
+ *  - if an error is thrown in the generator, it propagates through
+ *    every following yield until it is caught, or until it escapes
+ *    the generator function altogether, and is translated into a
+ *    rejection for the promise returned by the decorated generator.
+ */
+Q.async = async;
+function async(makeGenerator) {
+    return function () {
+        // when verb is "send", arg is a value
+        // when verb is "throw", arg is an exception
+        function continuer(verb, arg) {
+            var result;
+
+            // Until V8 3.19 / Chromium 29 is released, SpiderMonkey is the only
+            // engine that has a deployed base of browsers that support generators.
+            // However, SM's generators use the Python-inspired semantics of
+            // outdated ES6 drafts.  We would like to support ES6, but we'd also
+            // like to make it possible to use generators in deployed browsers, so
+            // we also support Python-style generators.  At some point we can remove
+            // this block.
+
+            if (typeof StopIteration === "undefined") {
+                // ES6 Generators
+                try {
+                    result = generator[verb](arg);
+                } catch (exception) {
+                    return reject(exception);
+                }
+                if (result.done) {
+                    return Q(result.value);
+                } else {
+                    return when(result.value, callback, errback);
+                }
+            } else {
+                // SpiderMonkey Generators
+                // FIXME: Remove this case when SM does ES6 generators.
+                try {
+                    result = generator[verb](arg);
+                } catch (exception) {
+                    if (isStopIteration(exception)) {
+                        return Q(exception.value);
+                    } else {
+                        return reject(exception);
+                    }
+                }
+                return when(result, callback, errback);
+            }
+        }
+        var generator = makeGenerator.apply(this, arguments);
+        var callback = continuer.bind(continuer, "next");
+        var errback = continuer.bind(continuer, "throw");
+        return callback();
+    };
+}
+
+/**
+ * The spawn function is a small wrapper around async that immediately
+ * calls the generator and also ends the promise chain, so that any
+ * unhandled errors are thrown instead of forwarded to the error
+ * handler. This is useful because it's extremely common to run
+ * generators at the top-level to work with libraries.
+ */
+Q.spawn = spawn;
+function spawn(makeGenerator) {
+    Q.done(Q.async(makeGenerator)());
+}
+
+// FIXME: Remove this interface once ES6 generators are in SpiderMonkey.
+/**
+ * Throws a ReturnValue exception to stop an asynchronous generator.
+ *
+ * This interface is a stop-gap measure to support generator return
+ * values in older Firefox/SpiderMonkey.  In browsers that support ES6
+ * generators like Chromium 29, just use "return" in your generator
+ * functions.
+ *
+ * @param value the return value for the surrounding generator
+ * @throws ReturnValue exception with the value.
+ * @example
+ * // ES6 style
+ * Q.async(function* () {
+ *      var foo = yield getFooPromise();
+ *      var bar = yield getBarPromise();
+ *      return foo + bar;
+ * })
+ * // Older SpiderMonkey style
+ * Q.async(function () {
+ *      var foo = yield getFooPromise();
+ *      var bar = yield getBarPromise();
+ *      Q.return(foo + bar);
+ * })
+ */
+Q["return"] = _return;
+function _return(value) {
+    throw new QReturnValue(value);
+}
+
+/**
+ * The promised function decorator ensures that any promise arguments
+ * are settled and passed as values (`this` is also settled and passed
+ * as a value).  It will also ensure that the result of a function is
+ * always a promise.
+ *
+ * @example
+ * var add = Q.promised(function (a, b) {
+ *     return a + b;
+ * });
+ * add(Q(a), Q(B));
+ *
+ * @param {function} callback The function to decorate
+ * @returns {function} a function that has been decorated.
+ */
+Q.promised = promised;
+function promised(callback) {
+    return function () {
+        return spread([this, all(arguments)], function (self, args) {
+            return callback.apply(self, args);
+        });
+    };
+}
+
+/**
+ * sends a message to a value in a future turn
+ * @param object* the recipient
+ * @param op the name of the message operation, e.g., "when",
+ * @param args further arguments to be forwarded to the operation
+ * @returns result {Promise} a promise for the result of the operation
+ */
+Q.dispatch = dispatch;
+function dispatch(object, op, args) {
+    return Q(object).dispatch(op, args);
+}
+
+Promise.prototype.dispatch = function (op, args) {
+    var self = this;
+    var deferred = defer();
+    Q.nextTick(function () {
+        self.promiseDispatch(deferred.resolve, op, args);
+    });
+    return deferred.promise;
+};
+
+/**
+ * Gets the value of a property in a future turn.
+ * @param object    promise or immediate reference for target object
+ * @param name      name of property to get
+ * @return promise for the property value
+ */
+Q.get = function (object, key) {
+    return Q(object).dispatch("get", [key]);
+};
+
+Promise.prototype.get = function (key) {
+    return this.dispatch("get", [key]);
+};
+
+/**
+ * Sets the value of a property in a future turn.
+ * @param object    promise or immediate reference for object object
+ * @param name      name of property to set
+ * @param value     new value of property
+ * @return promise for the return value
+ */
+Q.set = function (object, key, value) {
+    return Q(object).dispatch("set", [key, value]);
+};
+
+Promise.prototype.set = function (key, value) {
+    return this.dispatch("set", [key, value]);
+};
+
+/**
+ * Deletes a property in a future turn.
+ * @param object    promise or immediate reference for target object
+ * @param name      name of property to delete
+ * @return promise for the return value
+ */
+Q.del = // XXX legacy
+Q["delete"] = function (object, key) {
+    return Q(object).dispatch("delete", [key]);
+};
+
+Promise.prototype.del = // XXX legacy
+Promise.prototype["delete"] = function (key) {
+    return this.dispatch("delete", [key]);
+};
+
+/**
+ * Invokes a method in a future turn.
+ * @param object    promise or immediate reference for target object
+ * @param name      name of method to invoke
+ * @param value     a value to post, typically an array of
+ *                  invocation arguments for promises that
+ *                  are ultimately backed with `resolve` values,
+ *                  as opposed to those backed with URLs
+ *                  wherein the posted value can be any
+ *                  JSON serializable object.
+ * @return promise for the return value
+ */
+// bound locally because it is used by other methods
+Q.mapply = // XXX As proposed by "Redsandro"
+Q.post = function (object, name, args) {
+    return Q(object).dispatch("post", [name, args]);
+};
+
+Promise.prototype.mapply = // XXX As proposed by "Redsandro"
+Promise.prototype.post = function (name, args) {
+    return this.dispatch("post", [name, args]);
+};
+
+/**
+ * Invokes a method in a future turn.
+ * @param object    promise or immediate reference for target object
+ * @param name      name of method to invoke
+ * @param ...args   array of invocation arguments
+ * @return promise for the return value
+ */
+Q.send = // XXX Mark Miller's proposed parlance
+Q.mcall = // XXX As proposed by "Redsandro"
+Q.invoke = function (object, name /*...args*/) {
+    return Q(object).dispatch("post", [name, array_slice(arguments, 2)]);
+};
+
+Promise.prototype.send = // XXX Mark Miller's proposed parlance
+Promise.prototype.mcall = // XXX As proposed by "Redsandro"
+Promise.prototype.invoke = function (name /*...args*/) {
+    return this.dispatch("post", [name, array_slice(arguments, 1)]);
+};
+
+/**
+ * Applies the promised function in a future turn.
+ * @param object    promise or immediate reference for target function
+ * @param args      array of application arguments
+ */
+Q.fapply = function (object, args) {
+    return Q(object).dispatch("apply", [void 0, args]);
+};
+
+Promise.prototype.fapply = function (args) {
+    return this.dispatch("apply", [void 0, args]);
+};
+
+/**
+ * Calls the promised function in a future turn.
+ * @param object    promise or immediate reference for target function
+ * @param ...args   array of application arguments
+ */
+Q["try"] =
+Q.fcall = function (object /* ...args*/) {
+    return Q(object).dispatch("apply", [void 0, array_slice(arguments, 1)]);
+};
+
+Promise.prototype.fcall = function (/*...args*/) {
+    return this.dispatch("apply", [void 0, array_slice(arguments)]);
+};
+
+/**
+ * Binds the promised function, transforming return values into a fulfilled
+ * promise and thrown errors into a rejected one.
+ * @param object    promise or immediate reference for target function
+ * @param ...args   array of application arguments
+ */
+Q.fbind = function (object /*...args*/) {
+    var promise = Q(object);
+    var args = array_slice(arguments, 1);
+    return function fbound() {
+        return promise.dispatch("apply", [
+            this,
+            args.concat(array_slice(arguments))
+        ]);
+    };
+};
+Promise.prototype.fbind = function (/*...args*/) {
+    var promise = this;
+    var args = array_slice(arguments);
+    return function fbound() {
+        return promise.dispatch("apply", [
+            this,
+            args.concat(array_slice(arguments))
+        ]);
+    };
+};
+
+/**
+ * Requests the names of the owned properties of a promised
+ * object in a future turn.
+ * @param object    promise or immediate reference for target object
+ * @return promise for the keys of the eventually settled object
+ */
+Q.keys = function (object) {
+    return Q(object).dispatch("keys", []);
+};
+
+Promise.prototype.keys = function () {
+    return this.dispatch("keys", []);
+};
+
+/**
+ * Turns an array of promises into a promise for an array.  If any of
+ * the promises gets rejected, the whole array is rejected immediately.
+ * @param {Array*} an array (or promise for an array) of values (or
+ * promises for values)
+ * @returns a promise for an array of the corresponding values
+ */
+// By Mark Miller
+// http://wiki.ecmascript.org/doku.php?id=strawman:concurrency&rev=1308776521#allfulfilled
+Q.all = all;
+function all(promises) {
+    return when(promises, function (promises) {
+        var pendingCount = 0;
+        var deferred = defer();
+        array_reduce(promises, function (undefined, promise, index) {
+            var snapshot;
+            if (
+                isPromise(promise) &&
+                (snapshot = promise.inspect()).state === "fulfilled"
+            ) {
+                promises[index] = snapshot.value;
+            } else {
+                ++pendingCount;
+                when(
+                    promise,
+                    function (value) {
+                        promises[index] = value;
+                        if (--pendingCount === 0) {
+                            deferred.resolve(promises);
+                        }
+                    },
+                    deferred.reject,
+                    function (progress) {
+                        deferred.notify({ index: index, value: progress });
+                    }
+                );
+            }
+        }, void 0);
+        if (pendingCount === 0) {
+            deferred.resolve(promises);
+        }
+        return deferred.promise;
+    });
+}
+
+Promise.prototype.all = function () {
+    return all(this);
+};
+
+/**
+ * Returns the first resolved promise of an array. Prior rejected promises are
+ * ignored.  Rejects only if all promises are rejected.
+ * @param {Array*} an array containing values or promises for values
+ * @returns a promise fulfilled with the value of the first resolved promise,
+ * or a rejected promise if all promises are rejected.
+ */
+Q.any = any;
+
+function any(promises) {
+    if (promises.length === 0) {
+        return Q.resolve();
+    }
+
+    var deferred = Q.defer();
+    var pendingCount = 0;
+    array_reduce(promises, function (prev, current, index) {
+        var promise = promises[index];
+
+        pendingCount++;
+
+        when(promise, onFulfilled, onRejected, onProgress);
+        function onFulfilled(result) {
+            deferred.resolve(result);
+        }
+        function onRejected(err) {
+            pendingCount--;
+            if (pendingCount === 0) {
+                var rejection = err || new Error("" + err);
+
+                rejection.message = ("Q can't get fulfillment value from any promise, all " +
+                    "promises were rejected. Last error message: " + rejection.message);
+
+                deferred.reject(rejection);
+            }
+        }
+        function onProgress(progress) {
+            deferred.notify({
+                index: index,
+                value: progress
+            });
+        }
+    }, undefined);
+
+    return deferred.promise;
+}
+
+Promise.prototype.any = function () {
+    return any(this);
+};
+
+/**
+ * Waits for all promises to be settled, either fulfilled or
+ * rejected.  This is distinct from `all` since that would stop
+ * waiting at the first rejection.  The promise returned by
+ * `allResolved` will never be rejected.
+ * @param promises a promise for an array (or an array) of promises
+ * (or values)
+ * @return a promise for an array of promises
+ */
+Q.allResolved = deprecate(allResolved, "allResolved", "allSettled");
+function allResolved(promises) {
+    return when(promises, function (promises) {
+        promises = array_map(promises, Q);
+        return when(all(array_map(promises, function (promise) {
+            return when(promise, noop, noop);
+        })), function () {
+            return promises;
+        });
+    });
+}
+
+Promise.prototype.allResolved = function () {
+    return allResolved(this);
+};
+
+/**
+ * @see Promise#allSettled
+ */
+Q.allSettled = allSettled;
+function allSettled(promises) {
+    return Q(promises).allSettled();
+}
+
+/**
+ * Turns an array of promises into a promise for an array of their states (as
+ * returned by `inspect`) when they have all settled.
+ * @param {Array[Any*]} values an array (or promise for an array) of values (or
+ * promises for values)
+ * @returns {Array[State]} an array of states for the respective values.
+ */
+Promise.prototype.allSettled = function () {
+    return this.then(function (promises) {
+        return all(array_map(promises, function (promise) {
+            promise = Q(promise);
+            function regardless() {
+                return promise.inspect();
+            }
+            return promise.then(regardless, regardless);
+        }));
+    });
+};
+
+/**
+ * Captures the failure of a promise, giving an oportunity to recover
+ * with a callback.  If the given promise is fulfilled, the returned
+ * promise is fulfilled.
+ * @param {Any*} promise for something
+ * @param {Function} callback to fulfill the returned promise if the
+ * given promise is rejected
+ * @returns a promise for the return value of the callback
+ */
+Q.fail = // XXX legacy
+Q["catch"] = function (object, rejected) {
+    return Q(object).then(void 0, rejected);
+};
+
+Promise.prototype.fail = // XXX legacy
+Promise.prototype["catch"] = function (rejected) {
+    return this.then(void 0, rejected);
+};
+
+/**
+ * Attaches a listener that can respond to progress notifications from a
+ * promise's originating deferred. This listener receives the exact arguments
+ * passed to ``deferred.notify``.
+ * @param {Any*} promise for something
+ * @param {Function} callback to receive any progress notifications
+ * @returns the given promise, unchanged
+ */
+Q.progress = progress;
+function progress(object, progressed) {
+    return Q(object).then(void 0, void 0, progressed);
+}
+
+Promise.prototype.progress = function (progressed) {
+    return this.then(void 0, void 0, progressed);
+};
+
+/**
+ * Provides an opportunity to observe the settling of a promise,
+ * regardless of whether the promise is fulfilled or rejected.  Forwards
+ * the resolution to the returned promise when the callback is done.
+ * The callback can return a promise to defer completion.
+ * @param {Any*} promise
+ * @param {Function} callback to observe the resolution of the given
+ * promise, takes no arguments.
+ * @returns a promise for the resolution of the given promise when
+ * ``fin`` is done.
+ */
+Q.fin = // XXX legacy
+Q["finally"] = function (object, callback) {
+    return Q(object)["finally"](callback);
+};
+
+Promise.prototype.fin = // XXX legacy
+Promise.prototype["finally"] = function (callback) {
+    if (!callback || typeof callback.apply !== "function") {
+        throw new Error("Q can't apply finally callback");
+    }
+    callback = Q(callback);
+    return this.then(function (value) {
+        return callback.fcall().then(function () {
+            return value;
+        });
+    }, function (reason) {
+        // TODO attempt to recycle the rejection with "this".
+        return callback.fcall().then(function () {
+            throw reason;
+        });
+    });
+};
+
+/**
+ * Terminates a chain of promises, forcing rejections to be
+ * thrown as exceptions.
+ * @param {Any*} promise at the end of a chain of promises
+ * @returns nothing
+ */
+Q.done = function (object, fulfilled, rejected, progress) {
+    return Q(object).done(fulfilled, rejected, progress);
+};
+
+Promise.prototype.done = function (fulfilled, rejected, progress) {
+    var onUnhandledError = function (error) {
+        // forward to a future turn so that ``when``
+        // does not catch it and turn it into a rejection.
+        Q.nextTick(function () {
+            makeStackTraceLong(error, promise);
+            if (Q.onerror) {
+                Q.onerror(error);
+            } else {
+                throw error;
+            }
+        });
+    };
+
+    // Avoid unnecessary `nextTick`ing via an unnecessary `when`.
+    var promise = fulfilled || rejected || progress ?
+        this.then(fulfilled, rejected, progress) :
+        this;
+
+    if (typeof process === "object" && process && process.domain) {
+        onUnhandledError = process.domain.bind(onUnhandledError);
+    }
+
+    promise.then(void 0, onUnhandledError);
+};
+
+/**
+ * Causes a promise to be rejected if it does not get fulfilled before
+ * some milliseconds time out.
+ * @param {Any*} promise
+ * @param {Number} milliseconds timeout
+ * @param {Any*} custom error message or Error object (optional)
+ * @returns a promise for the resolution of the given promise if it is
+ * fulfilled before the timeout, otherwise rejected.
+ */
+Q.timeout = function (object, ms, error) {
+    return Q(object).timeout(ms, error);
+};
+
+Promise.prototype.timeout = function (ms, error) {
+    var deferred = defer();
+    var timeoutId = setTimeout(function () {
+        if (!error || "string" === typeof error) {
+            error = new Error(error || "Timed out after " + ms + " ms");
+            error.code = "ETIMEDOUT";
+        }
+        deferred.reject(error);
+    }, ms);
+
+    this.then(function (value) {
+        clearTimeout(timeoutId);
+        deferred.resolve(value);
+    }, function (exception) {
+        clearTimeout(timeoutId);
+        deferred.reject(exception);
+    }, deferred.notify);
+
+    return deferred.promise;
+};
+
+/**
+ * Returns a promise for the given value (or promised value), some
+ * milliseconds after it resolved. Passes rejections immediately.
+ * @param {Any*} promise
+ * @param {Number} milliseconds
+ * @returns a promise for the resolution of the given promise after milliseconds
+ * time has elapsed since the resolution of the given promise.
+ * If the given promise rejects, that is passed immediately.
+ */
+Q.delay = function (object, timeout) {
+    if (timeout === void 0) {
+        timeout = object;
+        object = void 0;
+    }
+    return Q(object).delay(timeout);
+};
+
+Promise.prototype.delay = function (timeout) {
+    return this.then(function (value) {
+        var deferred = defer();
+        setTimeout(function () {
+            deferred.resolve(value);
+        }, timeout);
+        return deferred.promise;
+    });
+};
+
+/**
+ * Passes a continuation to a Node function, which is called with the given
+ * arguments provided as an array, and returns a promise.
+ *
+ *      Q.nfapply(FS.readFile, [__filename])
+ *      .then(function (content) {
+ *      })
+ *
+ */
+Q.nfapply = function (callback, args) {
+    return Q(callback).nfapply(args);
+};
+
+Promise.prototype.nfapply = function (args) {
+    var deferred = defer();
+    var nodeArgs = array_slice(args);
+    nodeArgs.push(deferred.makeNodeResolver());
+    this.fapply(nodeArgs).fail(deferred.reject);
+    return deferred.promise;
+};
+
+/**
+ * Passes a continuation to a Node function, which is called with the given
+ * arguments provided individually, and returns a promise.
+ * @example
+ * Q.nfcall(FS.readFile, __filename)
+ * .then(function (content) {
+ * })
+ *
+ */
+Q.nfcall = function (callback /*...args*/) {
+    var args = array_slice(arguments, 1);
+    return Q(callback).nfapply(args);
+};
+
+Promise.prototype.nfcall = function (/*...args*/) {
+    var nodeArgs = array_slice(arguments);
+    var deferred = defer();
+    nodeArgs.push(deferred.makeNodeResolver());
+    this.fapply(nodeArgs).fail(deferred.reject);
+    return deferred.promise;
+};
+
+/**
+ * Wraps a NodeJS continuation passing function and returns an equivalent
+ * version that returns a promise.
+ * @example
+ * Q.nfbind(FS.readFile, __filename)("utf-8")
+ * .then(console.log)
+ * .done()
+ */
+Q.nfbind =
+Q.denodeify = function (callback /*...args*/) {
+    if (callback === undefined) {
+        throw new Error("Q can't wrap an undefined function");
+    }
+    var baseArgs = array_slice(arguments, 1);
+    return function () {
+        var nodeArgs = baseArgs.concat(array_slice(arguments));
+        var deferred = defer();
+        nodeArgs.push(deferred.makeNodeResolver());
+        Q(callback).fapply(nodeArgs).fail(deferred.reject);
+        return deferred.promise;
+    };
+};
+
+Promise.prototype.nfbind =
+Promise.prototype.denodeify = function (/*...args*/) {
+    var args = array_slice(arguments);
+    args.unshift(this);
+    return Q.denodeify.apply(void 0, args);
+};
+
+Q.nbind = function (callback, thisp /*...args*/) {
+    var baseArgs = array_slice(arguments, 2);
+    return function () {
+        var nodeArgs = baseArgs.concat(array_slice(arguments));
+        var deferred = defer();
+        nodeArgs.push(deferred.makeNodeResolver());
+        function bound() {
+            return callback.apply(thisp, arguments);
+        }
+        Q(bound).fapply(nodeArgs).fail(deferred.reject);
+        return deferred.promise;
+    };
+};
+
+Promise.prototype.nbind = function (/*thisp, ...args*/) {
+    var args = array_slice(arguments, 0);
+    args.unshift(this);
+    return Q.nbind.apply(void 0, args);
+};
+
+/**
+ * Calls a method of a Node-style object that accepts a Node-style
+ * callback with a given array of arguments, plus a provided callback.
+ * @param object an object that has the named method
+ * @param {String} name name of the method of object
+ * @param {Array} args arguments to pass to the method; the callback
+ * will be provided by Q and appended to these arguments.
+ * @returns a promise for the value or error
+ */
+Q.nmapply = // XXX As proposed by "Redsandro"
+Q.npost = function (object, name, args) {
+    return Q(object).npost(name, args);
+};
+
+Promise.prototype.nmapply = // XXX As proposed by "Redsandro"
+Promise.prototype.npost = function (name, args) {
+    var nodeArgs = array_slice(args || []);
+    var deferred = defer();
+    nodeArgs.push(deferred.makeNodeResolver());
+    this.dispatch("post", [name, nodeArgs]).fail(deferred.reject);
+    return deferred.promise;
+};
+
+/**
+ * Calls a method of a Node-style object that accepts a Node-style
+ * callback, forwarding the given variadic arguments, plus a provided
+ * callback argument.
+ * @param object an object that has the named method
+ * @param {String} name name of the method of object
+ * @param ...args arguments to pass to the method; the callback will
+ * be provided by Q and appended to these arguments.
+ * @returns a promise for the value or error
+ */
+Q.nsend = // XXX Based on Mark Miller's proposed "send"
+Q.nmcall = // XXX Based on "Redsandro's" proposal
+Q.ninvoke = function (object, name /*...args*/) {
+    var nodeArgs = array_slice(arguments, 2);
+    var deferred = defer();
+    nodeArgs.push(deferred.makeNodeResolver());
+    Q(object).dispatch("post", [name, nodeArgs]).fail(deferred.reject);
+    return deferred.promise;
+};
+
+Promise.prototype.nsend = // XXX Based on Mark Miller's proposed "send"
+Promise.prototype.nmcall = // XXX Based on "Redsandro's" proposal
+Promise.prototype.ninvoke = function (name /*...args*/) {
+    var nodeArgs = array_slice(arguments, 1);
+    var deferred = defer();
+    nodeArgs.push(deferred.makeNodeResolver());
+    this.dispatch("post", [name, nodeArgs]).fail(deferred.reject);
+    return deferred.promise;
+};
+
+/**
+ * If a function would like to support both Node continuation-passing-style and
+ * promise-returning-style, it can end its internal promise chain with
+ * `nodeify(nodeback)`, forwarding the optional nodeback argument.  If the user
+ * elects to use a nodeback, the result will be sent there.  If they do not
+ * pass a nodeback, they will receive the result promise.
+ * @param object a result (or a promise for a result)
+ * @param {Function} nodeback a Node.js-style callback
+ * @returns either the promise or nothing
+ */
+Q.nodeify = nodeify;
+function nodeify(object, nodeback) {
+    return Q(object).nodeify(nodeback);
+}
+
+Promise.prototype.nodeify = function (nodeback) {
+    if (nodeback) {
+        this.then(function (value) {
+            Q.nextTick(function () {
+                nodeback(null, value);
+            });
+        }, function (error) {
+            Q.nextTick(function () {
+                nodeback(error);
+            });
+        });
+    } else {
+        return this;
+    }
+};
+
+Q.noConflict = function() {
+    throw new Error("Q.noConflict only works when Q is used as a global");
+};
+
+// All code before this point will be filtered from stack traces.
+var qEndingLine = captureLine();
+
+return Q;
+
+});
+
+
+/***/ }),
+/* 33 */
+/***/ (function(module, exports) {
+
+module.exports = require("nw.gui");
+
+/***/ })
+/******/ ]);

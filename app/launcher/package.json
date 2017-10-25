@@ -2,13 +2,14 @@
 	"name":		"nw-package-launcher",
 	"main":		"____launcher____.html",
 	"version":	"0.1.0",
+	"chromium-args": "--mixed-context",
 
 	"debug": 	false,
 
 	"window": {
 		"toolbar":			false,
 		"frame":			false,
-		"transparent":		true,
+		"transparent":		false,
 
 		"width": 			400,
 		"height":			400,
