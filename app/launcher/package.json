@@ -9,7 +9,7 @@
 	"window": {
 		"toolbar":			false,
 		"frame":			false,
-		"transparent":		false,
+		"transparent":		true,
 
 		"width": 			400,
 		"height":			400,
