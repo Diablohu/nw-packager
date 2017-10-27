@@ -597,6 +597,10 @@
 [icon="folder"]:before {
   content: "\e601" !important;
 }
+:disabled {
+  pointer-events: none;
+  opacity: .5;
+}
 html,
 body {
   height: 100%;
@@ -1189,6 +1193,17 @@ main .log > p.complete {
 main .log > p.complete > em {
   color: #268ed9;
   font-weight: normal;
+}
+.versions_platforms {
+  display: flex;
+  flex-flow: row nowrap;
+}
+.versions_platforms .platform {
+  flex: 1 1 auto;
+}
+.versions_platforms .platform label[for] {
+  display: block;
+  font-style: italic;
 }
 .debug_step_switcher {
   position: fixed;

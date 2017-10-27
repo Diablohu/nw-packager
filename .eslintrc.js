@@ -8,10 +8,22 @@ module.exports = {
     },
     "extends": "eslint:recommended",
     "parserOptions": {
+        // ECMAScript 版本
+        "ecmaVersion": 7,
+        "sourceType": "module", //script
+        // 想使用的额外的语言特性:
         "ecmaFeatures": {
-            "jsx": true
-        },
-        "sourceType": "module"
+            // 允许在全局作用域下使用 return 语句
+            "globalReturn": true,
+            // impliedStric
+            "impliedStrict": true
+        }
+    },
+    "globals": {
+        "node": false,
+        "_g": true,
+        "_frame": true,
+        "Versions": true
     },
     "rules": {
         "no-const-assign": 1,
@@ -25,7 +37,12 @@ module.exports = {
         "no-empty-pattern": 2,
         "no-mixed-spaces-and-tabs": 0,
         "no-octal": 2,
-        "no-redeclare": [2, {"builtinGlobals": true}],
+        "no-redeclare": [
+            2,
+            {
+                "builtinGlobals": true
+            }
+        ],
         "no-self-assign": 2,
         "no-this-before-super": 1,
         "no-undef": 1,
@@ -41,9 +58,8 @@ module.exports = {
             "error",
             4,
             {
-                "SwitchCase": 1,
-                "VariableDeclarator": { "var": 2, "let": 1, "const": 3 }
+                "SwitchCase": 1
             }
-        ]
+        ],
     }
 };

@@ -1,3 +1,8 @@
+:disabled{
+	pointer-events: none;
+	opacity: .5;
+}
+
 html, body{
 	height:		100%;
 	overflow:	hidden;
@@ -487,6 +492,18 @@ main{
 					font-weight:normal;
 				}
 			}
+		}
+	}
+}
+
+.versions_platforms{
+	display: flex;
+	flex-flow: row nowrap;
+	.platform{
+		flex: 1 1 auto;
+		label[for]{
+			display: block;
+			font-style: italic;
 		}
 	}
 }
